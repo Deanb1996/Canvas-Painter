@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Data Structs">
+      <UniqueIdentifier>{66b13198-2729-4595-8c6f-ea960f3d60e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\HelperClasses">
+      <UniqueIdentifier>{72e34a3f-c6a8-4f9e-aedc-f5f3854e6cd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MathsHelper">
+      <UniqueIdentifier>{1a6f768b-5b98-443d-a34f-0562ed2ce990}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Managers">
+      <UniqueIdentifier>{6c52a71c-480c-4b76-9335-31e09af0c0d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems">
+      <UniqueIdentifier>{518234e9-0374-4f5a-b0ec-c335e33de2df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\HelperClasses">
+      <UniqueIdentifier>{74a45401-1eba-4226-8cdb-776a20debb1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Managers">
+      <UniqueIdentifier>{63bcaff2-29e7-4af4-ad0d-acc59a8be1a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MathsHelper">
+      <UniqueIdentifier>{9d81ff0b-23c3-40e7-9a22-3f87949af31f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Systems">
+      <UniqueIdentifier>{90f146cd-1bff-439a-af1e-38cf0aa9ba0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components">
+      <UniqueIdentifier>{44fbdb40-196d-4d6e-9de4-614a3550ca8a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header Files\HelperClasses\ObjLoader.h">
+      <Filter>Header Files\HelperClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\DataStructs\Vertex.h">
+      <Filter>Header Files\Data Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\DataStructs\CullState.h">
+      <Filter>Header Files\Data Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\DataStructs\DepthState.h">
+      <Filter>Header Files\Data Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\DataStructs\Entity.h">
+      <Filter>Header Files\Data Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Managers\ECSManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Managers\Managers.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Managers\ResourceManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Managers\SceneManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\MathsHelper\MathsHelper.h">
+      <Filter>Header Files\MathsHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\MathsHelper\Matrix4.h">
+      <Filter>Header Files\MathsHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\MathsHelper\Vector4.h">
+      <Filter>Header Files\MathsHelper</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Systems\ISystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Systems\RenderSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Systems\RenderSystem_DX.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Systems\Systems.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Components\BoxCollider.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Components\Camera.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Components\Components.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Components\ComponentType.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Components\Geometry.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Components\Light.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Components\Shader.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Components\Texture.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Components\Transform.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Managers\InputManager.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\HelperClasses\Scene.h">
+      <Filter>Header Files\HelperClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\HelperClasses\ShaderObject.h">
+      <Filter>Header Files\HelperClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\HelperClasses\ShaderObject_DX.h">
+      <Filter>Header Files\HelperClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\HelperClasses\TextureObject.h">
+      <Filter>Header Files\HelperClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\HelperClasses\TextureObject_DX.h">
+      <Filter>Header Files\HelperClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\HelperClasses\VBO.h">
+      <Filter>Header Files\HelperClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\HelperClasses\VBO_DX.h">
+      <Filter>Header Files\HelperClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\DataStructs\BlendState.h">
+      <Filter>Header Files\Data Structs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source Files\HelperClasses\ObjLoader.cpp">
+      <Filter>Source Files\HelperClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\Managers\ECSManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\Managers\ResourceManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\Managers\SceneManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\MathsHelper\Matrix4.cpp">
+      <Filter>Source Files\MathsHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\MathsHelper\Vector4.cpp">
+      <Filter>Source Files\MathsHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\Systems\RenderSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\Systems\RenderSystem_DX.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\Managers\InputManager.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\HelperClasses\ShaderObject_DX.cpp">
+      <Filter>Source Files\HelperClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\HelperClasses\TextureObject_DX.cpp">
+      <Filter>Source Files\HelperClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\HelperClasses\VBO_DX.cpp">
+      <Filter>Source Files\HelperClasses</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

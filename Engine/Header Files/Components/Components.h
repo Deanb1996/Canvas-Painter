@@ -1,0 +1,9 @@
+#pragma once
+#include "ComponentType.h"
+#include "BoxCollider.h"
+#include "Camera.h"
+#include "Geometry.h"
+#include "Light.h"
+#include "Shader.h"
+#include "Texture.h"
+#include "Transform.h"
