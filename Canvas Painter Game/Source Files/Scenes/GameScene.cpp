@@ -8,16 +8,16 @@ using namespace MathsHelper;
 void GameScene::CreateCamera()
 {
 	//Create camera entity
-	ecsManager->CreateEntity("Camera");
+	mCameraID = mEcsManager->CreateEntity();
 
 	//Create cameras transform component
 	Transform transform;
-	transform.mTranslation = Vector4(0.0f, 0.0f, -5.0f, 1.0f);
-	ecsManager->AddTransformComp(transform, "Camera");
+	transform.mTranslation = Vector4(0.0f, 0.0f, -20.0f, 1.0f);
+	mEcsManager->AddTransformComp(transform, mCameraID);
 
 	//Creates cameras camera component
 	Camera camera{ Vector4(0.0f, 0.0f, 1.0f, 1.0f), Vector4(0.0f, 1.0f, 0.0f, 1.0f), 60, 1, 500 };
-	ecsManager->AddCameraComp(camera, "Camera");
+	mEcsManager->AddCameraComp(camera, mCameraID);
 }
 
 /// <summary>
@@ -26,16 +26,16 @@ void GameScene::CreateCamera()
 void GameScene::CreateLight()
 {
 	//Create light entity
-	ecsManager->CreateEntity("Light");
+	mLightID = mEcsManager->CreateEntity();
 
 	//Create lights transform component
 	Transform transform;
-	transform.mTranslation = Vector4(0.0f, 15.0f, -5.0f, 1.0f);
-	ecsManager->AddTransformComp(transform, "Light");
+	transform.mTranslation = Vector4(15.0f, 10.0f, -15.0f, 1.0f);
+	mEcsManager->AddTransformComp(transform, mLightID);
 
 	//Create lights light component
-	Light light{ Vector4(1.0f, 0.0f, 0.0f, 1.0f) };
-	ecsManager->AddLightComp(light, "Light");
+	Light light{ Vector4(1.0f, 1.0f, 1.0f, 1.0f) };
+	mEcsManager->AddLightComp(light, mLightID);
 }
 
 /// <summary>
@@ -43,31 +43,29 @@ void GameScene::CreateLight()
 /// </summary>
 void GameScene::CreateCanvas()
 {
-	int counter = 0;
-	for (int i = 0; i < 20; i++)
+	int cubeID = 0;
+	for (float i = -100; i < 100; i++)
 	{
-		for (int j = 0; j < 20; j++)
+		for (float j = -100; j < 100; j++)
 		{
-			for (int k = 0; k < 4; k++)
+			for (float k = -2; k < 2; k++)
 			{
-				//Creates cube entity
-				ecsManager->CreateEntity("Cube" + std::to_string(counter));
+				//Create cube entity
+				cubeID = mEcsManager->CreateEntity();
 
 				//Create cubes transform component
 				Transform transform;
-				transform.mTranslation = Vector4(i, k, j, 1.0f);
-				transform.mTransform *= TranslationMatrix(transform.mTranslation) * ScaleMatrix(Vector4(0.5f, 0.5f, 0.5f, 1.0f));// *RotationMatrixX(DegreesToRadians(45)) * ScaleMatrix(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-				ecsManager->AddTransformComp(transform, "Cube" + std::to_string(counter));
+				transform.mTranslation = Vector4(i / 10, j / 10, k / 10, 1.0f);
+				transform.mTransform *= TranslationMatrix(transform.mTranslation) * ScaleMatrix(Vector4(0.1f, 0.1f, 0.1f, 1.0f));// *RotationMatrixX(DegreesToRadians(45)) * ScaleMatrix(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+				mEcsManager->AddTransformComp(transform, cubeID);
 
 				//Creates cubes geometry component
 				Geometry geometry{ L"cube.obj" };
-				ecsManager->AddGeometryComp(geometry, "Cube" + std::to_string(counter));
+				mEcsManager->AddGeometryComp(geometry, cubeID);
 
 				//Creates cubes shader component
 				Shader shader{ L"defaultShader.fx", BlendState::NOBLEND, CullState::NONE, DepthState::NONE };
-				ecsManager->AddShaderComp(shader, "Cube" + std::to_string(counter));
-
-				counter++;
+				mEcsManager->AddShaderComp(shader, cubeID);
 			}
 		}
 	}
@@ -99,6 +97,33 @@ void GameScene::Render()
 /// </summary>
 void GameScene::Update()
 {
+	auto keyPresses = mInputManager->KeyPresses();
+	if (keyPresses.size() > 0)
+	{
+		auto A_KEY = std::find_if(keyPresses.begin(), keyPresses.end(), [&](const std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>& key)
+		{
+			return key.first == KEYBOARD_BUTTONS::KEY_A && key.second == KEYBOARD_BUTTON_STATE::KEY_DOWN;
+		});
+		if (A_KEY != keyPresses.end())
+		{
+			mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
+			mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(1, 0, 0, 0)  * mSceneManager->DeltaTime();
+		}
+	}
+
+	auto mousePresses = mInputManager->MousePresses();
+	if (mousePresses.size() > 0)
+	{
+		auto LEFT_BUTTON = std::find_if(mousePresses.begin(), mousePresses.end(), [&](const std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>& button)
+		{
+			return button.first == MOUSE_BUTTONS::MOUSE_BUTTON_LEFT && button.second == MOUSE_BUTTON_STATE::MOUSE_DOWN;
+		});
+		if (LEFT_BUTTON != mousePresses.end())
+		{
+			mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
+			mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
+		}
+	}
 }
 
 /// <summary>
@@ -107,8 +132,8 @@ void GameScene::Update()
 void GameScene::OnLoad()
 {
 	CreateCamera();
-	CreateLight();
 	CreateCanvas();
+	CreateLight();
 }
 
 /// <summary>

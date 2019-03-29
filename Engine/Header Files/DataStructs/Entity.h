@@ -4,7 +4,6 @@
 
 struct Entity
 {
-	std::string mName;
 	int mID;
 	ComponentType mComponentMask;
 };

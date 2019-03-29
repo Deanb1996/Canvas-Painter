@@ -101,7 +101,7 @@ void InputManager::KeyboardInput()
 	mKeyboardTracker.Update(state);
 
 
-	//HeldDownKeys(state); // Registers every frame that a key is pressed
+	HeldDownKeys(state); // Registers every frame that a key is pressed
 	SinglePressKeys(); // Registers once
 	ReleasedKeys();
 }

@@ -48,4 +48,15 @@
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="defaultPS.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="defaultShader.fx">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="defaultVS.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+  </ItemGroup>
 </Project>

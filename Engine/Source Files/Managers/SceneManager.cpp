@@ -19,8 +19,8 @@ const void SceneManager::Update()
 	mDeltaTime = mCurrentTime - mPreviousTime;
 
 	mScene->Update();
-	ecsManager->ProcessSystems();
-	inputManager->Update();
+	mEcsManager->ProcessSystems();
+	mInputManager->Update();
 
 	// Average the fps over n frames.
 	mAverageDeltaTime = 0;

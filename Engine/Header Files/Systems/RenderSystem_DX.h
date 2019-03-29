@@ -80,6 +80,7 @@ public:
 
 
 	void AssignEntity(const Entity& pEntity) override;
+	void ReAssignEntity(const Entity& pEntity) override;
 	void Process() override;
 	Microsoft::WRL::ComPtr<ID3D11Device> Device() const { return mDevice; }
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext> Context() const { return mContext; }

@@ -8,8 +8,8 @@
 class SceneManager
 {
 private:
-	std::shared_ptr<ECSManager> ecsManager = ECSManager::Instance();
-	std::shared_ptr<InputManager> inputManager = InputManager::Instance();
+	std::shared_ptr<ECSManager> mEcsManager = ECSManager::Instance();
+	std::shared_ptr<InputManager> mInputManager = InputManager::Instance();
 
 	std::chrono::nanoseconds mDeltaTime;
 	std::chrono::high_resolution_clock::time_point mStartTime;

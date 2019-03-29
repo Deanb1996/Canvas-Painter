@@ -9,6 +9,7 @@ using namespace DirectX;
 RenderSystem_DX::RenderSystem_DX(const HWND& pWindow) : RenderSystem(ComponentType::COMPONENT_TRANSFORM | ComponentType::COMPONENT_GEOMETRY | ComponentType::COMPONENT_SHADER),
 mWindow(pWindow), mActiveCamera(nullptr)
 {
+	mEntities = std::vector<Entity>(200000, Entity{-1, ComponentType::COMPONENT_NONE});
 	if (FAILED(Init()))
 	{
 		Cleanup();
@@ -377,28 +378,14 @@ void RenderSystem_DX::Cleanup()
 /// <param name="pEntity"></param>
 void RenderSystem_DX::AssignEntity(const Entity & pEntity)
 {
-	//Finds if an entity that matches given entities ID exists and returns it
+	//Checks if entity mask matches the renderable mask
 	if ((pEntity.mComponentMask & mMask) == mMask)
 	{
-		//If the entity matches renderable mask then check if it is in the list 
-		const auto entity = find_if(mEntities.begin(), mEntities.end(), [&](const Entity& entity) {return entity.mID == pEntity.mID; });
-		if (entity == mEntities.end())
-		{
-			//If not found then add it
-			mEntities.push_back(pEntity);
-		}
-		else
-		{
-			//if already in the list, then update mask
-			entity->mComponentMask = pEntity.mComponentMask;
-		}
-	}
-	else
-	{
-		//If the mask doesn't match then remove it (if it wasn't in the list then the remove acts as a search to confirm it is not there)
-		mEntities.erase(remove_if(mEntities.begin(), mEntities.end(), [&](const Entity& entity) {return entity.mID == pEntity.mID; }), mEntities.end());
+		//If the entity matches renderable mask then update entry in systems entity list
+		mEntities[pEntity.mID] = pEntity;
 	}
 
+	//Checks if entity mask matches the light mask
 	if ((pEntity.mComponentMask & ComponentType::COMPONENT_LIGHT) == ComponentType::COMPONENT_LIGHT)
 	{
 		//If the entity has a light component then find it in the lights
@@ -410,14 +397,9 @@ void RenderSystem_DX::AssignEntity(const Entity & pEntity)
 		}
 		else
 		{
-			//if already in the list, then update mask
+			//If already in the list, then update mask
 			entity->mComponentMask = pEntity.mComponentMask;
 		}
-	}
-	else
-	{
-		//If the mask doesn't match then remove it (if it wasn't in the list then the remove acts as a search to confirm it is not there)
-		mLights.erase(remove_if(mLights.begin(), mLights.end(), [&](const Entity& entity) {return entity.mID == pEntity.mID; }), mLights.end());
 	}
 
 	//If the entity is marked as a camera set it to the active camera
@@ -429,7 +411,49 @@ void RenderSystem_DX::AssignEntity(const Entity & pEntity)
 		//if already in the list, then update mask
 		//mActiveCamera->mComponentMask = pEntity.mComponentMask;
 	}
+}
 
+/// <summary>
+/// Re-assigns entity to system when component is removed from entity
+/// </summary>
+/// <param name="pEntity">Entity to re-assign</param>
+void RenderSystem_DX::ReAssignEntity(const Entity & pEntity)
+{
+	//Checks if entity mask matches the renderable mask
+	if ((pEntity.mComponentMask & mMask) == mMask)
+	{
+		//If the entity matches renderable mask then update entry in systems entity list
+		mEntities[pEntity.mID] = pEntity;
+	}
+	else
+	{
+		//If the mask doesn't match then set ID to -1
+		mEntities[pEntity.mID].mID = -1;
+	}
+
+	//Checks if entity mask matches the light mask
+	if ((pEntity.mComponentMask & ComponentType::COMPONENT_LIGHT) == ComponentType::COMPONENT_LIGHT)
+	{
+		//If the entity has a light component then find it in the lights
+		const auto entity = find_if(mLights.begin(), mLights.end(), [&](const Entity& entity) {return entity.mID == pEntity.mID; });
+		if (entity == mLights.end())
+		{
+			//If not found then add it
+			mLights.push_back(pEntity);
+		}
+		else
+		{
+			//If already in the list, then update mask
+			entity->mComponentMask = pEntity.mComponentMask;
+		}
+	}
+	else
+	{
+		//If the mask doesn't match then remove it (if it wasn't in the list then the remove acts as a search to confirm it is not there)
+		mLights.erase(remove_if(mLights.begin(), mLights.end(), [&](const Entity& entity) {return entity.mID == pEntity.mID; }), mLights.end());
+	}
+
+	//TODO: Implement multiple cameras
 }
 
 /// <summary>
@@ -438,7 +462,7 @@ void RenderSystem_DX::AssignEntity(const Entity & pEntity)
 void RenderSystem_DX::Process()
 {
 	ClearView();
-	
+
 	if (mActiveCamera)
 	{
 		SetViewProj();
@@ -449,20 +473,23 @@ void RenderSystem_DX::Process()
 	}
 	for (const Entity& entity : mEntities)
 	{
-		auto geometry = LoadGeometry(entity);
-		//LoadTexture(entity);
-		LoadShaders(entity);
+		if (entity.mID != -1)
+		{
+			auto geometry = LoadGeometry(entity);
+			//LoadTexture(entity);
+			LoadShaders(entity);
 
-		//world
-		mCB.mWorld = XMFLOAT4X4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(entity.mID)->mTransform)));
-		mContext->UpdateSubresource(mConstantBuffer.Get(), 0, nullptr, &mCB, 0, 0);
+			//world
+			mCB.mWorld = XMFLOAT4X4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(entity.mID)->mTransform)));
+			mContext->UpdateSubresource(mConstantBuffer.Get(), 0, nullptr, &mCB, 0, 0);
 
-		//mContext->OMSetBlendState()
-		//mContext->OMSetDepthStencilState(NULL, 1);
-		mContext->RSSetState(mDefaultRasterizerState.Get());
+			//mContext->OMSetBlendState()
+			//mContext->OMSetDepthStencilState(NULL, 1);
+			mContext->RSSetState(mDefaultRasterizerState.Get());
 
-		//mContext->DrawIndexed(mEcsManager->GeometryComp(entity.mID)->)
-		geometry->Draw(this);
+			//mContext->DrawIndexed(mEcsManager->GeometryComp(entity.mID)->)
+			geometry->Draw(this);
+		}
 	}
 
 	SwapBuffers();

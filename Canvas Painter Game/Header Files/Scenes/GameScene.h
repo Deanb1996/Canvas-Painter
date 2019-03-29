@@ -8,8 +8,13 @@ class GameScene : public Scene
 {
 private:
 	//Managers
-	std::shared_ptr<ECSManager> ecsManager = ECSManager::Instance();
-	std::shared_ptr<InputManager> inputManager = InputManager::Instance();
+	std::shared_ptr<ECSManager> mEcsManager = ECSManager::Instance();
+	std::shared_ptr<InputManager> mInputManager = InputManager::Instance();
+	std::shared_ptr<SceneManager> mSceneManager = SceneManager::Instance();
+
+	//Entity IDs
+	int mCameraID;
+	int mLightID;
 
 	void CreateCamera();
 	void CreateLight();
