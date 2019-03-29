@@ -1,38 +1,63 @@
 #include "InputManager.h"
 
+/// <summary>
+/// 
+/// </summary>
 InputManager::InputManager()
 {
 	mKeyboard = std::make_shared<DirectX::Keyboard>();
 	mMouse = std::make_shared<DirectX::Mouse>();
 }
 
+/// <summary>
+/// 
+/// </summary>
 InputManager::~InputManager()
 {
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
 std::shared_ptr<InputManager> InputManager::Instance()
 {
 	static std::shared_ptr<InputManager> instance{ new InputManager };
 	return instance;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
 const std::vector<std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>> InputManager::KeyPresses() const
 {
 	/*return std::vector<std::pair<KEYBOARD_BUTTONS, bool>>();*/
 	return keyboardButtonPresses;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
 const std::vector<std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>> InputManager::MousePresses() const
 {
 	//return std::vector<std::pair<MOUSE_BUTTONS, bool>>();
 	return mouseButtonPresses;
 }
 
+/// <summary>
+/// 
+/// </summary>
 void InputManager::CenterCursor()
 {
 	//SetCursorPos(CLIENT_WIDTH / 2, CLIENT_HEIGHT / 2);
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pVisible"></param>
 void InputManager::CursorVisible(bool pVisible)
 {
 	if (pVisible) { mMouse->SetVisible(true); }
@@ -42,6 +67,15 @@ void InputManager::CursorVisible(bool pVisible)
 ////--------------------------------------------------------------------------------------
 //// Called every time the application receives a message
 ////--------------------------------------------------------------------------------------
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="hWnd"></param>
+/// <param name="message"></param>
+/// <param name="wParam"></param>
+/// <param name="lParam"></param>
+/// <returns></returns>
 LRESULT CALLBACK InputManager::WndProc(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam)
 {
 	//mMouse->SetWindow(hWnd);
@@ -87,12 +121,18 @@ LRESULT CALLBACK InputManager::WndProc(const HWND hWnd, const UINT message, cons
 	return 0;
 }
 
+/// <summary>
+/// 
+/// </summary>
 void InputManager::Update()
 {
 	KeyboardInput();
 	MouseInput();
 }
 
+/// <summary>
+/// 
+/// </summary>
 void InputManager::KeyboardInput()
 {
 	keyboardButtonPresses.clear();
@@ -106,6 +146,10 @@ void InputManager::KeyboardInput()
 	ReleasedKeys();
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
 const void InputManager::MouseInput() {
 
 	mouseButtonPresses.clear();
@@ -142,6 +186,10 @@ const void InputManager::MouseInput() {
 	if (mMouseTracker.middleButton == ButtonState::RELEASED) { pressedMouseButton = MOUSE_BUTTONS::MOUSE_BUTTON_MIDDLE; mouseButtonState = MOUSE_BUTTON_STATE::MOUSE_UP; }
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
 const void InputManager::ReleasedKeys()
 {
 	if (mKeyboardTracker.released.A) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_A; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
@@ -304,6 +352,10 @@ const void InputManager::ReleasedKeys()
 	if (mKeyboardTracker.released.Zoom) {}
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
 const void InputManager::SinglePressKeys()
 {
 	if (mKeyboardTracker.pressed.A) {
@@ -471,6 +523,11 @@ const void InputManager::SinglePressKeys()
 	if (mKeyboardTracker.pressed.Zoom) {}
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="state"></param>
+/// <returns></returns>
 const void InputManager::HeldDownKeys(DirectX::Keyboard::State &state)
 {
 	if (state.A) {}

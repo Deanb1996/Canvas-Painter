@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{0E6A8A0F-D02E-4898-ABD5-BA2E5FCC4F57}</ProjectGuid>
     <RootNamespace>CanvasPainterGame</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -122,6 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>"Header Files";"Header Files\Components";"Header Files\Systems";"Header Files\Scenes";"../Engine/Header Files/MathsHelper";"../Engine/Header Files/Components";"../Engine/Header Files/DataStructs";"../Engine/Header Files/HelperClasses";"../Engine/Header Files/Managers";"../Engine/Header Files/Systems";</AdditionalIncludeDirectories>
+      <AdditionalOptions>/Zc:twoPhase-</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
