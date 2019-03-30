@@ -10,7 +10,7 @@ class SceneManager
 private:
 	//Managers
 	std::shared_ptr<ECSManager> mEcsManager = ECSManager::Instance();
-	std::shared_ptr<InputManager> mInputManager = InputManager::Instance();
+	std::shared_ptr<InputManager_DX> mInputManager = InputManager_DX::Instance();
 
 	//Timing variables
 	std::chrono::nanoseconds mDeltaTime;
@@ -37,8 +37,8 @@ public:
 	void Update();
 
 	//Timing functions
-	const double& DeltaTime() const;
-	const double& Time() const;
+	const double DeltaTime() const;
+	const double Time() const;
 	const int& Fps() const;
 
 	//Window width/height functions

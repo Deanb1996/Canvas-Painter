@@ -17,7 +17,6 @@ namespace MathsHelper
 
 		//Maths methods
 		float Magnitude() const;
-		float Dot(const Vector4& b) const;
 		Vector4& Clamp(float pMagnitude);
 		Vector4& Normalise();
 

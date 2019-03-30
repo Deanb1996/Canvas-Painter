@@ -84,7 +84,7 @@ HRESULT InitWindow(const HINSTANCE pHInstance, const int pNCmdShow)
 	WNDCLASSEX wcex;
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc = InputManager::WndProc;
+	wcex.lpfnWndProc = InputManager_DX::WndProc;
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = pHInstance;

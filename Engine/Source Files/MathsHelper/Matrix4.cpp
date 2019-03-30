@@ -1,3 +1,4 @@
+#include "MathsHelper.h"
 #include "Matrix4.h"
 
 using namespace MathsHelper;
@@ -67,31 +68,31 @@ Matrix4 & Matrix4::operator*=(const Matrix4 & rhs)
 {
 	//Calculates dot product of the 1st row with each column of the given matrix to get the new values for the 1st row of the matrix
 	mRows[0] = Vector4(
-		mRows[0].Dot(Vector4(rhs._11, rhs._21, rhs._31, rhs._41)),
-		mRows[0].Dot(Vector4(rhs._12, rhs._22, rhs._32, rhs._42)),
-		mRows[0].Dot(Vector4(rhs._13, rhs._23, rhs._33, rhs._43)),
-		mRows[0].Dot(Vector4(rhs._14, rhs._24, rhs._34, rhs._44)));
+		Dot(mRows[0], Vector4(rhs._11, rhs._21, rhs._31, rhs._41)),
+		Dot(mRows[0], Vector4(rhs._12, rhs._22, rhs._32, rhs._42)),
+		Dot(mRows[0], Vector4(rhs._13, rhs._23, rhs._33, rhs._43)),
+		Dot(mRows[0], Vector4(rhs._14, rhs._24, rhs._34, rhs._44)));
 
 	//Calculates dot product of the 2nd row with each column of the given matrix to get the new values for the 2nd row of the matrix
 	mRows[1] = Vector4(
-		mRows[1].Dot(Vector4(rhs._11, rhs._21, rhs._31, rhs._41)),
-		mRows[1].Dot(Vector4(rhs._12, rhs._22, rhs._32, rhs._42)),
-		mRows[1].Dot(Vector4(rhs._13, rhs._23, rhs._33, rhs._43)),
-		mRows[1].Dot(Vector4(rhs._14, rhs._24, rhs._34, rhs._44)));
+		Dot(mRows[1], Vector4(rhs._11, rhs._21, rhs._31, rhs._41)),
+		Dot(mRows[1], Vector4(rhs._12, rhs._22, rhs._32, rhs._42)),
+		Dot(mRows[1], Vector4(rhs._13, rhs._23, rhs._33, rhs._43)),
+		Dot(mRows[1], Vector4(rhs._14, rhs._24, rhs._34, rhs._44)));
 
 	//Calculates dot product of the 3rd row with each column of the given matrix to get the new values for the 3rd row of the matrix
 	mRows[2] = Vector4(
-		mRows[2].Dot(Vector4(rhs._11, rhs._21, rhs._31, rhs._41)),
-		mRows[2].Dot(Vector4(rhs._12, rhs._22, rhs._32, rhs._42)),
-		mRows[2].Dot(Vector4(rhs._13, rhs._23, rhs._33, rhs._43)),
-		mRows[2].Dot(Vector4(rhs._14, rhs._24, rhs._34, rhs._44)));
+		Dot(mRows[2], Vector4(rhs._11, rhs._21, rhs._31, rhs._41)),
+		Dot(mRows[2], Vector4(rhs._12, rhs._22, rhs._32, rhs._42)),
+		Dot(mRows[2], Vector4(rhs._13, rhs._23, rhs._33, rhs._43)),
+		Dot(mRows[2], Vector4(rhs._14, rhs._24, rhs._34, rhs._44)));
 
 	//Calculates dot product of the 4th row with each column of the given matrix to get the new values for the 4th row of the matrix
 	mRows[3] = Vector4(
-		mRows[3].Dot(Vector4(rhs._11, rhs._21, rhs._31, rhs._41)),
-		mRows[3].Dot(Vector4(rhs._12, rhs._22, rhs._32, rhs._42)),
-		mRows[3].Dot(Vector4(rhs._13, rhs._23, rhs._33, rhs._43)),
-		mRows[3].Dot(Vector4(rhs._14, rhs._24, rhs._34, rhs._44)));
+		Dot(mRows[3], Vector4(rhs._11, rhs._21, rhs._31, rhs._41)),
+		Dot(mRows[3], Vector4(rhs._12, rhs._22, rhs._32, rhs._42)),
+		Dot(mRows[3], Vector4(rhs._13, rhs._23, rhs._33, rhs._43)),
+		Dot(mRows[3], Vector4(rhs._14, rhs._24, rhs._34, rhs._44)));
 
 	return *this;
 }

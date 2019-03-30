@@ -1,11 +1,6 @@
 #pragma once
-#include <windows.h>
-#include <Keyboard.h>
-#include <DirectXMath.h>
 #include <vector>
 #include <string>
-#include <Mouse.h>
-#include <memory>
 #include <algorithm>
 #include "MathsHelper.h"
 
@@ -57,33 +52,26 @@ enum class KEYBOARD_BUTTON_STATE
 
 class InputManager
 {
-private:
+protected:
 	//Keyboard
-	std::shared_ptr<DirectX::Keyboard> mKeyboard;
-	DirectX::Keyboard::KeyboardStateTracker mKeyboardTracker;
-	DirectX::Keyboard::State mKeyboardState;
 	std::vector<std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>> mMouseButtonPresses;
 
 	//Mouse
-	std::shared_ptr<DirectX::Mouse> mMouse;
-	DirectX::Mouse::ButtonStateTracker mMouseTracker;
-	DirectX::Mouse::State mMouseState;
 	std::vector<std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>> mKeyboardButtonPresses;
-	DirectX::XMFLOAT2 mMousePosition;
+	MathsHelper::Vector2 mMousePosition; //Make vector 2 struct for this
 	float mMouseWheelValue;
 
-	void KeyboardInput();
-	void SinglePressKeys();
-	void ReleasedKeys();
-	void HeldDownKeys();
-	void MouseInput();
+	virtual void KeyboardInput() = 0;
+	virtual void SinglePressKeys() = 0;
+	virtual void ReleasedKeys() = 0;
+	virtual void HeldDownKeys() = 0;
+	virtual void MouseInput() = 0;
 
 	//Private constructor for singleton pattern
 	InputManager();
 
 public:
-	static LRESULT CALLBACK WndProc(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam);
-	~InputManager();
+	virtual ~InputManager();
 
 	void Update();
 
@@ -91,10 +79,9 @@ public:
 	//Deleted copy constructor and assignment operator so no copies of the singleton instance can be made
 	InputManager(InputManager const&) = delete;
 	InputManager& operator=(InputManager const&) = delete;
-	static std::shared_ptr<InputManager> Instance();
 
-	void CenterCursor();
-	void CursorVisible(bool pVisible);
+	virtual void CenterCursor() = 0;
+	virtual void CursorVisible(bool pVisible) = 0;
 
 	//Get key presses this frame
 	bool KeyDown(const KEYBOARD_BUTTONS& pButton);
@@ -105,13 +92,12 @@ public:
 	bool KeyUp(const MOUSE_BUTTONS& pButton);
 
 	//Get keys held this frame
-	bool KeyHeld(const KEYBOARD_BUTTONS& pButton);
+    bool KeyHeld(const KEYBOARD_BUTTONS& pButton);
 	bool KeyHeld(const MOUSE_BUTTONS& pButton);
 
 	//Mouse
 	const float& ScrollWheel() const;
-	const float& MouseX() const;
-	const float& MouseY() const;
+	const MathsHelper::Vector2& MousePos() const;
 	void RayFromMouse(const float& pNear, const float& pFar, const float& pFOV, const float& pWindowWidth, const float& pWindowHeight, const MathsHelper::Matrix4& pViewInverse,
 		MathsHelper::Vector4& pOrigin, MathsHelper::Vector4& pDirection);
 };

@@ -70,6 +70,10 @@ void GameScene::CreateCanvas()
 				//Creates cubes shader component
 				Shader shader{ L"defaultShader.fx", BlendState::NOBLEND, CullState::NONE, DepthState::NONE };
 				mEcsManager->AddShaderComp(shader, cubeID);
+
+				//Creates cubes box collider component
+				BoxCollider boxCollider{ std::vector<int>(), 0.2, 0.2, 0.2 };
+				mEcsManager->AddBoxColliderComp(boxCollider, cubeID);
 			}
 		}
 	}

@@ -9,7 +9,7 @@ class GameScene : public Scene
 private:
 	//Managers
 	std::shared_ptr<ECSManager> mEcsManager = ECSManager::Instance();
-	std::shared_ptr<InputManager> mInputManager = InputManager::Instance();
+	std::shared_ptr<InputManager_DX> mInputManager = InputManager_DX::Instance();
 	std::shared_ptr<SceneManager> mSceneManager = SceneManager::Instance();
 
 	//Entity IDs
@@ -18,8 +18,8 @@ private:
 
 	//Camera
 	Camera mActiveCamera;
-	Matrix4 mLookAt;
-	Matrix4 mInverseLookAt;
+	MathsHelper::Matrix4 mLookAt;
+	MathsHelper::Matrix4 mInverseLookAt;
 
 	void CreateCamera();
 	void CreateLight();

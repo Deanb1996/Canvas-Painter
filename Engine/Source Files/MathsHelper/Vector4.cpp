@@ -39,16 +39,6 @@ float Vector4::Magnitude() const
 }
 
 /// <summary>
-/// Calculates and returns the dot product between this vector and a given vector
-/// </summary>
-/// <param name="b">Given vector to do this vector with</param>
-/// <returns>Dot product of the two vectors</returns>
-float Vector4::Dot(const Vector4 & b) const
-{
-	return (X * b.X) + (Y * b.Y) + (Z * b.Z) + (W * b.W);
-}
-
-/// <summary>
 /// Clamps this vector magnitude to a given value
 /// </summary>
 /// <param name="pMagnitude">Given magnitude to clamp to</param>

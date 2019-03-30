@@ -75,7 +75,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>"Header Files";"Header Files\Components";"Header Files\Systems";"Header Files\Scenes";"../Engine/Header Files/MathsHelper";"../Engine/Header Files/Components";"../Engine/Header Files/DataStructs";"../Engine/Header Files/HelperClasses";"../Engine/Header Files/Managers";"../Engine/Header Files/Systems";</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -88,7 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>"Header Files";"Header Files\Components";"Header Files\Systems";"Header Files\Scenes";"../Engine/Header Files/MathsHelper";"../Engine/Header Files/Components";"../Engine/Header Files/DataStructs";"../Engine/Header Files/HelperClasses";"../Engine/Header Files/Managers";"../Engine/Header Files/Systems";</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -103,7 +103,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>"Header Files";"Header Files\Components";"Header Files\Systems";"Header Files\Scenes";"../Engine/Header Files/MathsHelper";"../Engine/Header Files/Components";"../Engine/Header Files/DataStructs";"../Engine/Header Files/HelperClasses";"../Engine/Header Files/Managers";"../Engine/Header Files/Systems";</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -120,7 +120,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <ConformanceMode>true</ConformanceMode>
+      <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>"Header Files";"Header Files\Components";"Header Files\Systems";"Header Files\Scenes";"../Engine/Header Files/MathsHelper";"../Engine/Header Files/Components";"../Engine/Header Files/DataStructs";"../Engine/Header Files/HelperClasses";"../Engine/Header Files/Managers";"../Engine/Header Files/Systems";</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:twoPhase-</AdditionalOptions>
     </ClCompile>

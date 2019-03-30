@@ -165,6 +165,12 @@
     <ClInclude Include="Header Files\Components\Colour.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Header Files\Managers\InputManager_DX.h">
+      <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\MathsHelper\Vector2.h">
+      <Filter>Header Files\MathsHelper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source Files\HelperClasses\ObjLoader.cpp">
@@ -202,6 +208,12 @@
     </ClCompile>
     <ClCompile Include="Source Files\HelperClasses\VBO_DX.cpp">
       <Filter>Source Files\HelperClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\Managers\InputManager_DX.cpp">
+      <Filter>Source Files\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\MathsHelper\Vector2.cpp">
+      <Filter>Source Files\MathsHelper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

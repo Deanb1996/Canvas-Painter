@@ -47,7 +47,7 @@ void SceneManager::Update()
 /// Calculates delta time
 /// </summary>
 /// <returns>Delta time of the scene</returns>
-const double& SceneManager::DeltaTime() const
+const double SceneManager::DeltaTime() const
 {
 	return mDeltaTime.count() / pow(10, 9); // (or 1e+9)
 
@@ -57,7 +57,7 @@ const double& SceneManager::DeltaTime() const
 /// Calculates the total elapsed time of the scene
 /// </summary>
 /// <returns>Total elapsed time of the scene</returns>
-const double& SceneManager::Time() const
+const double SceneManager::Time() const
 {
 	auto time = mCurrentTime - mStartTime;
 	return time.count() / pow(10, 9); // (or 1e+9)
