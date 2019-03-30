@@ -29,26 +29,6 @@ std::shared_ptr<InputManager> InputManager::Instance()
 /// <summary>
 /// 
 /// </summary>
-/// <returns></returns>
-const std::vector<std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>> InputManager::KeyPresses() const
-{
-	/*return std::vector<std::pair<KEYBOARD_BUTTONS, bool>>();*/
-	return keyboardButtonPresses;
-}
-
-/// <summary>
-/// 
-/// </summary>
-/// <returns></returns>
-const std::vector<std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>> InputManager::MousePresses() const
-{
-	//return std::vector<std::pair<MOUSE_BUTTONS, bool>>();
-	return mouseButtonPresses;
-}
-
-/// <summary>
-/// 
-/// </summary>
 void InputManager::CenterCursor()
 {
 	//SetCursorPos(CLIENT_WIDTH / 2, CLIENT_HEIGHT / 2);
@@ -62,6 +42,172 @@ void InputManager::CursorVisible(bool pVisible)
 {
 	if (pVisible) { mMouse->SetVisible(true); }
 	else { mMouse->SetVisible(true); }
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pButton"></param>
+/// <returns></returns>
+bool InputManager::KeyDown(const KEYBOARD_BUTTONS & pButton)
+{
+	auto key = std::find_if(mKeyboardButtonPresses.begin(), mKeyboardButtonPresses.end(), [&](const std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>& key)
+	{
+		return key.first == pButton && key.second == KEYBOARD_BUTTON_STATE::KEY_DOWN;
+	});
+	if (key != mKeyboardButtonPresses.end())
+	{
+		return true;
+	}
+	return false;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pButton"></param>
+/// <returns></returns>
+bool InputManager::KeyDown(const MOUSE_BUTTONS & pButton)
+{
+	auto key = std::find_if(mMouseButtonPresses.begin(), mMouseButtonPresses.end(), [&](const std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>& key)
+	{
+		return key.first == pButton && key.second == MOUSE_BUTTON_STATE::MOUSE_DOWN;
+	});
+	if (key != mMouseButtonPresses.end())
+	{
+		return true;
+	}
+	return false;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pButton"></param>
+/// <returns></returns>
+bool InputManager::KeyUp(const KEYBOARD_BUTTONS & pButton)
+{
+	auto key = std::find_if(mKeyboardButtonPresses.begin(), mKeyboardButtonPresses.end(), [&](const std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>& key)
+	{
+		return key.first == pButton && key.second == KEYBOARD_BUTTON_STATE::KEY_UP;
+	});
+	if (key != mKeyboardButtonPresses.end())
+	{
+		return true;
+	}
+	return false;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pButton"></param>
+/// <returns></returns>
+bool InputManager::KeyUp(const MOUSE_BUTTONS & pButton)
+{
+	auto key = std::find_if(mMouseButtonPresses.begin(), mMouseButtonPresses.end(), [&](const std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>& key)
+	{
+		return key.first == pButton && key.second == MOUSE_BUTTON_STATE::MOUSE_UP;
+	});
+	if (key != mMouseButtonPresses.end())
+	{
+		return true;
+	}
+	return false;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pButton"></param>
+/// <returns></returns>
+bool InputManager::KeyHeld(const KEYBOARD_BUTTONS & pButton)
+{
+	auto key = std::find_if(mKeyboardButtonPresses.begin(), mKeyboardButtonPresses.end(), [&](const std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>& key)
+	{
+		return key.first == pButton && key.second == KEYBOARD_BUTTON_STATE::KEY_HELD;
+	});
+	if (key != mKeyboardButtonPresses.end())
+	{
+		return true;
+	}
+	return false;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pButton"></param>
+/// <returns></returns>
+bool InputManager::KeyHeld(const MOUSE_BUTTONS & pButton)
+{
+	auto key = std::find_if(mMouseButtonPresses.begin(), mMouseButtonPresses.end(), [&](const std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>& key)
+	{
+		return key.first == pButton && key.second == MOUSE_BUTTON_STATE::MOUSE_HELD;
+	});
+	if (key != mMouseButtonPresses.end())
+	{
+		return true;
+	}
+	return false;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
+const float & InputManager::ScrollWheel() const
+{
+	return mMouseWheelValue;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
+const float & InputManager::MouseX() const
+{
+	return mMousePosition.x;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
+const float & InputManager::MouseY() const
+{
+	return mMousePosition.y;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pNear"></param>
+/// <param name="pFar"></param>
+/// <param name="pFOV"></param>
+/// <param name="pWindowWidth"></param>
+/// <param name="pWindowHeight"></param>
+/// <param name="mViewInverse"></param>
+void InputManager::RayFromMouse(const float& pNear, const float& pFar, const float& pFOV, const float& pWindowWidth, const float& pWindowHeight, const MathsHelper::Matrix4& pViewInverse,
+	MathsHelper::Vector4& pOrigin, MathsHelper::Vector4& pDirection)
+{
+	float aspectRatio = pWindowWidth / pWindowHeight;
+	float widthDiv2 = pWindowWidth * 0.5f;
+	float heightDiv2 = pWindowHeight * 0.5f;
+
+	//Normalise and scale mouse co-ords to frustrum
+	float x = tanf(pFOV * 0.5f) * (mMousePosition.x / widthDiv2 - 1.0f) / aspectRatio;
+	float y = tanf(pFOV * 0.5f) * (1.0f - mMousePosition.y / heightDiv2);
+
+	//Calculate ray
+	MathsHelper::Vector4 origin = MathsHelper::Vector4(x * pNear, y * pNear, pNear, 1);
+	MathsHelper::Vector4 destination = MathsHelper::Vector4(x * pFar, y * pFar, pFar, 1);
+
+	//MULTIPLY BY INVERSE VIEW MATRIX
+
+	//Return origin and direction of ray
+	pOrigin = origin;
+	pDirection = MathsHelper::Vector4(destination - origin).Normalise();
 }
 
 ////--------------------------------------------------------------------------------------
@@ -135,14 +281,16 @@ void InputManager::Update()
 /// </summary>
 void InputManager::KeyboardInput()
 {
-	keyboardButtonPresses.clear();
+	//Clears key presses from last frame
+	mKeyboardButtonPresses.clear();
 
-	auto state = mKeyboard->GetState();
-	mKeyboardTracker.Update(state);
+	//Updates state of keyboard and keyboard tracker
+	mKeyboardState = mKeyboard->GetState();
+	mKeyboardTracker.Update(mKeyboardState);
 
-
-	HeldDownKeys(state); // Registers every frame that a key is pressed
-	SinglePressKeys(); // Registers once
+	//Methods to gather information from key presses, states and releases
+	HeldDownKeys();
+	SinglePressKeys();
 	ReleasedKeys();
 }
 
@@ -150,377 +298,770 @@ void InputManager::KeyboardInput()
 /// 
 /// </summary>
 /// <returns></returns>
-const void InputManager::MouseInput() {
+void InputManager::MouseInput() 
+{
+	//Clears mouse presses from last frame
+	mMouseButtonPresses.clear();
 
-	mouseButtonPresses.clear();
+	mMouseState = mMouse->GetState();
+	mMouseTracker.Update(mMouseState);
 
-	auto state = mMouse->GetState();
-	mMouseTracker.Update(state);
-
+	//Mouse position
 	mMousePosition = DirectX::XMFLOAT2(mMouse->GetState().x, mMouse->GetState().y);
 
-	// Scroll wheel
+	//Scroll wheel
 	mMouseWheelValue = mMouse->GetState().scrollWheelValue;
 
-	// Buttons
+	//Buttons
 	using ButtonState = DirectX::Mouse::ButtonStateTracker::ButtonState;
 
-	// Allows mouse buttons to be held down
-	if (mMouseTracker.leftButton == ButtonState::HELD) { pressedMouseButton = MOUSE_BUTTONS::MOUSE_BUTTON_LEFT; mouseButtonState = MOUSE_BUTTON_STATE::MOUSE_HELD; }
-	if (mMouseTracker.rightButton == ButtonState::HELD) { pressedMouseButton = MOUSE_BUTTONS::MOUSE_BUTTON_RIGHT; mouseButtonState = MOUSE_BUTTON_STATE::MOUSE_HELD; }
-	if (mMouseTracker.middleButton == ButtonState::HELD) { pressedMouseButton = MOUSE_BUTTONS::MOUSE_BUTTON_MIDDLE; mouseButtonState = MOUSE_BUTTON_STATE::MOUSE_HELD; }
-
-	// single mouse button presses
-	if (mMouseTracker.leftButton == ButtonState::PRESSED) {
-		pressedMouseButton = MOUSE_BUTTONS::MOUSE_BUTTON_LEFT;
-		mouseButtonState = MOUSE_BUTTON_STATE::MOUSE_DOWN;
-		mouseButtonPresses.push_back(std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>(pressedMouseButton, mouseButtonState));
+	//Mouse buttons held
+	if (mMouseTracker.leftButton == ButtonState::HELD)
+	{ 
+		mMouseButtonPresses.push_back(std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>(MOUSE_BUTTONS::MOUSE_BUTTON_LEFT, MOUSE_BUTTON_STATE::MOUSE_HELD));
+	}
+	if (mMouseTracker.rightButton == ButtonState::HELD) 
+	{ 
+		mMouseButtonPresses.push_back(std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>(MOUSE_BUTTONS::MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_STATE::MOUSE_HELD));
+	}
+	if (mMouseTracker.middleButton == ButtonState::HELD)
+	{ 
+		mMouseButtonPresses.push_back(std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>(MOUSE_BUTTONS::MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_STATE::MOUSE_HELD));
 	}
 
-	if (mMouseTracker.rightButton == ButtonState::PRESSED) { pressedMouseButton = MOUSE_BUTTONS::MOUSE_BUTTON_RIGHT; mouseButtonState = MOUSE_BUTTON_STATE::MOUSE_DOWN; }
-	if (mMouseTracker.middleButton == ButtonState::PRESSED) { pressedMouseButton = MOUSE_BUTTONS::MOUSE_BUTTON_MIDDLE; mouseButtonState = MOUSE_BUTTON_STATE::MOUSE_DOWN; }
+	//Mouse buttons down
+	if (mMouseTracker.leftButton == ButtonState::PRESSED) 
+	{
+		mMouseButtonPresses.push_back(std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>(MOUSE_BUTTONS::MOUSE_BUTTON_LEFT, MOUSE_BUTTON_STATE::MOUSE_DOWN));
+	}
+	if (mMouseTracker.rightButton == ButtonState::PRESSED) 
+	{ 
+		mMouseButtonPresses.push_back(std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>(MOUSE_BUTTONS::MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_STATE::MOUSE_DOWN));
+	}
+	if (mMouseTracker.middleButton == ButtonState::PRESSED) 
+	{ 
+		mMouseButtonPresses.push_back(std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>(MOUSE_BUTTONS::MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_STATE::MOUSE_DOWN));
+	}
 
-	// single mouse button releases
-	if (mMouseTracker.leftButton == ButtonState::RELEASED) { pressedMouseButton = MOUSE_BUTTONS::MOUSE_BUTTON_LEFT; mouseButtonState = MOUSE_BUTTON_STATE::MOUSE_UP; }
-	if (mMouseTracker.rightButton == ButtonState::RELEASED) { pressedMouseButton = MOUSE_BUTTONS::MOUSE_BUTTON_RIGHT; mouseButtonState = MOUSE_BUTTON_STATE::MOUSE_UP; }
-	if (mMouseTracker.middleButton == ButtonState::RELEASED) { pressedMouseButton = MOUSE_BUTTONS::MOUSE_BUTTON_MIDDLE; mouseButtonState = MOUSE_BUTTON_STATE::MOUSE_UP; }
+	//Mouse buttons up
+	if (mMouseTracker.leftButton == ButtonState::RELEASED) 
+	{
+		mMouseButtonPresses.push_back(std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>(MOUSE_BUTTONS::MOUSE_BUTTON_LEFT, MOUSE_BUTTON_STATE::MOUSE_UP));
+	}
+	if (mMouseTracker.rightButton == ButtonState::RELEASED) 
+	{ 
+		mMouseButtonPresses.push_back(std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>(MOUSE_BUTTONS::MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_STATE::MOUSE_UP));
+	}
+	if (mMouseTracker.middleButton == ButtonState::RELEASED)
+	{ 
+		mMouseButtonPresses.push_back(std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>(MOUSE_BUTTONS::MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_STATE::MOUSE_UP));
+	}
 }
 
 /// <summary>
 /// 
 /// </summary>
 /// <returns></returns>
-const void InputManager::ReleasedKeys()
+void InputManager::ReleasedKeys()
 {
-	if (mKeyboardTracker.released.A) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_A; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.B) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_B; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.C) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_C; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.D) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_D; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.E) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_E; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.G) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_G; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.H) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_H; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.I) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_I; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.J) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_J; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.K) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_K; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.L) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_L; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.M) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_M; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.N) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_N; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.O) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_O; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.P) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_P; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.Q) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_Q; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.R) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_R; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.S) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_S; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.T) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_T; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.U) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_U; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.V) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_V; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.W) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_W; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.X) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_X; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.Y) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_Y; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.Z) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_Z; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
+	//Letters
+	if (mKeyboardTracker.released.A) 
+	{ 
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_A, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.B) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_B, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.C) 
+	{ 
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_C, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.D)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_D, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.E) 
+	{ 
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_E, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F) 
+	{ 
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.G) 
+	{ 
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_G, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.H) 
+	{ 
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_H, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.I) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_I, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.J) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_J, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.K)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_K, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.L)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_L, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.M)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_M, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.N)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_N, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.O)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_O, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.P)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_P, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Q)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_Q, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.R)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_R, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.S)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_S, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.T)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_T, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.U)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_U, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.V)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_V, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.W)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_W, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.X)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_X, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Y)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_Y, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Z)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_Z, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
 
-	if (mKeyboardTracker.released.NumPad0) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_0; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.NumPad1) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_1; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.NumPad2) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_2; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.NumPad3) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_3; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.NumPad4) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_4; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.NumPad5) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_5; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.NumPad6) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_6; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.NumPad7) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_7; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.NumPad8) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_8; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.NumPad9) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_9; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
+	//Numpad
+	if (mKeyboardTracker.released.NumPad0)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_0, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.NumPad1)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_1, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.NumPad2)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_2, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.NumPad3)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_3, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.NumPad4)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_4, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.NumPad5)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_5, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.NumPad6)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_6, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.NumPad7)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_7, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.NumPad8)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_8, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.NumPad9)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_9, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
 
-	if (mKeyboardTracker.released.D0) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_0; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.D1) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_1; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.D2) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_2; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.D3) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_3; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.D4) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_4; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.D5) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_5; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.D6) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_6; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.D7) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_7; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.D8) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_8; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.D9) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_9; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
+	//Numbers
+	if (mKeyboardTracker.released.D0)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_0, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.D1)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_1, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.D2)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_2, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}																										
+	if (mKeyboardTracker.released.D3)																		
+	{																										
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_3, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}																									
+	if (mKeyboardTracker.released.D4)																	
+	{																									
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_4, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}																									
+	if (mKeyboardTracker.released.D5)																	
+	{																									
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_5, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}																									
+	if (mKeyboardTracker.released.D6)																	
+	{																									
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_6, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}																								
+	if (mKeyboardTracker.released.D7)																
+	{																								
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_7, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}																								
+	if (mKeyboardTracker.released.D8)																
+	{																								
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_8, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.D9)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_9, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
 
-	if (mKeyboardTracker.released.Add) {}
-	if (mKeyboardTracker.released.Apps) {}
-	if (mKeyboardTracker.released.Attn) {}
-	if (mKeyboardTracker.released.Back) {}
-	if (mKeyboardTracker.released.BrowserBack) {}
-	if (mKeyboardTracker.released.BrowserFavorites) {}
-	if (mKeyboardTracker.released.BrowserForward) {}
-	if (mKeyboardTracker.released.BrowserHome) {}
-	if (mKeyboardTracker.released.BrowserRefresh) {}
-	if (mKeyboardTracker.released.BrowserSearch) {}
-	if (mKeyboardTracker.released.BrowserStop) {}
-	if (mKeyboardTracker.released.CapsLock) {}
-	if (mKeyboardTracker.released.Crsel) {}
+	//Maths symbols
+	if (mKeyboardTracker.released.Add)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_ADD, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Subtract)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_SUBTRACT, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Multiply)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_MULTIPLY, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Divide) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_DIVIDE, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
 
-	if (mKeyboardTracker.released.Decimal) {}
-	if (mKeyboardTracker.released.Delete) {}
-	if (mKeyboardTracker.released.Divide) {}
-	if (mKeyboardTracker.released.Down) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_DOWN_ARROW; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.End) {}
-	if (mKeyboardTracker.released.Enter) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_ENTER; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.EraseEof) {}
-	if (mKeyboardTracker.released.Escape) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_ESC; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.Execute) {}
-	if (mKeyboardTracker.released.Exsel) {}
+	//Arrow keys
+	if (mKeyboardTracker.released.Up) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_UP_ARROW, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Left) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_ARROW, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Right) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_ARROW, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Down) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_DOWN_ARROW, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
 
-	if (mKeyboardTracker.released.F1) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F1; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F2) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F2; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F3) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F3; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F4) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F4; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F5) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F5; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F6) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F6; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F7) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F7; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F8) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F8; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F9) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F9; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F10) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F10; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F11) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F11; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F12) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F12; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F13) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F13; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F14) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F14; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F15) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F15; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F16) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F16; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F17) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F17; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F18) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F18; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F19) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F19; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.F20) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F20; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
+	//F keys
+	if (mKeyboardTracker.released.F1) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F1, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F2) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F2, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F3) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F3, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F4) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F4, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F5) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F5, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F6) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F6, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F7) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F7, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F8) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F8, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F9) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F9, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F10)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F10, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F11)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F11, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.F12)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F12, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
 
-	if (mKeyboardTracker.released.Help) {}
-	if (mKeyboardTracker.released.Home) {}
-	if (mKeyboardTracker.released.ImeConvert) {}
-	if (mKeyboardTracker.released.ImeNoConvert) {}
-	if (mKeyboardTracker.released.Insert) {}
-	if (mKeyboardTracker.released.Kana) {}
-	if (mKeyboardTracker.released.Kanji) {}
-	if (mKeyboardTracker.released.LaunchApplication1) {}
-	if (mKeyboardTracker.released.LaunchApplication2) {}
-	if (mKeyboardTracker.released.LaunchMail) {}
-	if (mKeyboardTracker.released.Left) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_LEFT_ARROW; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.LeftAlt) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_LEFT_ALT; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.LeftControl) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_LEFT_CTRL; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.LeftShift) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_LEFT_SHIFT; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.LeftWindows) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_LEFT_WINDOWS; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.MediaNextTrack) {}
-	if (mKeyboardTracker.released.MediaPlayPause) {}
-	if (mKeyboardTracker.released.MediaPreviousTrack) {}
-	if (mKeyboardTracker.released.MediaStop) {}
-	if (mKeyboardTracker.released.Multiply) {}
-	if (mKeyboardTracker.released.Oem8) {}
-	if (mKeyboardTracker.released.OemAuto) {}
-	if (mKeyboardTracker.released.OemBackslash) {}
-	if (mKeyboardTracker.released.OemClear) {}
-	if (mKeyboardTracker.released.OemCloseBrackets) {}
-	if (mKeyboardTracker.released.OemComma) {}
-	if (mKeyboardTracker.released.OemCopy) {}
-	if (mKeyboardTracker.released.OemEnlW) {}
-	if (mKeyboardTracker.released.OemMinus) {}
-	if (mKeyboardTracker.released.OemOpenBrackets) {}
-	if (mKeyboardTracker.released.OemPeriod) {}
-	if (mKeyboardTracker.released.OemPipe) {}
-	if (mKeyboardTracker.released.OemPlus) {}
-	if (mKeyboardTracker.released.OemQuestion) {}
-	if (mKeyboardTracker.released.OemQuotes) {}
-	if (mKeyboardTracker.released.OemSemicolon) {}
-	if (mKeyboardTracker.released.OemTilde) {}
-	if (mKeyboardTracker.released.PageDown) {}
-	if (mKeyboardTracker.released.Pa1) {}
-	if (mKeyboardTracker.released.PageUp) {}
-	if (mKeyboardTracker.released.Pause) {}
-	if (mKeyboardTracker.released.Play) {}
-	if (mKeyboardTracker.released.Print) {}
-	if (mKeyboardTracker.released.PrintScreen) {}
-	if (mKeyboardTracker.released.ProcessKey) {}
-	if (mKeyboardTracker.released.Right) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_RIGHT_ARROW; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.RightAlt) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_RIGHT_ALT; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.RightControl) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_RIGHT_CTRL; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.RightShift) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_RIGHT_SHIFT; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.RightWindows) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_RIGHT_WINDOWS; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.Scroll) {}
-	if (mKeyboardTracker.released.Select) {}
-	if (mKeyboardTracker.released.SelectMedia) {}
-	if (mKeyboardTracker.released.Separator) {}
-	if (mKeyboardTracker.released.Sleep) {}
-	if (mKeyboardTracker.released.Space) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_SPACE; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.Subtract) {}
-	if (mKeyboardTracker.released.Tab) {}
-	if (mKeyboardTracker.released.Up) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_UP_ARROW; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_UP; }
-	if (mKeyboardTracker.released.VolumeDown) {}
-	if (mKeyboardTracker.released.VolumeUp) {}
-	if (mKeyboardTracker.released.VolumeMute) {}
-	if (mKeyboardTracker.released.Zoom) {}
+	//Other keys
+	if (mKeyboardTracker.released.Back)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_BACKSPACE, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.CapsLock)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_CAPS_LOCK, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Delete)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_DELETE, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Enter) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_ENTER, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Escape)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_ESC, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.LeftAlt)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_ALT, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.LeftControl)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_CTRL, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.LeftShift) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_SHIFT, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.LeftWindows)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_WINDOWS, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.RightAlt) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_ALT, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.RightControl) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_CTRL, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.RightShift)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_SHIFT, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.RightWindows) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_WINDOWS, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Space) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_SPACE, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.Tab) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_TAB, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.OemPeriod)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_PERIOD, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
+	if (mKeyboardTracker.released.OemComma)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_COMMA, KEYBOARD_BUTTON_STATE::KEY_UP));
+	}
 }
 
 /// <summary>
 /// 
 /// </summary>
 /// <returns></returns>
-const void InputManager::SinglePressKeys()
+void InputManager::SinglePressKeys()
 {
-	if (mKeyboardTracker.pressed.A) {
-		pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_A;
-		keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN;
-		keyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(pressedKeyboardButton, keyboardButtonState));
+	//Letters
+	if (mKeyboardTracker.pressed.A)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_A, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.B)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_B, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.C)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_C, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.D)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_D, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.E)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_E, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.G)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_G, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.H)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_H, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.I)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_I, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.J)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_J, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.K)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_K, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.L)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_L, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.M)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_M, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.N)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_N, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.O)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_O, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.P)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_P, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Q)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_Q, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.R)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_R, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.S)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_S, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.T)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_T, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.U)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_U, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.V)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_V, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.W)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_W, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.X)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_X, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Y)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_Y, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Z)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_Z, KEYBOARD_BUTTON_STATE::KEY_DOWN));
 	}
 
-	if (mKeyboardTracker.pressed.B) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_B; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.C) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_C; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.D) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_D; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.E) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_E; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.G) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_G; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.H) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_H; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.I) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_I; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.J) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_J; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.K) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_K; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.L) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_L; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.M) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_M; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.N) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_N; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.O) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_O; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.P) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_P; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.Q) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_Q; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.R) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_R; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.S) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_S; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.T) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_T; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.U) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_U; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.V) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_V; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.W) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_W; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.X) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_X; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.Y) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_Y; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.Z) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_Z; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
+	//Numpad
+	if (mKeyboardTracker.pressed.NumPad0)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_0, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.NumPad1)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_1, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.NumPad2)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_2, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.NumPad3)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_3, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.NumPad4)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_4, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.NumPad5)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_5, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.NumPad6)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_6, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.NumPad7)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_7, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.NumPad8)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_8, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.NumPad9)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_9, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
 
-	if (mKeyboardTracker.pressed.NumPad0) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_0; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.NumPad1) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_1; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.NumPad2) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_2; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.NumPad3) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_3; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.NumPad4) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_4; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.NumPad5) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_5; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.NumPad6) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_6; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.NumPad7) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_7; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.NumPad8) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_8; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.NumPad9) { pressedKeyboardButton = KEYBOARD_BUTTONS::NUM_PAD_KEY_9; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
+	//Numbers
+	if (mKeyboardTracker.pressed.D0)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_0, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.D1)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_1, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.D2)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_2, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.D3)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_3, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.D4)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_4, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.D5)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_5, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.D6)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_6, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.D7)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_7, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.D8)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_8, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.D9)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_9, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
 
-	if (mKeyboardTracker.pressed.D0) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_0; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.D1) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_1; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.D2) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_2; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.D3) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_3; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.D4) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_4; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.D5) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_5; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.D6) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_6; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.D7) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_7; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.D8) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_8; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.D9) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_9; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
+	//Maths symbols
+	if (mKeyboardTracker.pressed.Add)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_ADD, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Subtract)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_SUBTRACT, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Multiply)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_MULTIPLY, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Divide)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_DIVIDE, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
 
-	if (mKeyboardTracker.pressed.Add) {}
-	if (mKeyboardTracker.pressed.Apps) {}
-	if (mKeyboardTracker.pressed.Attn) {}
-	if (mKeyboardTracker.pressed.Back) {}
-	if (mKeyboardTracker.pressed.BrowserBack) {}
-	if (mKeyboardTracker.pressed.BrowserFavorites) {}
-	if (mKeyboardTracker.pressed.BrowserForward) {}
-	if (mKeyboardTracker.pressed.BrowserHome) {}
-	if (mKeyboardTracker.pressed.BrowserRefresh) {}
-	if (mKeyboardTracker.pressed.BrowserSearch) {}
-	if (mKeyboardTracker.pressed.BrowserStop) {}
-	if (mKeyboardTracker.pressed.CapsLock) {}
-	if (mKeyboardTracker.pressed.Crsel) {}
+	//Arrow keys
+	if (mKeyboardTracker.pressed.Up)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_UP_ARROW, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Left)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_ARROW, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Right)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_ARROW, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Down)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_DOWN_ARROW, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
 
-	if (mKeyboardTracker.pressed.Decimal) {}
-	if (mKeyboardTracker.pressed.Delete) {}
-	if (mKeyboardTracker.pressed.Divide) {}
-	if (mKeyboardTracker.pressed.Down) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_DOWN_ARROW; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.End) {}
-	if (mKeyboardTracker.pressed.Enter) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_ENTER; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.EraseEof) {}
-	if (mKeyboardTracker.pressed.Escape) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_ESC; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.Execute) {}
-	if (mKeyboardTracker.pressed.Exsel) {}
+	//F keys
+	if (mKeyboardTracker.pressed.F1)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F1, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F2)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F2, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F3)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F3, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F4)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F4, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F5)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F5, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F6)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F6, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F7)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F7, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F8)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F8, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F9)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F9, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F10)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F10, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F11)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F11, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.F12)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F12, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
 
-	if (mKeyboardTracker.pressed.F1) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F1; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F2) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F2; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F3) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F3; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F4) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F4; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F5) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F5; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F6) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F6; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F7) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F7; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F8) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F8; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F9) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F9; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F10) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F10; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F11) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F11; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F12) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F12; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F13) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F13; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F14) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F14; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F15) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F15; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F16) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F16; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F17) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F17; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F18) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F18; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F19) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F19; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.F20) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_F20; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-
-	if (mKeyboardTracker.pressed.Help) {}
-	if (mKeyboardTracker.pressed.Home) {}
-	if (mKeyboardTracker.pressed.ImeConvert) {}
-	if (mKeyboardTracker.pressed.ImeNoConvert) {}
-	if (mKeyboardTracker.pressed.Insert) {}
-	if (mKeyboardTracker.pressed.Kana) {}
-	if (mKeyboardTracker.pressed.Kanji) {}
-	if (mKeyboardTracker.pressed.LaunchApplication1) {}
-	if (mKeyboardTracker.pressed.LaunchApplication2) {}
-	if (mKeyboardTracker.pressed.LaunchMail) {}
-	if (mKeyboardTracker.pressed.Left) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_LEFT_ARROW; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.LeftAlt) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_LEFT_ALT; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.LeftControl) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_LEFT_CTRL; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.LeftShift) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_LEFT_SHIFT; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.LeftWindows) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_LEFT_WINDOWS; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.MediaNextTrack) {}
-	if (mKeyboardTracker.pressed.MediaPlayPause) {}
-	if (mKeyboardTracker.pressed.MediaPreviousTrack) {}
-	if (mKeyboardTracker.pressed.MediaStop) {}
-	if (mKeyboardTracker.pressed.Multiply) {}
-	if (mKeyboardTracker.pressed.Oem8) {}
-	if (mKeyboardTracker.pressed.OemAuto) {}
-	if (mKeyboardTracker.pressed.OemBackslash) {}
-	if (mKeyboardTracker.pressed.OemClear) {}
-	if (mKeyboardTracker.pressed.OemCloseBrackets) {}
-	if (mKeyboardTracker.pressed.OemComma) {}
-	if (mKeyboardTracker.pressed.OemCopy) {}
-	if (mKeyboardTracker.pressed.OemEnlW) {}
-	if (mKeyboardTracker.pressed.OemMinus) {}
-	if (mKeyboardTracker.pressed.OemOpenBrackets) {}
-	if (mKeyboardTracker.pressed.OemPeriod) {}
-	if (mKeyboardTracker.pressed.OemPipe) {}
-	if (mKeyboardTracker.pressed.OemPlus) {}
-	if (mKeyboardTracker.pressed.OemQuestion) {}
-	if (mKeyboardTracker.pressed.OemQuotes) {}
-	if (mKeyboardTracker.pressed.OemSemicolon) {}
-	if (mKeyboardTracker.pressed.OemTilde) {}
-	if (mKeyboardTracker.pressed.PageDown) {}
-	if (mKeyboardTracker.pressed.Pa1) {}
-	if (mKeyboardTracker.pressed.PageUp) {}
-	if (mKeyboardTracker.pressed.Pause) {}
-	if (mKeyboardTracker.pressed.Play) {}
-	if (mKeyboardTracker.pressed.Print) {}
-	if (mKeyboardTracker.pressed.PrintScreen) {}
-	if (mKeyboardTracker.pressed.ProcessKey) {}
-	if (mKeyboardTracker.pressed.Right) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_RIGHT_ARROW; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.RightAlt) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_RIGHT_ALT; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.RightControl) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_RIGHT_CTRL; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.RightShift) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_RIGHT_SHIFT; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.RightWindows) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_RIGHT_WINDOWS; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.Scroll) {}
-	if (mKeyboardTracker.pressed.Select) {}
-	if (mKeyboardTracker.pressed.SelectMedia) {}
-	if (mKeyboardTracker.pressed.Separator) {}
-	if (mKeyboardTracker.pressed.Sleep) {}
-	if (mKeyboardTracker.pressed.Space) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_SPACE; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.Subtract) {}
-	if (mKeyboardTracker.pressed.Tab) {}
-	if (mKeyboardTracker.pressed.Up) { pressedKeyboardButton = KEYBOARD_BUTTONS::KEY_UP_ARROW; keyboardButtonState = KEYBOARD_BUTTON_STATE::KEY_DOWN; }
-	if (mKeyboardTracker.pressed.VolumeDown) {}
-	if (mKeyboardTracker.pressed.VolumeUp) {}
-	if (mKeyboardTracker.pressed.VolumeMute) {}
-	if (mKeyboardTracker.pressed.Zoom) {}
+	//Other keys
+	if (mKeyboardTracker.pressed.Back)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_BACKSPACE, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.CapsLock)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_CAPS_LOCK, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Delete)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_DELETE, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Enter)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_ENTER, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Escape)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_ESC, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.LeftAlt)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_ALT, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.LeftControl)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_CTRL, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.LeftShift)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_SHIFT, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.LeftWindows)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_WINDOWS, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.RightAlt)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_ALT, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.RightControl)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_CTRL, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.RightShift)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_SHIFT, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.RightWindows)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_WINDOWS, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Space)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_SPACE, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.pressed.Tab)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_TAB, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.released.OemPeriod)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_PERIOD, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
+	if (mKeyboardTracker.released.OemComma)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_COMMA, KEYBOARD_BUTTON_STATE::KEY_DOWN));
+	}
 }
 
 /// <summary>
@@ -528,162 +1069,351 @@ const void InputManager::SinglePressKeys()
 /// </summary>
 /// <param name="state"></param>
 /// <returns></returns>
-const void InputManager::HeldDownKeys(DirectX::Keyboard::State &state)
+void InputManager::HeldDownKeys()
 {
-	if (state.A) {}
-	if (state.B) {}
-	if (state.C) {}
-	if (state.D) {}
-	if (state.E) {}
-	if (state.F) {}
-	if (state.G) {}
-	if (state.H) {}
-	if (state.I) {}
-	if (state.J) {}
-	if (state.K) {}
-	if (state.L) {}
-	if (state.M) {}
-	if (state.N) {}
-	if (state.O) {}
-	if (state.P) {}
-	if (state.Q) {}
-	if (state.R) {}
-	if (state.S) {}
-	if (state.T) {}
-	if (state.U) {}
-	if (state.V) {}
-	if (state.W) {}
-	if (state.X) {}
-	if (state.Y) {}
-	if (state.Z) {}
+	//Letters
+	if (mKeyboardState.A) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_A, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.B) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_B, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.C) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_C, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.D) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_D, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.E) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_E, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.G) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_G, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.H) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_H, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.I) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_I, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.J) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_J, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.K) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_K, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.L) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_L, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.M) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_M, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.N) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_N, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.O) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_O, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.P) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_P, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Q) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_Q, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.R) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_R, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.S) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_S, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.T) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_T, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.U) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_U, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.V) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_V, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.W) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_W, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.X) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_X, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Y) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_Y, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Z) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_Z, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
 
-	if (state.NumPad0) {}
-	if (state.NumPad1) {}
-	if (state.NumPad2) {}
-	if (state.NumPad3) {}
-	if (state.NumPad4) {}
-	if (state.NumPad5) {}
-	if (state.NumPad6) {}
-	if (state.NumPad7) {}
-	if (state.NumPad8) {}
-	if (state.NumPad9) {}
+	//Numpad
+	if (mKeyboardState.NumPad0)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_0, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.NumPad1)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_1, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.NumPad2)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_2, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.NumPad3)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_3, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.NumPad4)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_4, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.NumPad5)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_5, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.NumPad6)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_6, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.NumPad7)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_7, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.NumPad8)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_8, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.NumPad9)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::NUM_PAD_KEY_9, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
 
-	if (state.Add) {}
-	if (state.Apps) {}
-	if (state.Attn) {}
-	if (state.Back) {}
-	if (state.BrowserBack) {}
-	if (state.BrowserFavorites) {}
-	if (state.BrowserForward) {}
-	if (state.BrowserHome) {}
-	if (state.BrowserRefresh) {}
-	if (state.BrowserSearch) {}
-	if (state.BrowserStop) {}
-	if (state.CapsLock) {}
-	if (state.Crsel) {}
-	if (state.D0) {}
-	if (state.D1) {}
-	if (state.D2) {}
-	if (state.D3) {}
-	if (state.D4) {}
-	if (state.D5) {}
-	if (state.D6) {}
-	if (state.D7) {}
-	if (state.D8) {}
-	if (state.D9) {}
-	if (state.Decimal) {}
-	if (state.Delete) {}
-	if (state.Divide) {}
-	if (state.Down) {}
-	if (state.End) {}
-	if (state.Enter) {}
-	if (state.EraseEof) {}
-	if (state.Escape) {}
-	if (state.Execute) {}
-	if (state.Exsel) {}
+	//Numbers
+	if (mKeyboardState.D0)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_0, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.D1)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_1, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.D2)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_2, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.D3)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_3, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.D4)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_4, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.D5)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_5, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.D6)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_6, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.D7)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_7, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.D8)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_8, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.D9)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_9, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
 
-	if (state.F1) {}
-	if (state.F2) {}
-	if (state.F3) {}
-	if (state.F4) {}
-	if (state.F5) {}
-	if (state.F6) {}
-	if (state.F7) {}
-	if (state.F8) {}
-	if (state.F9) {}
-	if (state.F10) {}
-	if (state.F11) {}
-	if (state.F12) {}
-	if (state.F13) {}
-	if (state.F14) {}
-	if (state.F15) {}
-	if (state.F16) {}
-	if (state.F17) {}
-	if (state.F18) {}
-	if (state.F19) {}
-	if (state.F20) {}
+	//Arrow keys
+	if (mKeyboardState.Up) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_UP_ARROW, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Left) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_ARROW, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Right)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_ARROW, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Down) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_DOWN_ARROW, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
 
-	if (state.Help) {}
-	if (state.Home) {}
-	if (state.ImeConvert) {}
-	if (state.ImeNoConvert) {}
-	if (state.Insert) {}
-	if (state.Kana) {}
-	if (state.Kanji) {}
-	if (state.LaunchApplication1) {}
-	if (state.LaunchApplication2) {}
-	if (state.LaunchMail) {}
-	if (state.Left) {}
-	if (state.LeftAlt) {}
-	if (state.LeftControl) {}
-	if (state.LeftShift) {}
-	if (state.LeftWindows) {}
-	if (state.MediaNextTrack) {}
-	if (state.MediaPlayPause) {}
-	if (state.MediaPreviousTrack) {}
-	if (state.MediaStop) {}
-	if (state.Multiply) {}
-	if (state.Oem8) {}
-	if (state.OemAuto) {}
-	if (state.OemBackslash) {}
-	if (state.OemClear) {}
-	if (state.OemCloseBrackets) {}
-	if (state.OemComma) {}
-	if (state.OemCopy) {}
-	if (state.OemEnlW) {}
-	if (state.OemMinus) {}
-	if (state.OemOpenBrackets) {}
-	if (state.OemPeriod) {}
-	if (state.OemPipe) {}
-	if (state.OemPlus) {}
-	if (state.OemQuestion) {}
-	if (state.OemQuotes) {}
-	if (state.OemSemicolon) {}
-	if (state.OemTilde) {}
-	if (state.PageDown) {}
-	if (state.Pa1) {}
-	if (state.PageUp) {}
-	if (state.Pause) {}
-	if (state.Play) {}
-	if (state.Print) {}
-	if (state.PrintScreen) {}
-	if (state.ProcessKey) {}
-	if (state.Right) {}
-	if (state.RightAlt) {}
-	if (state.RightControl) {}
-	if (state.RightShift) {}
-	if (state.RightWindows) {}
-	if (state.Scroll) {}
-	if (state.Select) {}
-	if (state.SelectMedia) {}
-	if (state.Separator) {}
-	if (state.Sleep) {}
-	if (state.Space) {}
-	if (state.Subtract) {}
-	if (state.Tab) {}
-	if (state.Up) {}
-	if (state.VolumeDown) {}
-	if (state.VolumeUp) {}
-	if (state.VolumeMute) {}
-	if (state.Zoom) {}
+	//Maths symbols
+	if (mKeyboardState.Multiply)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_MULTIPLY, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Subtract) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_SUBTRACT, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Add)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_ADD, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Divide)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_DIVIDE, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+
+	//F keys
+	if (mKeyboardState.F1) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F1, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F2) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F2, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F3) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F3, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F4) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F4, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F5) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F5, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F6) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F6, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F7) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F7, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F8) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F8, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F9) 
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F9, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F10)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F10, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F11)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F11, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.F12)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_F12, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+
+	//Other keys
+	if (mKeyboardState.Back)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_BACKSPACE, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.CapsLock)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_CAPS_LOCK, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Delete)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_DELETE, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Enter)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_ENTER, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Escape)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_ESC, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.LeftAlt)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_ALT, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.LeftControl)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_CTRL, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.LeftShift)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_SHIFT, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.LeftWindows)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_LEFT_WINDOWS, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.RightAlt)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_ALT, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.RightControl)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_CTRL, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.RightShift)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_SHIFT, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.RightWindows)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_RIGHT_WINDOWS, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Space)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_SPACE, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.Tab)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_TAB, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.OemPeriod)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_PERIOD, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
+	if (mKeyboardState.OemComma)
+	{
+		mKeyboardButtonPresses.push_back(std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>(KEYBOARD_BUTTONS::KEY_COMMA, KEYBOARD_BUTTON_STATE::KEY_HELD));
+	}
 }

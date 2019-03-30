@@ -3,7 +3,7 @@
 /// <summary>
 /// Calls the render function for the scene
 /// </summary>
-const void SceneManager::Render()
+void SceneManager::Render()
 {
 	mScene->Render();
 }
@@ -13,7 +13,7 @@ const void SceneManager::Render()
 /// Updates the scene every frame
 /// Calculates all the timing of the scene
 /// </summary>
-const void SceneManager::Update()
+void SceneManager::Update()
 {
 	mCurrentTime = std::chrono::high_resolution_clock::now();
 	mDeltaTime = mCurrentTime - mPreviousTime;
@@ -47,7 +47,7 @@ const void SceneManager::Update()
 /// Calculates delta time
 /// </summary>
 /// <returns>Delta time of the scene</returns>
-const double SceneManager::DeltaTime()
+const double& SceneManager::DeltaTime() const
 {
 	return mDeltaTime.count() / pow(10, 9); // (or 1e+9)
 
@@ -57,7 +57,7 @@ const double SceneManager::DeltaTime()
 /// Calculates the total elapsed time of the scene
 /// </summary>
 /// <returns>Total elapsed time of the scene</returns>
-const double SceneManager::Time() const
+const double& SceneManager::Time() const
 {
 	auto time = mCurrentTime - mStartTime;
 	return time.count() / pow(10, 9); // (or 1e+9)
@@ -67,9 +67,38 @@ const double SceneManager::Time() const
 /// Get method for scenes fps
 /// </summary>
 /// <returns>Average fps of the scene</returns>
-const int SceneManager::Fps()
+const int& SceneManager::Fps() const
 {
 	return mFps;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pWidth"></param>
+/// <param name="pHeight"></param>
+void SceneManager::SetWindowWidthHeight(const float & pWidth, const float & pHeight)
+{
+	mWindowWidth = pWidth;
+	mWindowHeight = pHeight;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
+const float & SceneManager::WindowWidth() const
+{
+	return mWindowWidth;
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <returns></returns>
+const float & SceneManager::WindowHeight() const
+{
+	return mWindowHeight;
 }
 
 /// <summary>

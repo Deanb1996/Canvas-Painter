@@ -16,6 +16,11 @@ private:
 	int mCameraID;
 	int mLightID;
 
+	//Camera
+	Camera mActiveCamera;
+	Matrix4 mLookAt;
+	Matrix4 mInverseLookAt;
+
 	void CreateCamera();
 	void CreateLight();
 	void CreateCanvas();

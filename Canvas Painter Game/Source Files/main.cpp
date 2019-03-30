@@ -35,6 +35,13 @@ int WINAPI wWinMain(_In_ const HINSTANCE pHInstance, _In_opt_ const HINSTANCE pH
 	std::shared_ptr<ECSManager> ecsManager = ECSManager::Instance();
 	std::shared_ptr<SceneManager> sceneManager = SceneManager::Instance();
 
+	//Get window height and width for scene manager
+	RECT rc;
+	GetClientRect(hWnd, &rc);
+	float width = rc.right - rc.left;
+	float height = rc.bottom - rc.top;
+	sceneManager->SetWindowWidthHeight(width, height);
+
 	//Update systems
 	//ecsManager->AddUpdateSystem(systPointer);
 

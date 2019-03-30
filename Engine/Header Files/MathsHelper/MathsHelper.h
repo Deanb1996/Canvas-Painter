@@ -108,7 +108,7 @@ namespace MathsHelper
 		const float yZ = pAxis.Y * pAxis.Z;
 
 		Matrix4 matrix(
-			//Column 1             // Column 2            //Column 3             //Column 4
+			//Column 1             //Column 2            //Column 3             //Column 4
 			(c + xSqrd) * oneSubC, (xY * oneSubC) - zS,   (xZ * oneSubC) + yS,   0,  //Row 1
 			(xY * oneSubC) + zS,   (c + ySqrd) * oneSubC, (yZ * oneSubC) - xS,   0,  //Row 2
 			(xZ * oneSubC) - yS,   (yZ * oneSubC) + xS,   (c + zSqrd) * oneSubC, 0,  //Row 3
@@ -164,6 +164,211 @@ namespace MathsHelper
 
 		return matrix;
 	}
+
+	/// <summary>
+	/// Calculates the inverse of a given matrix using the Minors, Cofactors and Adjugate method
+	/// </summary>
+	/// <param name="pMatrix">Matrix to be inverted</param>
+	/// <returns>Inverse of the given matrix</returns>
+	static Matrix4 Inverse(const Matrix4& pMatrix)
+	{
+		Matrix4 matrix;
+
+		//Row 1 Column 1
+		matrix._11 = 
+			pMatrix._22 * pMatrix._33 * pMatrix._44 -
+			pMatrix._22 * pMatrix._34 * pMatrix._43 -
+			pMatrix._32 * pMatrix._23 * pMatrix._44 +
+			pMatrix._32 * pMatrix._24 * pMatrix._43 +
+			pMatrix._42 * pMatrix._23 * pMatrix._34 -
+			pMatrix._42 * pMatrix._24 * pMatrix._33;
+
+		//Row 2 Column 1
+		matrix._21 =
+			pMatrix._21 * pMatrix._33 * pMatrix._44 +
+			pMatrix._21 * pMatrix._34 * pMatrix._43 +
+			pMatrix._31 * pMatrix._23 * pMatrix._44 -
+			pMatrix._31 * pMatrix._24 * pMatrix._43 -
+			pMatrix._41 * pMatrix._23 * pMatrix._34 +
+			pMatrix._41 * pMatrix._24 * pMatrix._33;
+
+		//Row 3 Column 1
+		matrix._31 =
+			pMatrix._22 * pMatrix._32 * pMatrix._44 -
+			pMatrix._22 * pMatrix._34 * pMatrix._42 -
+			pMatrix._31 * pMatrix._22 * pMatrix._44 +
+			pMatrix._31 * pMatrix._24 * pMatrix._42 +
+			pMatrix._41 * pMatrix._22 * pMatrix._34 -
+			pMatrix._41 * pMatrix._24 * pMatrix._32;
+
+		//Row 4 Column 1
+		matrix._41 =
+			pMatrix._22 * pMatrix._32 * pMatrix._44 -
+			pMatrix._22 * pMatrix._34 * pMatrix._42 -
+			pMatrix._31 * pMatrix._22 * pMatrix._44 +
+			pMatrix._31 * pMatrix._24 * pMatrix._42 +
+			pMatrix._41 * pMatrix._22 * pMatrix._34 -
+			pMatrix._41 * pMatrix._24 * pMatrix._32;
+
+		//Row 1 Column 2
+		matrix._12 =
+		   -pMatrix._12 * pMatrix._33 * pMatrix._44 +
+			pMatrix._12 * pMatrix._34 * pMatrix._43 +
+			pMatrix._32 * pMatrix._13 * pMatrix._44 -
+			pMatrix._32 * pMatrix._14 * pMatrix._43 -
+			pMatrix._42 * pMatrix._13 * pMatrix._34 +
+			pMatrix._42 * pMatrix._14 * pMatrix._33;
+
+		//Row 2 Column 2
+		matrix._22 =
+			pMatrix._11 * pMatrix._33 * pMatrix._44 -
+			pMatrix._11 * pMatrix._34 * pMatrix._43 -
+			pMatrix._31 * pMatrix._13 * pMatrix._44 +
+			pMatrix._31 * pMatrix._14 * pMatrix._43 +
+			pMatrix._41 * pMatrix._13 * pMatrix._34 -
+			pMatrix._41 * pMatrix._14 * pMatrix._33;
+
+		//Row 3 Column 2
+		matrix._32 =
+		   -pMatrix._11 * pMatrix._32 * pMatrix._44 +
+			pMatrix._11 * pMatrix._34 * pMatrix._42 +
+			pMatrix._31 * pMatrix._12 * pMatrix._44 -
+			pMatrix._31 * pMatrix._14 * pMatrix._42 -
+			pMatrix._41 * pMatrix._12 * pMatrix._34 +
+			pMatrix._41 * pMatrix._14 * pMatrix._32;
+
+		//Row 4 Column 2
+		matrix._42 =
+			pMatrix._11 * pMatrix._32 * pMatrix._43 -
+			pMatrix._11 * pMatrix._33 * pMatrix._42 -
+			pMatrix._31 * pMatrix._12 * pMatrix._43 +
+			pMatrix._31 * pMatrix._13 * pMatrix._42 +
+			pMatrix._41 * pMatrix._12 * pMatrix._33 -
+			pMatrix._41 * pMatrix._13 * pMatrix._32;
+
+		//Row 1 Column 3
+		matrix._13 =
+			pMatrix._12 * pMatrix._33 * pMatrix._44 -
+			pMatrix._12 * pMatrix._34 * pMatrix._43 -
+			pMatrix._22 * pMatrix._13 * pMatrix._44 +
+			pMatrix._22 * pMatrix._14 * pMatrix._43 +
+			pMatrix._42 * pMatrix._13 * pMatrix._24 -
+			pMatrix._42 * pMatrix._14 * pMatrix._23;
+
+		//Row 2 Column 3
+		matrix._23 =
+		   -pMatrix._11 * pMatrix._33 * pMatrix._44 +
+			pMatrix._11 * pMatrix._34 * pMatrix._43 +
+			pMatrix._21 * pMatrix._13 * pMatrix._44 -
+			pMatrix._21 * pMatrix._14 * pMatrix._43 -
+			pMatrix._41 * pMatrix._13 * pMatrix._24 +
+			pMatrix._41 * pMatrix._14 * pMatrix._23;
+
+		//Row 3 Column 3
+		matrix._33 =
+			pMatrix._11 * pMatrix._32 * pMatrix._44 -
+			pMatrix._11 * pMatrix._34 * pMatrix._42 -
+			pMatrix._21 * pMatrix._12 * pMatrix._44 +
+			pMatrix._21 * pMatrix._14 * pMatrix._42 +
+			pMatrix._41 * pMatrix._12 * pMatrix._24 -
+			pMatrix._41 * pMatrix._14 * pMatrix._22;
+
+		//Row 4 Column 3
+		matrix._43 =
+			pMatrix._11 * pMatrix._32 * pMatrix._44 -
+			pMatrix._11 * pMatrix._34 * pMatrix._42 -
+			pMatrix._21 * pMatrix._12 * pMatrix._44 +
+			pMatrix._21 * pMatrix._14 * pMatrix._42 +
+			pMatrix._41 * pMatrix._12 * pMatrix._24 -
+			pMatrix._41 * pMatrix._14 * pMatrix._22;
+
+		//Row 1 Column 4
+		matrix._14 =
+		   -pMatrix._12 * pMatrix._23 * pMatrix._34 +
+			pMatrix._12 * pMatrix._24 * pMatrix._33 +
+			pMatrix._22 * pMatrix._13 * pMatrix._34 -
+			pMatrix._22 * pMatrix._14 * pMatrix._33 -
+			pMatrix._42 * pMatrix._13 * pMatrix._24 +
+			pMatrix._42 * pMatrix._14 * pMatrix._23;
+
+		//Row 2 Column 4
+		matrix._24 =
+		    pMatrix._11 * pMatrix._23 * pMatrix._34 -
+			pMatrix._11 * pMatrix._24 * pMatrix._33 -
+			pMatrix._21 * pMatrix._13 * pMatrix._34 +
+			pMatrix._21 * pMatrix._14 * pMatrix._33 +
+			pMatrix._41 * pMatrix._13 * pMatrix._24 -
+			pMatrix._41 * pMatrix._14 * pMatrix._23;
+
+		//Row 3 Column 4
+		matrix._24 =
+		   -pMatrix._11 * pMatrix._22 * pMatrix._34 +
+			pMatrix._11 * pMatrix._24 * pMatrix._32 +
+			pMatrix._21 * pMatrix._12 * pMatrix._34 -
+			pMatrix._21 * pMatrix._14 * pMatrix._32 -
+			pMatrix._41 * pMatrix._12 * pMatrix._24 +
+			pMatrix._41 * pMatrix._14 * pMatrix._22;
+
+		//Row 4 Column 4
+		matrix._24 =
+			pMatrix._11 * pMatrix._22 * pMatrix._33 -
+			pMatrix._11 * pMatrix._23 * pMatrix._32 -
+			pMatrix._21 * pMatrix._12 * pMatrix._33 +
+			pMatrix._21 * pMatrix._13 * pMatrix._32 +
+			pMatrix._41 * pMatrix._12 * pMatrix._23 -
+			pMatrix._41 * pMatrix._13 * pMatrix._22;
+
+		//Calculate determinant
+		float det = pMatrix._11 * matrix._11 + pMatrix._12 * matrix._21 + pMatrix._13 * matrix._31 + pMatrix._14 * matrix._41;
+
+		//Calculate 1/determinant and multiply each element of the matrix by it
+		det = 1.0f / det;
+		for (int i = 0; i < 16; i++)
+		{
+			matrix.mElements[i] = matrix.mElements[i] * det;
+		}
+
+		return matrix;
+	}
+
+	/// <summary>
+	/// Calculates the cross product of two given vectors
+	/// </summary>
+	/// <param name="pVectorA">Left hand side vector of the cross product</param>
+	/// <param name="pVectorB">Right hand side vector of the cross product </param>
+	/// <returns>Cross product of the two given vectors</returns>
+	static Vector4 Cross(const Vector4& pVectorA, const Vector4& pVectorB)
+	{
+		return Vector4(
+			(pVectorA.Y * pVectorB.Z) - (pVectorA.Z * pVectorB.Y),
+			(pVectorA.Z * pVectorB.X) - (pVectorA.X * pVectorB.Z),
+			(pVectorA.X * pVectorB.Y) - (pVectorA.Y * pVectorB.X),
+			1);
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="pEyePosition"></param>
+	/// <param name="pLookAt"></param>
+	/// <param name="pUp"></param>
+	/// <returns></returns>
+	static Matrix4 LookAt(const Vector4& pEyePosition, const Vector4& pLookAt, const Vector4& pUp)
+	{
+		const Vector4 zAxis = Vector4(pLookAt - pEyePosition).Normalise();
+		const Vector4 xAxis = Cross(pUp, zAxis).Normalise();
+		const Vector4 yAxis = Cross(zAxis, xAxis);
+
+		Matrix4 matrix(
+			//Column 1                //Column 2                //Column 3                //Column 4
+			xAxis.X,				  yAxis.X,                  zAxis.X,                  0,  //Row 1
+			xAxis.Y,                  yAxis.Y,                  zAxis.Y,                  0,  //Row 2
+			xAxis.Z,                  yAxis.Z,                  zAxis.Z,                  0,  //Row 3
+			-xAxis.Dot(pEyePosition), -yAxis.Dot(pEyePosition), -zAxis.Dot(pEyePosition), 1); //Row 4
+
+		return matrix;
+	}
+
 
 	/// <summary>
 	///  Converts given angle from degrees to radians

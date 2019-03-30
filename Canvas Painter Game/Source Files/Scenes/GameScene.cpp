@@ -18,6 +18,10 @@ void GameScene::CreateCamera()
 	//Creates cameras camera component
 	Camera camera{ Vector4(0.0f, 0.0f, 1.0f, 1.0f), Vector4(0.0f, 1.0f, 0.0f, 1.0f), 60, 1, 500 };
 	mEcsManager->AddCameraComp(camera, mCameraID);
+
+	mActiveCamera = *mEcsManager->CameraComp(mCameraID);
+	mLookAt = LookAt(transform.mTranslation, mActiveCamera.mLookAt, mActiveCamera.mUp);
+	mInverseLookAt = Inverse(mLookAt);
 }
 
 /// <summary>
@@ -97,32 +101,17 @@ void GameScene::Render()
 /// </summary>
 void GameScene::Update()
 {
-	auto keyPresses = mInputManager->KeyPresses();
-	if (keyPresses.size() > 0)
+	if (mInputManager->KeyHeld(KEYBOARD_BUTTONS::KEY_D))
 	{
-		auto A_KEY = std::find_if(keyPresses.begin(), keyPresses.end(), [&](const std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>& key)
-		{
-			return key.first == KEYBOARD_BUTTONS::KEY_A && key.second == KEYBOARD_BUTTON_STATE::KEY_DOWN;
-		});
-		if (A_KEY != keyPresses.end())
-		{
-			mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
-			mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(1, 0, 0, 0)  * mSceneManager->DeltaTime();
-		}
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(1, 0, 0, 0)  * mSceneManager->DeltaTime();
 	}
 
-	auto mousePresses = mInputManager->MousePresses();
-	if (mousePresses.size() > 0)
+	if (mInputManager->KeyHeld(MOUSE_BUTTONS::MOUSE_BUTTON_LEFT))
 	{
-		auto LEFT_BUTTON = std::find_if(mousePresses.begin(), mousePresses.end(), [&](const std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>& button)
-		{
-			return button.first == MOUSE_BUTTONS::MOUSE_BUTTON_LEFT && button.second == MOUSE_BUTTON_STATE::MOUSE_DOWN;
-		});
-		if (LEFT_BUTTON != mousePresses.end())
-		{
-			mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
-			mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
-		}
+		Vector4 rayOrigin;
+		Vector4 rayDirection;
+		mInputManager->RayFromMouse(mActiveCamera.mNear, mActiveCamera.mFar, DegreesToRadians(mActiveCamera.mFOV), mSceneManager->WindowWidth(), mSceneManager->WindowHeight(), mInverseLookAt, rayOrigin, rayDirection);
 	}
 }
 

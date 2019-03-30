@@ -7,6 +7,7 @@ namespace MathsHelper
 	{
 		union
 		{
+			float mElements[16];
 			Vector4 mRows[4];
 			struct
 			{
