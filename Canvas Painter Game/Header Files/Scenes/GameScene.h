@@ -20,6 +20,10 @@ private:
 	Camera mActiveCamera;
 	MathsHelper::Matrix4 mLookAt;
 	MathsHelper::Matrix4 mInverseLookAt;
+	MathsHelper::Matrix4 mProjection;
+	MathsHelper::Matrix4 mInverseProjection;
+
+	MathsHelper::Vector4 mPlayerColour;
 
 	void CreateCamera();
 	void CreateLight();

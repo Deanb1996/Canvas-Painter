@@ -19,9 +19,14 @@ void GameScene::CreateCamera()
 	Camera camera{ Vector4(0.0f, 0.0f, 1.0f, 1.0f), Vector4(0.0f, 1.0f, 0.0f, 1.0f), 60, 1, 500 };
 	mEcsManager->AddCameraComp(camera, mCameraID);
 
+	//Sets camera variables for scene
 	mActiveCamera = *mEcsManager->CameraComp(mCameraID);
+
 	mLookAt = LookAt(transform.mTranslation, mActiveCamera.mLookAt, mActiveCamera.mUp);
 	mInverseLookAt = Inverse(mLookAt);
+
+	mProjection = Projection(DegreesToRadians(60), mSceneManager->WindowWidth() / mSceneManager->WindowHeight(), 1, 500);
+	mInverseProjection = Inverse(mProjection);
 }
 
 /// <summary>
@@ -34,7 +39,7 @@ void GameScene::CreateLight()
 
 	//Create lights transform component
 	Transform transform;
-	transform.mTranslation = Vector4(15.0f, 10.0f, -15.0f, 1.0f);
+	transform.mTranslation = Vector4(0.0f, 10.0f, -5.0f, 1.0f);
 	mEcsManager->AddTransformComp(transform, mLightID);
 
 	//Create lights light component
@@ -71,6 +76,10 @@ void GameScene::CreateCanvas()
 				Shader shader{ L"defaultShader.fx", BlendState::NOBLEND, CullState::NONE, DepthState::NONE };
 				mEcsManager->AddShaderComp(shader, cubeID);
 
+				//Creates cubes colour component
+				Colour colour{mPlayerColour};
+				mEcsManager->AddColourComp(colour, cubeID);
+
 				//Creates cubes box collider component
 				BoxCollider boxCollider{ std::vector<int>(), 0.2, 0.2, 0.2 };
 				mEcsManager->AddBoxColliderComp(boxCollider, cubeID);
@@ -105,17 +114,37 @@ void GameScene::Render()
 /// </summary>
 void GameScene::Update()
 {
-	if (mInputManager->KeyHeld(KEYBOARD_BUTTONS::KEY_D))
+	if (mInputManager->KeyHeld(KEYS::KEY_D))
 	{
 		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
 		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(1, 0, 0, 0)  * mSceneManager->DeltaTime();
 	}
 
-	if (mInputManager->KeyHeld(MOUSE_BUTTONS::MOUSE_BUTTON_LEFT))
+	if (mInputManager->KeyHeld(KEYS::MOUSE_BUTTON_LEFT))
 	{
-		Vector4 rayOrigin;
-		Vector4 rayDirection;
-		mInputManager->RayFromMouse(mActiveCamera.mNear, mActiveCamera.mFar, DegreesToRadians(mActiveCamera.mFOV), mSceneManager->WindowWidth(), mSceneManager->WindowHeight(), mInverseLookAt, rayOrigin, rayDirection);
+		Vector4 ray = mInputManager->RayFromMouse(mInverseLookAt, mInverseProjection, mSceneManager->WindowWidth(), mSceneManager->WindowHeight());
+		
+		Ray rayComp{ mEcsManager->TransformComp(mCameraID)->mTranslation, ray };
+		int rayID = mEcsManager->CreateEntity();
+		mEcsManager->AddRayComp(rayComp, rayID);
+
+
+		//Create cube entity
+		int cubeID = mEcsManager->CreateEntity();
+
+		//Create cubes transform component
+		Transform transform;
+		transform.mTranslation = mEcsManager->TransformComp(mCameraID)->mTranslation + (ray * 10);
+		transform.mTransform *= TranslationMatrix(transform.mTranslation) * ScaleMatrix(Vector4(0.5f, 0.5f, 0.5f, 1.0f));// *RotationMatrixX(DegreesToRadians(45)) * ScaleMatrix(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+		mEcsManager->AddTransformComp(transform, cubeID);
+
+		//Creates cubes geometry component
+		Geometry geometry{ L"cube.obj" };
+		mEcsManager->AddGeometryComp(geometry, cubeID);
+
+		//Creates cubes shader component
+		Shader shader{ L"defaultShader.fx", BlendState::NOBLEND, CullState::NONE, DepthState::NONE };
+		mEcsManager->AddShaderComp(shader, cubeID);
 	}
 }
 
@@ -124,6 +153,8 @@ void GameScene::Update()
 /// </summary>
 void GameScene::OnLoad()
 {
+	mPlayerColour = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
 	CreateCamera();
 	CreateCanvas();
 	CreateLight();

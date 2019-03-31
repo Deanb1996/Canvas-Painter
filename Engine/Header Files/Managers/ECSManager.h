@@ -24,6 +24,7 @@ private:
 	std::vector<Geometry> mGeometries;
 	std::vector<Gravity> mGravities;
 	std::vector<Light> mLights;
+	std::vector<Ray> mRays;
 	std::vector<Shader> mShaders;
 	std::vector<SphereCollider> mSphereColliders;
 	std::vector<Texture> mTextures;
@@ -68,6 +69,7 @@ public:
 	void AddColourComp(const Colour& pColour, const int pEntityID);
 	void AddGeometryComp(const Geometry& pGeometry, const int pEntityID);
 	void AddLightComp(const Light& pLight, const int pEntityID);
+	void AddRayComp(const Ray& pRay, const int pEntityID);
 	void AddShaderComp(const Shader& pShader, const int pEntityID);
 	void AddSphereColliderComp(const SphereCollider& pSphereCollider, const int pEntityID);
 	void AddTextureComp(const Texture& pTexture, const int pEntityID);
@@ -82,6 +84,7 @@ public:
 	void RemoveColourComp(const int pEntityID);
 	void RemoveGeometryComp(const int pEntityID);
 	void RemoveLightComp(const int pEntityID);
+	void RemoveRayComp(const int pEntityID);
 	void RemoveShaderComp(const int pEntityID);
 	void RemoveSphereColliderComp(const int pEntityID);
 	void RemoveTextureComp(const int pEntityID);
@@ -98,6 +101,7 @@ public:
 	Geometry* const GeometryComp(const int pEntityID);
 	Gravity* const GravityComp(const int pEntityID);
 	Light* const LightComp(const int pEntityID);
+	Ray* const RayComp(const int pEntityID);
 	Shader* const ShaderComp(const int pEntityID);
 	SphereCollider* const SphereColliderComp(const int pEntityID);
 	Texture* const TextureComp(const int pEntityID);

@@ -20,17 +20,13 @@ InputManager::~InputManager()
 /// </summary>
 /// <param name="pButton"></param>
 /// <returns></returns>
-bool InputManager::KeyDown(const KEYBOARD_BUTTONS & pButton)
+bool InputManager::KeyDown(const KEYS & pButton)
 {
-	auto key = std::find_if(mKeyboardButtonPresses.begin(), mKeyboardButtonPresses.end(), [&](const std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>& key)
+	auto key = std::find_if(mKeyStates.begin(), mKeyStates.end(), [&](const std::pair<KEYS, KEY_STATE>& key)
 	{
-		return key.first == pButton && key.second == KEYBOARD_BUTTON_STATE::KEY_DOWN;
+		return key.first == pButton && key.second == KEY_STATE::KEY_DOWN;
 	});
-	if (key != mKeyboardButtonPresses.end())
-	{
-		return true;
-	}
-	return false;
+	return key != mKeyStates.end();
 }
 
 /// <summary>
@@ -38,17 +34,13 @@ bool InputManager::KeyDown(const KEYBOARD_BUTTONS & pButton)
 /// </summary>
 /// <param name="pButton"></param>
 /// <returns></returns>
-bool InputManager::KeyDown(const MOUSE_BUTTONS & pButton)
+bool InputManager::KeyUp(const KEYS & pButton)
 {
-	auto key = std::find_if(mMouseButtonPresses.begin(), mMouseButtonPresses.end(), [&](const std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>& key)
+	auto key = std::find_if(mKeyStates.begin(), mKeyStates.end(), [&](const std::pair<KEYS, KEY_STATE>& key)
 	{
-		return key.first == pButton && key.second == MOUSE_BUTTON_STATE::MOUSE_DOWN;
+		return key.first == pButton && key.second == KEY_STATE::KEY_UP;
 	});
-	if (key != mMouseButtonPresses.end())
-	{
-		return true;
-	}
-	return false;
+	return key != mKeyStates.end();
 }
 
 /// <summary>
@@ -56,71 +48,13 @@ bool InputManager::KeyDown(const MOUSE_BUTTONS & pButton)
 /// </summary>
 /// <param name="pButton"></param>
 /// <returns></returns>
-bool InputManager::KeyUp(const KEYBOARD_BUTTONS & pButton)
+bool InputManager::KeyHeld(const KEYS & pButton)
 {
-	auto key = std::find_if(mKeyboardButtonPresses.begin(), mKeyboardButtonPresses.end(), [&](const std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>& key)
+	auto key = std::find_if(mKeyStates.begin(), mKeyStates.end(), [&](const std::pair<KEYS, KEY_STATE>& key)
 	{
-		return key.first == pButton && key.second == KEYBOARD_BUTTON_STATE::KEY_UP;
+		return key.first == pButton && key.second == KEY_STATE::KEY_HELD;
 	});
-	if (key != mKeyboardButtonPresses.end())
-	{
-		return true;
-	}
-	return false;
-}
-
-/// <summary>
-/// 
-/// </summary>
-/// <param name="pButton"></param>
-/// <returns></returns>
-bool InputManager::KeyUp(const MOUSE_BUTTONS & pButton)
-{
-	auto key = std::find_if(mMouseButtonPresses.begin(), mMouseButtonPresses.end(), [&](const std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>& key)
-	{
-		return key.first == pButton && key.second == MOUSE_BUTTON_STATE::MOUSE_UP;
-	});
-	if (key != mMouseButtonPresses.end())
-	{
-		return true;
-	}
-	return false;
-}
-
-/// <summary>
-/// 
-/// </summary>
-/// <param name="pButton"></param>
-/// <returns></returns>
-bool InputManager::KeyHeld(const KEYBOARD_BUTTONS & pButton)
-{
-	auto key = std::find_if(mKeyboardButtonPresses.begin(), mKeyboardButtonPresses.end(), [&](const std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>& key)
-	{
-		return key.first == pButton && key.second == KEYBOARD_BUTTON_STATE::KEY_HELD;
-	});
-	if (key != mKeyboardButtonPresses.end())
-	{
-		return true;
-	}
-	return false;
-}
-
-/// <summary>
-/// 
-/// </summary>
-/// <param name="pButton"></param>
-/// <returns></returns>
-bool InputManager::KeyHeld(const MOUSE_BUTTONS & pButton)
-{
-	auto key = std::find_if(mMouseButtonPresses.begin(), mMouseButtonPresses.end(), [&](const std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>& key)
-	{
-		return key.first == pButton && key.second == MOUSE_BUTTON_STATE::MOUSE_HELD;
-	});
-	if (key != mMouseButtonPresses.end())
-	{
-		return true;
-	}
-	return false;
+	return key != mKeyStates.end();
 }
 
 /// <summary>
@@ -150,28 +84,28 @@ const MathsHelper::Vector2 & InputManager::MousePos() const
 /// <param name="pWindowWidth"></param>
 /// <param name="pWindowHeight"></param>
 /// <param name="mViewInverse"></param>
-void InputManager::RayFromMouse(const float& pNear, const float& pFar, const float& pFOV, const float& pWindowWidth, const float& pWindowHeight, const MathsHelper::Matrix4& pViewInverse,
-	MathsHelper::Vector4& pOrigin, MathsHelper::Vector4& pDirection)
+const MathsHelper::Vector4 InputManager::RayFromMouse(const MathsHelper::Matrix4& pViewInverse, const MathsHelper::Matrix4& pProjInverse, const float& pWidth, const float& pHeight)
 {
-	float aspectRatio = pWindowWidth / pWindowHeight;
-	float widthDiv2 = pWindowWidth * 0.5f;
-	float heightDiv2 = pWindowHeight * 0.5f;
+	//Normalised device coords
+	const MathsHelper::Vector4 mousePosNormalised(
+		(2.0f * mMousePosition.X) / pWidth - 1.0f,
+		1.0f - (2.0f * mMousePosition.Y) / pHeight,
+		1.0f,
+		1.0f
+	);
 
-	//Normalise and scale mouse co-ords to frustrum
-	float x = tanf(pFOV * 0.5f) * (mMousePosition.X / widthDiv2 - 1.0f) / aspectRatio;
-	float y = tanf(pFOV * 0.5f) * (1.0f - mMousePosition.Y / heightDiv2);
-
-	//Calculate ray
-	MathsHelper::Vector4 origin = MathsHelper::Vector4(x * pNear, y * pNear, pNear, 1);
-	MathsHelper::Vector4 destination = MathsHelper::Vector4(x * pFar, y * pFar, pFar, 1);
+	//Multiply by inverse projection
+	MathsHelper::Vector4 ray = MathsHelper::MultiplyVectorMatrix(mousePosNormalised, pProjInverse);
+	ray.Z = 1.0f;
+	ray.W = 0.0f;
 
 	//Multiply by inverse view
-	origin = MathsHelper::MultiplyVectorMatrix(origin, pViewInverse);
-	destination = MathsHelper::MultiplyVectorMatrix(destination, pViewInverse);
+	ray = MathsHelper::MultiplyVectorMatrix(ray, pViewInverse);
+	ray.W = 0.0f;
 
-	//Return origin and direction of ray
-	pOrigin = origin;
-	pDirection = MathsHelper::Vector4(destination - origin).Normalise();
+	//Normalise to get direction of ray and return
+	ray.Normalise();
+	return ray;
 }
 
 /// <summary>
@@ -179,6 +113,7 @@ void InputManager::RayFromMouse(const float& pNear, const float& pFar, const flo
 /// </summary>
 void InputManager::Update()
 {
+	mKeyStates.clear();
 	KeyboardInput();
 	MouseInput();
 }

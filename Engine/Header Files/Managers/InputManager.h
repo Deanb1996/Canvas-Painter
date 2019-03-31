@@ -4,14 +4,8 @@
 #include <algorithm>
 #include "MathsHelper.h"
 
-//Mouse buttons enum
-enum class MOUSE_BUTTONS
-{
-	MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE, NO_MOUSE_BUTTON,
-};
-
-//Keyboard buttons enum
-enum class KEYBOARD_BUTTONS
+//Keys enum
+enum class KEYS
 {
 	//LETTERS
 	KEY_A, KEY_B, KEY_C, KEY_D, KEY_E, KEY_F, KEY_G, KEY_H, KEY_I, KEY_J, KEY_K, KEY_L, KEY_M,
@@ -35,17 +29,12 @@ enum class KEYBOARD_BUTTONS
 	KEY_LEFT_SHIFT, KEY_RIGHT_SHIFT, KEY_SPACE, KEY_BACKSPACE, KEY_LEFT_CTRL, KEY_RIGHT_CTRL, KEY_LEFT_ALT, KEY_RIGHT_ALT, KEY_ENTER,
 	KEY_ESC, KEY_LEFT_WINDOWS, KEY_RIGHT_WINDOWS, KEY_CAPS_LOCK, KEY_DELETE, KEY_TAB, KEY_PERIOD, KEY_COMMA,
 
-	NO_KEYBOARD_BUTTON
+	//MOUSE BUTTONS
+	MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE
 };
 
-//Mouse button states enum
-enum class MOUSE_BUTTON_STATE
-{
-	MOUSE_DOWN, MOUSE_UP, MOUSE_HELD
-};
-
-//Keyboard button states enum
-enum class KEYBOARD_BUTTON_STATE
+//Key states enum
+enum class KEY_STATE
 {
 	KEY_DOWN, KEY_UP, KEY_HELD
 };
@@ -53,11 +42,8 @@ enum class KEYBOARD_BUTTON_STATE
 class InputManager
 {
 protected:
-	//Keyboard
-	std::vector<std::pair<MOUSE_BUTTONS, MOUSE_BUTTON_STATE>> mMouseButtonPresses;
-
-	//Mouse
-	std::vector<std::pair<KEYBOARD_BUTTONS, KEYBOARD_BUTTON_STATE>> mKeyboardButtonPresses;
+	//Mouse and key states
+	std::vector<std::pair<KEYS, KEY_STATE>> mKeyStates;
 	MathsHelper::Vector2 mMousePosition; //Make vector 2 struct for this
 	float mMouseWheelValue;
 
@@ -84,20 +70,16 @@ public:
 	virtual void CursorVisible(bool pVisible) = 0;
 
 	//Get key presses this frame
-	bool KeyDown(const KEYBOARD_BUTTONS& pButton);
-	bool KeyDown(const MOUSE_BUTTONS& pButton);
+	bool KeyDown(const KEYS& pButton);
 
 	//Get key releases this frame
-	bool KeyUp(const KEYBOARD_BUTTONS& pButton);
-	bool KeyUp(const MOUSE_BUTTONS& pButton);
+	bool KeyUp(const KEYS& pButton);
 
 	//Get keys held this frame
-    bool KeyHeld(const KEYBOARD_BUTTONS& pButton);
-	bool KeyHeld(const MOUSE_BUTTONS& pButton);
+    bool KeyHeld(const KEYS& pButton);
 
 	//Mouse
 	const float& ScrollWheel() const;
 	const MathsHelper::Vector2& MousePos() const;
-	void RayFromMouse(const float& pNear, const float& pFar, const float& pFOV, const float& pWindowWidth, const float& pWindowHeight, const MathsHelper::Matrix4& pViewInverse,
-		MathsHelper::Vector4& pOrigin, MathsHelper::Vector4& pDirection);
+	const MathsHelper::Vector4 RayFromMouse(const MathsHelper::Matrix4& pViewInverse, const MathsHelper::Matrix4& pProjInverse, const float& pWidth, const float& pHeight);
 };

@@ -13,3 +13,4 @@
 #include "Audio.h"
 #include "Velocity.h"
 #include "Colour.h"
+#include "Ray.h"

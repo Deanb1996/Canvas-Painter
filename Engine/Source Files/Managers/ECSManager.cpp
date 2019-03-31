@@ -44,13 +44,20 @@ ECSManager::ECSManager()
 	:mEntityID(0)
 {
 	mEntities.reserve(200000);
-	mTransforms.resize(200000);
+	mAIs.resize(200000);
+	mAudios.resize(20000);
 	mBoxColliders.resize(200000);
-	mGeometries.resize(200000);
-	mTextures.resize(200000);
-	mShaders.resize(200000);
 	mCameras.resize(200000);
+	mColours.resize(200000);
+	mGeometries.resize(200000);
+	mGravities.resize(200000);
 	mLights.resize(200000);
+	mRays.resize(200000);
+	mShaders.resize(200000);
+	mSphereColliders.resize(200000);
+	mTextures.resize(200000);
+	mTransforms.resize(200000);
+	mVelocities.resize(200000);
 }
 
 /// <summary>
@@ -136,6 +143,11 @@ void ECSManager::DestroyEntity(const int pEntityID)
 	if ((entity->mComponentMask & ComponentType::COMPONENT_LIGHT) == ComponentType::COMPONENT_LIGHT)
 	{
 		RemoveLightComp(pEntityID);
+	}
+	//Ray Comp
+	if ((entity->mComponentMask & ComponentType::COMPONENT_RAY) == ComponentType::COMPONENT_RAY)
+	{
+		RemoveRayComp(pEntityID);
 	}
 	//Shader Comp
 	if ((entity->mComponentMask & ComponentType::COMPONENT_SHADER) == ComponentType::COMPONENT_SHADER)
@@ -294,6 +306,19 @@ void ECSManager::AddLightComp(const Light & pLight, const int pEntityID)
 }
 
 /// <summary>
+/// Adds a Ray component to the entity with a given name
+/// </summary>
+/// <param name="pRay">Ray component to add</param>
+/// <param name="pEntityID">Given id of the entity</param>
+void ECSManager::AddRayComp(const Ray & pRay, const int pEntityID)
+{
+	Entity* entity = &mEntities[pEntityID];
+	mRays[pEntityID] = pRay;
+	entity->mComponentMask |= ComponentType::COMPONENT_RAY;
+	AssignEntity(*entity);
+}
+
+/// <summary>
 /// Adds a Shader component to the entity with a given name
 /// </summary>
 /// <param name="pShader">Shader component to add</param>
@@ -438,6 +463,17 @@ void ECSManager::RemoveLightComp(const int pEntityID)
 	ReAssignEntity(*entity);
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pEntityID"></param>
+void ECSManager::RemoveRayComp(const int pEntityID)
+{
+	Entity* entity = &mEntities[pEntityID];
+	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_RAY; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	ReAssignEntity(*entity);
+}
+
 
 /// <summary>
 /// Removes a Shader component from the entity with a given name
@@ -573,6 +609,16 @@ Gravity * const ECSManager::GravityComp(const int pEntityID)
 Light * const ECSManager::LightComp(const int pEntityID)
 {
 	return &mLights[pEntityID];
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pEntityID"></param>
+/// <returns></returns>
+Ray * const ECSManager::RayComp(const int pEntityID)
+{
+	return &mRays[pEntityID];
 }
 
 /// <summary>

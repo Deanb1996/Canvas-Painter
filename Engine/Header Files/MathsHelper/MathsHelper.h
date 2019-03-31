@@ -429,6 +429,34 @@ namespace MathsHelper
 		return matrix;
 	}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="pFOV"></param>
+	/// <param name="pAspectRatio"></param>
+	/// <param name="pNear"></param>
+	/// <param name="pFar"></param>
+	/// <returns></returns>
+	static Matrix4 Projection(const float& pFOV, const float& pAspectRatio, const float& pNear, const float& pFar)
+	{
+		if (pFOV <= 0 || pAspectRatio == 0)
+		{
+			return Matrix4();
+		}
+
+		const float frustrumDepth = pFar - pNear;
+		const float oneDivDepth = 1 / frustrumDepth;
+
+		Matrix4 matrix;
+		matrix._22 = 1 / tan(0.5f * pFOV);
+		matrix._11 = matrix._22 / pAspectRatio;
+		matrix._33 = pFar * oneDivDepth;
+		matrix._43 = (-pFar * pNear) * oneDivDepth;
+		matrix._34 = 1;
+		matrix._44 = 0;
+
+		return matrix;
+	}
 
 	/// <summary>
 	///  Converts given angle from degrees to radians
