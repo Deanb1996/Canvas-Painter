@@ -9,7 +9,6 @@ using namespace DirectX;
 RenderSystem_DX::RenderSystem_DX(const HWND& pWindow) : RenderSystem(ComponentType::COMPONENT_TRANSFORM | ComponentType::COMPONENT_GEOMETRY | ComponentType::COMPONENT_SHADER),
 mWindow(pWindow), mActiveCamera(nullptr)
 {
-	mEntities = std::vector<Entity>(200000, Entity{-1, ComponentType::COMPONENT_NONE});
 	if (FAILED(Init()))
 	{
 		Cleanup();
@@ -480,6 +479,7 @@ void RenderSystem_DX::Process()
 
 			//world
 			mCB.mWorld = XMFLOAT4X4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(entity.mID)->mTransform)));
+			mCB.mColour = XMFLOAT4(reinterpret_cast<float*>(&mEcsManager->ColourComp(entity.mID)->Colour));
 			mContext->UpdateSubresource(mConstantBuffer.Get(), 0, nullptr, &mCB, 0, 0);
 
 			//mContext->OMSetBlendState()

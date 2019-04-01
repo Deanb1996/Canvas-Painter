@@ -53,11 +53,11 @@ void GameScene::CreateLight()
 void GameScene::CreateCanvas()
 {
 	int cubeID = 0;
-	for (float i = -100; i < 100; i++)
+	for (float k = -2; k < 2; k++)
 	{
 		for (float j = -100; j < 100; j++)
 		{
-			for (float k = -2; k < 2; k++)
+			for (float i = -100; i < 100; i++)
 			{
 				//Create cube entity
 				cubeID = mEcsManager->CreateEntity();
@@ -77,11 +77,16 @@ void GameScene::CreateCanvas()
 				mEcsManager->AddShaderComp(shader, cubeID);
 
 				//Creates cubes colour component
-				Colour colour{mPlayerColour};
+				Colour colour{Vector4(1.0f, 1.0f, 1.0f, 1.0f)};
 				mEcsManager->AddColourComp(colour, cubeID);
 
 				//Creates cubes box collider component
-				BoxCollider boxCollider{ std::vector<int>(), 0.2, 0.2, 0.2 };
+				//Cubes are 2 width, height and depth, scaled by 0.1 to 0.2 width, height and depth.
+				//+/- half the width, height and depth to cubes translation to get max/min bounds of box collider
+				BoxCollider boxCollider{
+					Vector3(transform.mTranslation.X - 0.1f, transform.mTranslation.Y - 0.1f, transform.mTranslation.Z - 0.1f),
+					Vector3(transform.mTranslation.X + 0.1f, transform.mTranslation.Y + 0.1f, transform.mTranslation.Z + 0.1f)
+				};
 				mEcsManager->AddBoxColliderComp(boxCollider, cubeID);
 			}
 		}
@@ -92,6 +97,7 @@ void GameScene::CreateCanvas()
 /// 
 /// </summary>
 GameScene::GameScene()
+	:mRayID(-1)
 {
 }
 
@@ -114,6 +120,23 @@ void GameScene::Render()
 /// </summary>
 void GameScene::Update()
 {
+	//If ray existed, retrieve intersection result
+	if (mRayID != -1)
+	{
+		Ray rayComp = *mEcsManager->RayComp(mRayID);
+
+		//If ray has intersected with a cube, set colour of intersected cube
+		int intersectedCube = rayComp.mIntersectedWith;
+		if (intersectedCube != -1)
+		{
+			mEcsManager->ColourComp(intersectedCube)->Colour = mPlayerColour;
+		}
+
+		//Destroy ray once done with it
+		mEcsManager->DestroyEntity(mRayID);
+		mRayID = -1;
+	}
+
 	if (mInputManager->KeyHeld(KEYS::KEY_D))
 	{
 		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
@@ -122,29 +145,15 @@ void GameScene::Update()
 
 	if (mInputManager->KeyHeld(KEYS::MOUSE_BUTTON_LEFT))
 	{
+		//Converts mouse position into world co-ords for mouse picking
 		Vector4 ray = mInputManager->RayFromMouse(mInverseLookAt, mInverseProjection, mSceneManager->WindowWidth(), mSceneManager->WindowHeight());
 		
-		Ray rayComp{ mEcsManager->TransformComp(mCameraID)->mTranslation, ray };
-		int rayID = mEcsManager->CreateEntity();
-		mEcsManager->AddRayComp(rayComp, rayID);
+		//Creates ray entity
+		mRayID = mEcsManager->CreateEntity();
 
-
-		//Create cube entity
-		int cubeID = mEcsManager->CreateEntity();
-
-		//Create cubes transform component
-		Transform transform;
-		transform.mTranslation = mEcsManager->TransformComp(mCameraID)->mTranslation + (ray * 10);
-		transform.mTransform *= TranslationMatrix(transform.mTranslation) * ScaleMatrix(Vector4(0.5f, 0.5f, 0.5f, 1.0f));// *RotationMatrixX(DegreesToRadians(45)) * ScaleMatrix(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-		mEcsManager->AddTransformComp(transform, cubeID);
-
-		//Creates cubes geometry component
-		Geometry geometry{ L"cube.obj" };
-		mEcsManager->AddGeometryComp(geometry, cubeID);
-
-		//Creates cubes shader component
-		Shader shader{ L"defaultShader.fx", BlendState::NOBLEND, CullState::NONE, DepthState::NONE };
-		mEcsManager->AddShaderComp(shader, cubeID);
+		//Creates rays ray component
+		Ray rayComp{ mEcsManager->TransformComp(mCameraID)->mTranslation.XYZ(), ray.XYZ(), -1 };
+		mEcsManager->AddRayComp(rayComp, mRayID);
 	}
 }
 
@@ -153,7 +162,7 @@ void GameScene::Update()
 /// </summary>
 void GameScene::OnLoad()
 {
-	mPlayerColour = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+	mPlayerColour = Vector4(0.5f, 0.0f, 0.0f, 1.0f);
 
 	CreateCamera();
 	CreateCanvas();

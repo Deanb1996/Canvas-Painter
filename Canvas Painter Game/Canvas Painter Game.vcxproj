@@ -134,12 +134,14 @@
   <ItemGroup>
     <ClCompile Include="Source Files\main.cpp" />
     <ClCompile Include="Source Files\Scenes\GameScene.cpp" />
+    <ClCompile Include="Source Files\Systems\RayAABBIntersectionSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header Files\Scenes\GameScene.h" />
+    <ClInclude Include="Header Files\Systems\RayAABBIntersectionSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="defaultPS.hlsl">

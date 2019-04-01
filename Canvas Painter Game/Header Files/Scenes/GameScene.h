@@ -15,6 +15,7 @@ private:
 	//Entity IDs
 	int mCameraID;
 	int mLightID;
+	int mRayID;
 
 	//Camera
 	Camera mActiveCamera;

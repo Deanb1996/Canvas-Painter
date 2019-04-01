@@ -3,6 +3,7 @@
 
 struct Ray
 {
-	MathsHelper::Vector4 mOrigin;
-	MathsHelper::Vector4 mDirection;
+	MathsHelper::Vector3 mOrigin;
+	MathsHelper::Vector3 mDirection;
+	int mIntersectedWith;
 };

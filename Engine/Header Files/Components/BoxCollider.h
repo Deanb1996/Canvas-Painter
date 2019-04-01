@@ -1,10 +1,9 @@
 #pragma once
 #include <vector>
+#include "Vector3.h"
 
 struct BoxCollider
 {
-	std::vector<int> mCollidedWith;
-	float mWidth;
-	float mHeight;
-	float mDepth;
+	MathsHelper::Vector3 mMinBounds;
+	MathsHelper::Vector3 mMaxBounds;
 };

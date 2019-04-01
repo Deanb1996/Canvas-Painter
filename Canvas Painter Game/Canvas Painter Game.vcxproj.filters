@@ -22,9 +22,6 @@
     <Filter Include="Source Files\Systems">
       <UniqueIdentifier>{59df2957-78a7-434a-8e0e-a894dab07485}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Components">
-      <UniqueIdentifier>{02bab026-b39d-425b-89b3-fe750a7ee679}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Scenes">
       <UniqueIdentifier>{5140fc9f-2089-4365-87c6-ce1e9cd3231a}</UniqueIdentifier>
     </Filter>
@@ -39,6 +36,9 @@
     <ClCompile Include="Source Files\Scenes\GameScene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="Source Files\Systems\RayAABBIntersectionSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -46,6 +46,9 @@
   <ItemGroup>
     <ClInclude Include="Header Files\Scenes\GameScene.h">
       <Filter>Header Files\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Systems\RayAABBIntersectionSystem.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

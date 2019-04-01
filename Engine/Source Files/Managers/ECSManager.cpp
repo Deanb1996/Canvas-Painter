@@ -89,6 +89,7 @@ const int ECSManager::CreateEntity()
 	{
 		entityID = mFreeEntityIDs.back();
 		mFreeEntityIDs.pop_back();
+		mEntities[entityID] = Entity{ entityID, ComponentType::COMPONENT_NONE };
 	}
 	else
 	{

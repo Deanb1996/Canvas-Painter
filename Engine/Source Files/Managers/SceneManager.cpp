@@ -18,8 +18,8 @@ void SceneManager::Update()
 	mCurrentTime = std::chrono::high_resolution_clock::now();
 	mDeltaTime = mCurrentTime - mPreviousTime;
 
-	mScene->Update();
 	mEcsManager->ProcessSystems();
+	mScene->Update();
 	mInputManager->Update();
 
 	// Average the fps over n frames.

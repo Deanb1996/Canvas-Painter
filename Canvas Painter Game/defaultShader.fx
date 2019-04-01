@@ -9,6 +9,7 @@ cbuffer ConstantBuffer : register(b0)
 	float4 LightColour;
 	float4 LightPosition;
 	float4 CameraPosition;
+	float4 Colour;
 }
 
 //--------------------------------------------------------------------------------------
@@ -56,6 +57,7 @@ float4 PS(PS_INPUT input) : SV_Target
 	float4 matDiffuse = float4(0.8, 0.8, 0.8, 1.0);
 	float4 matSpec = float4(1.0, 1.0, 1.0, 1.0);
 	float4 ambient = float4(0.1, 0.1, 0.1, 1.0);
+	float4 texColour = Colour;
 
 	float3 viewDirection = normalize(CameraPosition - input.PosWorld);
 	float4 light = ambient;
@@ -66,5 +68,5 @@ float4 PS(PS_INPUT input) : SV_Target
 	float spec = pow(max(0.0, dot(viewDirection, reflection)), 0.1 * 128);
 	light += saturate(((matDiffuse*diffuse) + (matSpec*spec)) * LightColour);
 
-	return  light;
+	return light * texColour;
 }

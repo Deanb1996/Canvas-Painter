@@ -3,6 +3,7 @@
 #include "Managers.h"
 #include "Systems.h"
 #include "GameScene.h"
+#include "RayAABBIntersectionSystem.h"
 
 #pragma comment(lib, "Engine.lib")
 
@@ -42,12 +43,13 @@ int WINAPI wWinMain(_In_ const HINSTANCE pHInstance, _In_opt_ const HINSTANCE pH
 	float height = rc.bottom - rc.top;
 	sceneManager->SetWindowWidthHeight(width, height);
 
-	//Update systems
-	//ecsManager->AddUpdateSystem(systPointer);
+	//Render systems
+	std::shared_ptr<ISystem> system = std::make_shared<RenderSystem_DX>(hWnd);
+	ecsManager->AddRenderSystem(system);
 
-	//Render Systems
-	std::shared_ptr<ISystem> renderer = std::make_shared<RenderSystem_DX>(hWnd);
-	ecsManager->AddRenderSystem(renderer);
+	//Update systems
+	system = std::make_shared<RayAABBIntersectionSystem>();
+	ecsManager->AddUpdateSystem(system);
 
 	//Scenes
 	sceneManager->LoadScene<GameScene>();

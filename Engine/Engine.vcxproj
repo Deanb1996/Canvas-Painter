@@ -57,6 +57,7 @@
     <ClInclude Include="Header Files\MathsHelper\MathsHelper.h" />
     <ClInclude Include="Header Files\MathsHelper\Matrix4.h" />
     <ClInclude Include="Header Files\MathsHelper\Vector2.h" />
+    <ClInclude Include="Header Files\MathsHelper\Vector3.h" />
     <ClInclude Include="Header Files\MathsHelper\Vector4.h" />
     <ClInclude Include="Header Files\Systems\ISystem.h" />
     <ClInclude Include="Header Files\Systems\RenderSystem.h" />
@@ -75,6 +76,7 @@
     <ClCompile Include="Source Files\Managers\SceneManager.cpp" />
     <ClCompile Include="Source Files\MathsHelper\Matrix4.cpp" />
     <ClCompile Include="Source Files\MathsHelper\Vector2.cpp" />
+    <ClCompile Include="Source Files\MathsHelper\Vector3.cpp" />
     <ClCompile Include="Source Files\MathsHelper\Vector4.cpp" />
     <ClCompile Include="Source Files\Systems\RenderSystem.cpp" />
     <ClCompile Include="Source Files\Systems\RenderSystem_DX.cpp" />
