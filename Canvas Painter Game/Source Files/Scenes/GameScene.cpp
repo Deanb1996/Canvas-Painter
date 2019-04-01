@@ -162,7 +162,7 @@ void GameScene::Update()
 /// </summary>
 void GameScene::OnLoad()
 {
-	mPlayerColour = Vector4(0.5f, 0.0f, 0.0f, 1.0f);
+	mPlayerColour = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
 	CreateCamera();
 	CreateCanvas();
