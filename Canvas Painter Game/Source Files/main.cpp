@@ -101,7 +101,7 @@ HRESULT InitWindow(const HINSTANCE pHInstance, const int pNCmdShow)
 
 	//Create window
 	hInst = pHInstance;
-	RECT rc = { 0, 0, 1600, 900 };
+	RECT rc = { 0, 0, 1920, 1080 };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 	hWnd = CreateWindow(L"Example Game", L"Example Game",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
