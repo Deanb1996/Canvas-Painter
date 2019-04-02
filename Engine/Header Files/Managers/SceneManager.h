@@ -33,7 +33,6 @@ private:
 public:
 	~SceneManager();
 
-	void Render();
 	void Update();
 
 	//Timing functions

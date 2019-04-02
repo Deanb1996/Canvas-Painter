@@ -2,6 +2,14 @@
 
 using namespace DirectX;
 
+//NOT YET IMPLEMENTED:
+//Blend states
+//Depth states
+//Cull states
+//Texture loading
+//Instance rendering
+
+
 /// <summary>
 /// Constructor
 /// Sets component mask to contain a transform component, a geometry and a shader component
@@ -484,9 +492,19 @@ void RenderSystem_DX::Process()
 	{
 		if (entity.mID != -1)
 		{
-			auto geometry = LoadGeometry(entity);
+			//If geometry of entity is not already in the buffers, load entities geometry
+			if (mEcsManager->GeometryComp(entity.mID)->mFilename != mActiveGeometry)
+			{
+				mGeometry = LoadGeometry(entity);
+				mActiveGeometry = mEcsManager->GeometryComp(entity.mID)->mFilename;
+			}
 			//LoadTexture(entity);
-			LoadShaders(entity);
+			//If shader of entity is not already in the buffers, load entities shader
+			if (mEcsManager->ShaderComp(entity.mID)->mFilename != mActiveShader)
+			{
+				LoadShaders(entity);
+				mActiveShader = mEcsManager->ShaderComp(entity.mID)->mFilename;
+			}
 
 			//Update constant buffer with world matrix and object colour
 			mCB.mWorld = XMFLOAT4X4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(entity.mID)->mTransform)));
@@ -497,7 +515,7 @@ void RenderSystem_DX::Process()
 			//mContext->OMSetDepthStencilState(NULL, 1);
 			mContext->RSSetState(mDefaultRasterizerState.Get());
 
-			geometry->Draw(this);
+			mGeometry->Draw(this);
 		}
 	}
 

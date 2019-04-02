@@ -144,9 +144,17 @@ void RayAABBIntersectionSystem::Process()
 				{
 					highestMin = minY;
 				}
+				else
+				{
+					highestMin = minX;
+				}
 				if (maxY < maxX)
 				{
 					lowestMax = maxY;
+				}
+				else
+				{
+					lowestMax = maxX;
 				}
 
 
@@ -163,7 +171,7 @@ void RayAABBIntersectionSystem::Process()
 				}
 
 				//If min is greater than max, ray did not intersect then continue
-				if ((minX > maxZ) || (minZ > maxX))
+				if ((highestMin > maxZ) || (minZ > lowestMax))
 				{
 					continue;
 				}
@@ -172,11 +180,11 @@ void RayAABBIntersectionSystem::Process()
 				mEcsManager->RayComp(ray.mID)->mIntersectedWith = box.mID;
 
 				//Find lowest max and highest min
-				if (minZ > minX)
+				if (minZ > highestMin)
 				{
 					highestMin = minZ;
 				}
-				if (maxZ < maxX)
+				if (maxZ < lowestMax)
 				{
 					lowestMax = maxZ;
 				}

@@ -34,6 +34,10 @@ private:
 	std::shared_ptr<ResourceManager>  mResourceManager = ResourceManager::Instance();
 	const Entity* mActiveCamera;
 	ConstantBuffer mCB;
+	const VBO* mGeometry;
+
+	std::wstring mActiveGeometry;
+	std::wstring mActiveShader;
 
 	/// <summary>
 	/// DirectX pointers

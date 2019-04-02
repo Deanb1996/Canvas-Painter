@@ -36,7 +36,6 @@ public:
 	GameScene();
 	~GameScene();
 
-	void Render() override;
 	void Update() override;
 	void OnLoad() override;
 	void OnUnload() override;

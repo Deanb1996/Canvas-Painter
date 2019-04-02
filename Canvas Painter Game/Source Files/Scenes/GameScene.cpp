@@ -94,7 +94,7 @@ void GameScene::CreateCanvas()
 }
 
 /// <summary>
-/// 
+/// Manages camera movement based on user input
 /// </summary>
 void GameScene::CameraControls()
 {
@@ -137,7 +137,7 @@ void GameScene::CameraControls()
 }
 
 /// <summary>
-/// 
+/// Default constructor
 /// </summary>
 GameScene::GameScene()
 	:mRayID(-1)
@@ -145,21 +145,14 @@ GameScene::GameScene()
 }
 
 /// <summary>
-/// 
+/// Default destructor
 /// </summary>
 GameScene::~GameScene()
 {
 }
 
 /// <summary>
-/// 
-/// </summary>
-void GameScene::Render()
-{
-}
-
-/// <summary>
-/// 
+/// Update loop for the scene
 /// </summary>
 void GameScene::Update()
 {
@@ -198,7 +191,7 @@ void GameScene::Update()
 }
 
 /// <summary>
-/// 
+/// Scene setup on load
 /// </summary>
 void GameScene::OnLoad()
 {
@@ -210,7 +203,7 @@ void GameScene::OnLoad()
 }
 
 /// <summary>
-/// 
+/// Clear up scene resources
 /// </summary>
 void GameScene::OnUnload()
 {

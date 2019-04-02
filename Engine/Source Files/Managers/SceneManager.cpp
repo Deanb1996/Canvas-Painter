@@ -1,14 +1,6 @@
 #include "SceneManager.h"
 
 /// <summary>
-/// Calls the render function for the scene
-/// </summary>
-void SceneManager::Render()
-{
-	mScene->Render();
-}
-
-/// <summary>
 /// Updates the input and ecsManager every frame
 /// Updates the scene every frame
 /// Calculates all the timing of the scene
