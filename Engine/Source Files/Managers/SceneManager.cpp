@@ -30,8 +30,6 @@ void SceneManager::Update()
 
 	mFps = 1 / mAverageDeltaTime;
 
-
-
 	mPreviousTime = mCurrentTime;
 }
 
@@ -65,10 +63,10 @@ const int& SceneManager::Fps() const
 }
 
 /// <summary>
-/// 
+/// Sets the window width and height inside the scene manager
 /// </summary>
-/// <param name="pWidth"></param>
-/// <param name="pHeight"></param>
+/// <param name="pWidth">Width of the window</param>
+/// <param name="pHeight">Height of the window</param>
 void SceneManager::SetWindowWidthHeight(const float & pWidth, const float & pHeight)
 {
 	mWindowWidth = pWidth;
@@ -76,18 +74,18 @@ void SceneManager::SetWindowWidthHeight(const float & pWidth, const float & pHei
 }
 
 /// <summary>
-/// 
+/// Get method for window width
 /// </summary>
-/// <returns></returns>
+/// <returns>Width of the window</returns>
 const float & SceneManager::WindowWidth() const
 {
 	return mWindowWidth;
 }
 
 /// <summary>
-/// 
+/// Get method for window height
 /// </summary>
-/// <returns></returns>
+/// <returns>Height of the window</returns>
 const float & SceneManager::WindowHeight() const
 {
 	return mWindowHeight;

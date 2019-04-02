@@ -1,10 +1,21 @@
 #include "VBO_DX.h"
 #include "RenderSystem_DX.h"
 
+/// <summary>
+/// Default constructor
+/// </summary>
+VBO_DX::VBO_DX()
+{
 
-VBO_DX::VBO_DX() = default;
-VBO_DX::~VBO_DX() = default;
+}
 
+/// <summary>
+/// Default destructor
+/// </summary>
+VBO_DX::~VBO_DX()
+{
+
+}
 
 /// <summary>
 /// Creates the vertex and index buffers by loading in the obj file given a filename
@@ -45,6 +56,10 @@ HRESULT VBO_DX::Create(const RenderSystem * pRenderer, const std::wstring& pFile
 	return hr;
 }
 
+/// <summary>
+/// Loads the vertices and indices of the geometry into vertex and index buffers of the given directX device
+/// </summary>
+/// <param name="pRenderer">Renderer to retrieve the device from</param>
 void VBO_DX::Load(const RenderSystem* pRenderer) const
 {
 	// Set vertex buffer
@@ -56,6 +71,10 @@ void VBO_DX::Load(const RenderSystem* pRenderer) const
 	reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Context()->IASetIndexBuffer(mIndices.Get(), DXGI_FORMAT_R32_UINT, 0);
 }
 
+/// <summary>
+/// Draws the vertices and indices in the VBO with the given directX device
+/// </summary>
+/// <param name="pRenderer">Renderer to retrieve the directX device from</param>
 void VBO_DX::Draw(const RenderSystem * pRenderer) const
 {
 	reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Context()->DrawIndexed(mIndexCount, 0, 0);

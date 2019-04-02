@@ -1,7 +1,8 @@
 #include "InputManager_DX.h"
 
 /// <summary>
-/// 
+/// Constructor
+/// Sets pointers to DirectX mouse and keyboard
 /// </summary>
 InputManager_DX::InputManager_DX() : InputManager()
 {
@@ -10,16 +11,17 @@ InputManager_DX::InputManager_DX() : InputManager()
 }
 
 /// <summary>
-/// 
+/// Default destructor
 /// </summary>
 InputManager_DX::~InputManager_DX()
 {
 }
 
 /// <summary>
-/// 
+/// Creates a singleton instance of Input Manager if one hasn't been created before
+/// Returns pointer to the instance of Input Manager
 /// </summary>
-/// <returns></returns>
+/// <returns>Shared pointer to the Input Manager instance</returns>
 std::shared_ptr<InputManager_DX> InputManager_DX::Instance()
 {
 	static std::shared_ptr<InputManager_DX> instance{ new InputManager_DX };
@@ -27,16 +29,17 @@ std::shared_ptr<InputManager_DX> InputManager_DX::Instance()
 }
 
 /// <summary>
-/// 
+/// Centers the cursor the the middle of the screen
 /// </summary>
 void InputManager_DX::CenterCursor()
 {
+	//NOT IMPLEMENTED
 }
 
 /// <summary>
-/// 
+/// Sets the visibility of the cursor
 /// </summary>
-/// <param name="pVisible"></param>
+/// <param name="pVisible">State to set the cursor visibility to</param>
 void InputManager_DX::CursorVisible(const bool pVisible)
 {
 	mMouse->SetVisible(pVisible);
@@ -46,15 +49,6 @@ void InputManager_DX::CursorVisible(const bool pVisible)
 ////--------------------------------------------------------------------------------------
 //// Called every time the application receives a message
 ////--------------------------------------------------------------------------------------
-
-/// <summary>
-/// 
-/// </summary>
-/// <param name="hWnd"></param>
-/// <param name="message"></param>
-/// <param name="wParam"></param>
-/// <param name="lParam"></param>
-/// <returns></returns>
 LRESULT CALLBACK InputManager_DX::WndProc(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam)
 {
 	switch (message)
@@ -99,7 +93,7 @@ LRESULT CALLBACK InputManager_DX::WndProc(const HWND hWnd, const UINT message, c
 }
 
 /// <summary>
-/// 
+/// Updates the state of the keyboard and calls the three methods for tracking keyboard inputs
 /// </summary>
 void InputManager_DX::KeyboardInput()
 {
@@ -114,9 +108,8 @@ void InputManager_DX::KeyboardInput()
 }
 
 /// <summary>
-/// 
+/// Updates all the information about the mouse input based on information reveived from the DirectXTK
 /// </summary>
-/// <returns></returns>
 void InputManager_DX::MouseInput()
 {
 	mMouseState = mMouse->GetState();
@@ -175,9 +168,8 @@ void InputManager_DX::MouseInput()
 }
 
 /// <summary>
-/// 
+/// Updates all the information about released keys this frame based on information reveived from the DirectXTK
 /// </summary>
-/// <returns></returns>
 void InputManager_DX::ReleasedKeys()
 {
 	//Letters
@@ -528,9 +520,8 @@ void InputManager_DX::ReleasedKeys()
 }
 
 /// <summary>
-/// 
+/// Updates all the information about pressed keys this frame based on information reveived from the DirectXTK
 /// </summary>
-/// <returns></returns>
 void InputManager_DX::SinglePressKeys()
 {
 	//Letters
@@ -881,10 +872,8 @@ void InputManager_DX::SinglePressKeys()
 }
 
 /// <summary>
-/// 
+/// Updates all the information about held down keys this frame based on information reveived from the DirectXTK
 /// </summary>
-/// <param name="state"></param>
-/// <returns></returns>
 void InputManager_DX::HeldDownKeys()
 {
 	//Letters

@@ -39,7 +39,7 @@ void GameScene::CreateLight()
 
 	//Create lights transform component
 	Transform transform;
-	transform.mTranslation = Vector4(0.0f, 10.0f, -5.0f, 1.0f);
+	transform.mTranslation = Vector4(0.0f, 10.0f, -20.0f, 1.0f);
 	mEcsManager->AddTransformComp(transform, lightID);
 
 	//Create lights light component

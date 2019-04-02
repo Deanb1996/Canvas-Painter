@@ -67,7 +67,6 @@ int WINAPI wWinMain(_In_ const HINSTANCE pHInstance, _In_opt_ const HINSTANCE pH
 		{
 			//Update scenes
 			sceneManager->Update();
-			sceneManager->Render();
 		}
 	}
 

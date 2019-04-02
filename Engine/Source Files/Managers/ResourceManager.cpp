@@ -56,7 +56,7 @@ const TextureObject * const ResourceManager::LoadTexture(const RenderSystem * co
 /// </summary>
 /// <param name="pRenderer">The render system used for the creation of the geometry object</param>
 /// <param name="pFilename">Filename of the geometry</param>
-/// <returns></returns>
+/// <returns>Handle to the VBO associated with the file name</returns>
 const VBO * const ResourceManager::LoadGeometry(const RenderSystem * const pRenderer, const std::wstring& pFilename)
 {
 	auto hr{ S_OK };
@@ -81,6 +81,13 @@ const VBO * const ResourceManager::LoadGeometry(const RenderSystem * const pRend
 	return mGeometries.back().second;
 }
 
+/// <summary>
+/// If shader is not already loaded, loads and stores shader file into shader object
+/// If shader is already loaded, retrieves the already created shader object
+/// </summary>
+/// <param name="pRenderer">The render system used for the creation of the shader object</param>
+/// <param name="pFilename">Filename of the shader</param>
+/// <returns>Handle to the shader object associated with the file name</returns>
 const ShaderObject * const ResourceManager::LoadShader(const RenderSystem * const pRenderer, const std::wstring & pFilename)
 {
 	auto hr{ S_OK };
@@ -110,6 +117,11 @@ const ShaderObject * const ResourceManager::LoadShader(const RenderSystem * cons
 	return mShaders.back().second;
 }
 
+/// <summary>
+/// Creates a singleton instance of Resource Manager if one hasn't been created before
+/// Returns pointer to the instance of Resource Manager
+/// </summary>
+/// <returns>Shared pointer to the Resource Manager instance</returns>
 std::shared_ptr<ResourceManager> ResourceManager::Instance()
 {
 	static shared_ptr<ResourceManager> instance{ new ResourceManager };

@@ -3,6 +3,11 @@
 using namespace std;
 using namespace DirectX;
 
+/// <summary>
+/// Loads vertices, indices, texcoords and normals into a Vertex struct from an obj file
+/// </summary>
+/// <param name="pFilename">File name of the obj file</param>
+/// <returns>Vertex containing the geometry data loaded from the obj file</returns>
 pair<vector<unsigned>, vector<Vertex>> ObjLoader::LoadObject(const wstring & pFilename)
 {
 	vector<unsigned> indices;
