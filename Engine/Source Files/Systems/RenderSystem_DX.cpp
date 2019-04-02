@@ -3,9 +3,11 @@
 using namespace DirectX;
 
 /// <summary>
-/// 
+/// Constructor
+/// Sets component mask to contain a transform component, a geometry and a shader component
+/// Initialises directX device, and cleans up directX resources if failed
 /// </summary>
-/// <param name="pWindow"></param>
+/// <param name="pWindow">A handle to the win32 window</param>
 RenderSystem_DX::RenderSystem_DX(const HWND& pWindow) : RenderSystem(ComponentType::COMPONENT_TRANSFORM | ComponentType::COMPONENT_GEOMETRY | ComponentType::COMPONENT_SHADER),
 mWindow(pWindow), mActiveCamera(nullptr)
 {
@@ -16,14 +18,17 @@ mWindow(pWindow), mActiveCamera(nullptr)
 }
 
 /// <summary>
-/// 
+/// Default destructor
 /// </summary>
-RenderSystem_DX::~RenderSystem_DX() = default;
+RenderSystem_DX::~RenderSystem_DX()
+{
+
+}
 
 /// <summary>
-/// 
+/// Initialises directx device and resources
 /// </summary>
-/// <returns></returns>
+/// <returns>HRESULT status code</returns>
 HRESULT RenderSystem_DX::Init()
 {
 	auto hr{ S_OK };
@@ -57,9 +62,13 @@ HRESULT RenderSystem_DX::Init()
 	if (FAILED(hr))
 		return hr;
 
+	hr = CreateConstantBuffers();
+	if (FAILED(hr))
+		return hr;
+
 	CreateViewport();
 
-	// Set primitive topology
+	//Set primitive topology
 	mContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//improved object reporting for finding memory leaks
@@ -70,20 +79,13 @@ HRESULT RenderSystem_DX::Init()
 	//	hr = DebugDevice->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 	//#endif
 
-	//Create constant buffers
-	hr = CreateConstantBuffers();
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
 	return hr;
 }
 
 /// <summary>
-/// 
+/// Creates directx device
 /// </summary>
-/// <returns></returns>
+/// <returns>HRESULT status code</returns>
 HRESULT RenderSystem_DX::CreateDevice()
 {
 	auto hr{ S_OK };
@@ -130,9 +132,9 @@ HRESULT RenderSystem_DX::CreateDevice()
 }
 
 /// <summary>
-/// 
+/// Creates swap chain for directx 
 /// </summary>
-/// <returns></returns>
+/// <returns>HRESULT status code</returns>
 HRESULT RenderSystem_DX::CreateSwapChain()
 {
 	auto hr{ S_OK };
@@ -212,9 +214,9 @@ HRESULT RenderSystem_DX::CreateSwapChain()
 }
 
 /// <summary>
-/// 
+/// Creates render target for directx
 /// </summary>
-/// <returns></returns>
+/// <returns>HRESULT status code</returns>
 HRESULT RenderSystem_DX::CreateRenderTarget()
 {
 	auto hr{ S_OK };
@@ -233,9 +235,9 @@ HRESULT RenderSystem_DX::CreateRenderTarget()
 }
 
 /// <summary>
-/// 
+/// Creates depth stencil for diretx
 /// </summary>
-/// <returns></returns>
+/// <returns>HRESULT status code</returns>
 HRESULT RenderSystem_DX::CreateDepth()
 {
 	auto hr{ S_OK };
@@ -283,9 +285,9 @@ HRESULT RenderSystem_DX::CreateDepth()
 }
 
 /// <summary>
-/// 
+/// Creates rasteriser states
 /// </summary>
-/// <returns></returns>
+/// <returns>HRESULT status code</returns>
 HRESULT RenderSystem_DX::CreateRasterizer()
 {
 	auto hr{ S_OK };
@@ -300,15 +302,19 @@ HRESULT RenderSystem_DX::CreateRasterizer()
 	return hr;
 }
 
+/// <summary>
+/// Creates blend states
+/// </summary>
+/// <returns>HRESULT status code</returns>
 HRESULT RenderSystem_DX::CreateBlend()
 {
 	return E_NOTIMPL;
 }
 
 /// <summary>
-/// 
+/// Creates sampler state
 /// </summary>
-/// <returns></returns>
+/// <returns>HRESULT status code</returns>
 HRESULT RenderSystem_DX::CreateSampler()
 {
 	auto hr{ S_OK };
@@ -327,7 +333,7 @@ HRESULT RenderSystem_DX::CreateSampler()
 }
 
 /// <summary>
-/// 
+/// Creates viewport
 /// </summary>
 void RenderSystem_DX::CreateViewport() const
 {
@@ -342,6 +348,10 @@ void RenderSystem_DX::CreateViewport() const
 	mContext->RSSetViewports(1, &vp);
 }
 
+/// <summary>
+/// Creates constant buffers
+/// </summary>
+/// <returns>HRESULT status code</returns>
 HRESULT RenderSystem_DX::CreateConstantBuffers()
 {
 	auto hr = S_OK;
@@ -364,16 +374,16 @@ HRESULT RenderSystem_DX::CreateConstantBuffers()
 }
 
 /// <summary>
-/// 
+/// Cleans up system resources used by directx   IS THIS EVEN NEEDED???
 /// </summary>
 void RenderSystem_DX::Cleanup()
 {
 }
 
 /// <summary>
-/// 
+/// Assigns entity to system if the entities mask matches the system mask
 /// </summary>
-/// <param name="pEntity"></param>
+/// <param name="pEntity">Entity to be assigned</param>
 void RenderSystem_DX::AssignEntity(const Entity & pEntity)
 {
 	//Checks if entity mask matches the renderable mask
@@ -455,7 +465,8 @@ void RenderSystem_DX::ReAssignEntity(const Entity & pEntity)
 }
 
 /// <summary>
-/// 
+/// Systems process function, core logic of system
+/// Renders every renderable entity, as well as updating all lighting and camera data
 /// </summary>
 void RenderSystem_DX::Process()
 {
@@ -477,7 +488,7 @@ void RenderSystem_DX::Process()
 			//LoadTexture(entity);
 			LoadShaders(entity);
 
-			//world
+			//Update constant buffer with world matrix and object colour
 			mCB.mWorld = XMFLOAT4X4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(entity.mID)->mTransform)));
 			mCB.mColour = XMFLOAT4(reinterpret_cast<float*>(&mEcsManager->ColourComp(entity.mID)->Colour));
 			mContext->UpdateSubresource(mConstantBuffer.Get(), 0, nullptr, &mCB, 0, 0);
@@ -486,7 +497,6 @@ void RenderSystem_DX::Process()
 			//mContext->OMSetDepthStencilState(NULL, 1);
 			mContext->RSSetState(mDefaultRasterizerState.Get());
 
-			//mContext->DrawIndexed(mEcsManager->GeometryComp(entity.mID)->)
 			geometry->Draw(this);
 		}
 	}
@@ -494,22 +504,27 @@ void RenderSystem_DX::Process()
 	SwapBuffers();
 }
 
-
+/// <summary>
+/// Clears screen to cornflower blue background
+/// </summary>
 void RenderSystem_DX::ClearView() const
 {
 	mContext->ClearRenderTargetView(mRenderTargetView.Get(), DirectX::Colors::CornflowerBlue);
 	mContext->ClearDepthStencilView(mDepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
+/// <summary>
+/// Swaps buffers in swap chain
+/// </summary>
 void RenderSystem_DX::SwapBuffers() const
 {
 	mSwapChain->Present(1, 0);
 }
 
 /// <summary>
-/// Sets the given entities geometry buffers as the active buffers (does not create buffers that do not exist)
+/// Loads the geometry for the given entity into a VBO object 
 /// </summary>
-/// <param name="pEntity"></param>
+/// <param name="pEntity">Entity to load geometry for</param>
 const VBO * const RenderSystem_DX::LoadGeometry(const Entity& pEntity) const
 {
 	const auto geometry = mResourceManager->LoadGeometry(this, mEcsManager->GeometryComp(pEntity.mID)->mFilename);
@@ -517,12 +532,20 @@ const VBO * const RenderSystem_DX::LoadGeometry(const Entity& pEntity) const
 	return geometry;
 }
 
+/// <summary>
+/// Loads the shader for the given entity into a shader object
+/// </summary>
+/// <param name="pEntity">Entity to load shader for</param>
 void RenderSystem_DX::LoadShaders(const Entity & pEntity) const
 {
 	const auto shader = mResourceManager->LoadShader(this, mEcsManager->ShaderComp(pEntity.mID)->mFilename);
 	shader->Load(this);
 }
 
+/// <summary>
+/// Loads the texture for the given entity into a texture object
+/// </summary>
+/// <param name="pEntity">Entity to load texture for</param>
 void RenderSystem_DX::LoadTexture(const Entity & pEntity) const
 {
 	//Loads diffuse texture from texture component
@@ -547,9 +570,12 @@ void RenderSystem_DX::LoadTexture(const Entity & pEntity) const
 	}
 }
 
+/// <summary>
+/// Sets the view and projection matrices in the constant buffer
+/// </summary>
 void RenderSystem_DX::SetViewProj()
 {
-	//view
+	//Calculates the view matrix and sets it in the constant buffer
 	const XMFLOAT4 position(reinterpret_cast<float*>(&(mEcsManager->TransformComp(mActiveCamera->mID)->mTranslation)));
 	mCB.mCameraPosition = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(mActiveCamera->mID)->mTranslation)));
 	const XMFLOAT4 lookAt(reinterpret_cast<float*>(&(mEcsManager->CameraComp(mActiveCamera->mID)->mLookAt)));
@@ -561,14 +587,18 @@ void RenderSystem_DX::SetViewProj()
 
 	XMStoreFloat4x4(&mCB.mView, XMMatrixTranspose(XMMatrixLookAtLH(posVec, lookAtVec, upVec)));
 
-	//projection
+	//Calculates the projection matrix and sets it in the constant buffer
 	const float fov = XMConvertToRadians(mEcsManager->CameraComp(mActiveCamera->mID)->mFOV);
 	const float aspectRatio = static_cast<float>(mWidth) / static_cast<float>(mHeight);
 	const float nearClip = mEcsManager->CameraComp(mActiveCamera->mID)->mNear;
 	const float farClip = mEcsManager->CameraComp(mActiveCamera->mID)->mFar;
+
 	XMStoreFloat4x4(&mCB.mProj, XMMatrixTranspose(XMMatrixPerspectiveFovLH(fov, aspectRatio, nearClip, farClip)));
 }
 
+/// <summary>
+/// Sets the light position and colour in the constant buffer
+/// </summary>
 void RenderSystem_DX::SetLights()
 {
 	mCB.mLightPosition = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(mLights[0].mID)->mTranslation)));

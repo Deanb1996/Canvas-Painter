@@ -14,7 +14,6 @@ private:
 
 	//Entity IDs
 	int mCameraID;
-	int mLightID;
 	int mRayID;
 
 	//Camera
@@ -26,9 +25,12 @@ private:
 
 	MathsHelper::Vector4 mPlayerColour;
 
+	//On load functions
 	void CreateCamera();
 	void CreateLight();
 	void CreateCanvas();
+
+	void CameraControls();
 public:
 	//Structors
 	GameScene();

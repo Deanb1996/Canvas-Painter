@@ -1,14 +1,14 @@
 #include "InputManager.h"
 
 /// <summary>
-/// 
+/// Default constructor
 /// </summary>
 InputManager::InputManager()
 {
 }
 
 /// <summary>
-/// 
+/// Default destructor
 /// </summary>
 InputManager::~InputManager()
 {
@@ -16,10 +16,10 @@ InputManager::~InputManager()
 
 
 /// <summary>
-/// 
+/// Checks to see if a given button was pushed this frame
 /// </summary>
-/// <param name="pButton"></param>
-/// <returns></returns>
+/// <param name="pButton">Given button to check</param>
+/// <returns>True or false representing if button was pushed this frame or not</returns>
 bool InputManager::KeyDown(const KEYS & pButton)
 {
 	auto key = std::find_if(mKeyStates.begin(), mKeyStates.end(), [&](const std::pair<KEYS, KEY_STATE>& key)
@@ -30,10 +30,10 @@ bool InputManager::KeyDown(const KEYS & pButton)
 }
 
 /// <summary>
-/// 
+/// Checks to see if a given button was released this frame
 /// </summary>
-/// <param name="pButton"></param>
-/// <returns></returns>
+/// <param name="pButton">Given button to check</param>
+/// <returns>True or false representing if button was released this frame or not</returns>
 bool InputManager::KeyUp(const KEYS & pButton)
 {
 	auto key = std::find_if(mKeyStates.begin(), mKeyStates.end(), [&](const std::pair<KEYS, KEY_STATE>& key)
@@ -42,12 +42,11 @@ bool InputManager::KeyUp(const KEYS & pButton)
 	});
 	return key != mKeyStates.end();
 }
-
 /// <summary>
-/// 
+/// Checks to see if a given button was released this frame
 /// </summary>
-/// <param name="pButton"></param>
-/// <returns></returns>
+/// <param name="pButton">Given button to check</param>
+/// <returns>True or false representing if button was released this frame or not</returns>
 bool InputManager::KeyHeld(const KEYS & pButton)
 {
 	auto key = std::find_if(mKeyStates.begin(), mKeyStates.end(), [&](const std::pair<KEYS, KEY_STATE>& key)
@@ -58,32 +57,31 @@ bool InputManager::KeyHeld(const KEYS & pButton)
 }
 
 /// <summary>
-/// 
+/// Gets the value of the mouses scroll wheel this frame
 /// </summary>
-/// <returns></returns>
+/// <returns>Value of the mouses scroll wheel</returns>
 const float & InputManager::ScrollWheel() const
 {
 	return mMouseWheelValue;
 }
 
 /// <summary>
-/// 
+/// Gets the position of the mouse this frame
 /// </summary>
-/// <returns></returns>
+/// <returns>Position of the mouse</returns>
 const MathsHelper::Vector2 & InputManager::MousePos() const
 {
 	return mMousePosition;
 }
 
 /// <summary>
-/// 
+/// Converts the mouses position from screen coords to world coords and calculates the direction from the eye position
 /// </summary>
-/// <param name="pNear"></param>
-/// <param name="pFar"></param>
-/// <param name="pFOV"></param>
-/// <param name="pWindowWidth"></param>
-/// <param name="pWindowHeight"></param>
-/// <param name="mViewInverse"></param>
+/// <param name="pViewInverse">Inverse view matrix</param>
+/// <param name="pProjInverse">Inverse projection matrix</param>
+/// <param name="pWidth">Width of window</param>
+/// <param name="pHeight">Height of window</param>
+/// <returns>Direction vector containing the direction of the world mouse pos from the eye position</returns>
 const MathsHelper::Vector4 InputManager::RayFromMouse(const MathsHelper::Matrix4& pViewInverse, const MathsHelper::Matrix4& pProjInverse, const float& pWidth, const float& pHeight)
 {
 	//Normalised device coords
@@ -109,7 +107,7 @@ const MathsHelper::Vector4 InputManager::RayFromMouse(const MathsHelper::Matrix4
 }
 
 /// <summary>
-/// 
+/// Updates the input handling every frame
 /// </summary>
 void InputManager::Update()
 {

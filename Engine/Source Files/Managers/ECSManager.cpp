@@ -216,10 +216,10 @@ void ECSManager::ProcessSystems()
 }
 
 /// <summary>
-/// 
+/// Adds an AI component to the entity with a given ID
 /// </summary>
-/// <param name="pAI"></param>
-/// <param name="pEntityID"></param>
+/// <param name="pAI">AI component to add</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddAIComp(const AI & pAI, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -229,10 +229,10 @@ void ECSManager::AddAIComp(const AI & pAI, const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Adds an Audio component to the entity with a given ID
 /// </summary>
-/// <param name="pAudio"></param>
-/// <param name="pEntityID"></param>
+/// <param name="pAudio">Audio component to add</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddAudioComp(const Audio & pAudio, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -242,10 +242,10 @@ void ECSManager::AddAudioComp(const Audio & pAudio, const int pEntityID)
 }
 
 /// <summary>
-/// Adds a BoxCollider component to the entity with a given name
+/// Adds a Box Collider component to the entity with a given ID
 /// </summary>
-/// <param name="pBoxCollider">BoxCollider component to add</param>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pBoxCollider">Box Collider component to add</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddBoxColliderComp(const BoxCollider & pBoxCollider, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -255,10 +255,10 @@ void ECSManager::AddBoxColliderComp(const BoxCollider & pBoxCollider, const int 
 }
 
 /// <summary>
-/// Adds a Camera component to the entity with a given name
+/// Adds a Camera component to the entity with a given ID
 /// </summary>
 /// <param name="pCamera">Camera component to add</param>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddCameraComp(const Camera & pCamera, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -268,10 +268,10 @@ void ECSManager::AddCameraComp(const Camera & pCamera, const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Adds a Colour component to the entity with a given ID
 /// </summary>
-/// <param name="pColour"></param>
-/// <param name="pEntityID"></param>
+/// <param name="pColour">Colour component to add</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddColourComp(const Colour & pColour, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -281,10 +281,10 @@ void ECSManager::AddColourComp(const Colour & pColour, const int pEntityID)
 }
 
 /// <summary>
-/// Adds a Geometry component to the entity with a given name
+/// Adds a Geometry component to the entity with a given ID
 /// </summary>
 /// <param name="pGeometry">Geometry component to add</param>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddGeometryComp(const Geometry & pGeometry, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -294,10 +294,10 @@ void ECSManager::AddGeometryComp(const Geometry & pGeometry, const int pEntityID
 }
 
 /// <summary>
-/// Adds a Light component to the entity with a given name
+/// Adds a Light component to the entity with a given ID
 /// </summary>
 /// <param name="pLight">Light component to add</param>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddLightComp(const Light & pLight, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -307,10 +307,10 @@ void ECSManager::AddLightComp(const Light & pLight, const int pEntityID)
 }
 
 /// <summary>
-/// Adds a Ray component to the entity with a given name
+/// Adds a Ray component to the entity with a given ID
 /// </summary>
 /// <param name="pRay">Ray component to add</param>
-/// <param name="pEntityID">Given id of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddRayComp(const Ray & pRay, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -320,10 +320,10 @@ void ECSManager::AddRayComp(const Ray & pRay, const int pEntityID)
 }
 
 /// <summary>
-/// Adds a Shader component to the entity with a given name
+/// Adds a Shader component to the entity with a given ID
 /// </summary>
 /// <param name="pShader">Shader component to add</param>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddShaderComp(const Shader & pShader, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -333,10 +333,10 @@ void ECSManager::AddShaderComp(const Shader & pShader, const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Adds a Sphere Collider component to the entity with a given ID
 /// </summary>
-/// <param name="pSphereCollider"></param>
-/// <param name="pEntityID"></param>
+/// <param name="pSphereCollider">Sphere Collider component to add</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddSphereColliderComp(const SphereCollider & pSphereCollider, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -346,10 +346,10 @@ void ECSManager::AddSphereColliderComp(const SphereCollider & pSphereCollider, c
 }
 
 /// <summary>
-/// Adds a Texture component to the entity with a given name
+/// Adds a Texture component to the entity with a given ID
 /// </summary>
 /// <param name="pTexture">Texture component to add</param>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddTextureComp(const Texture & pTexture, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -359,10 +359,10 @@ void ECSManager::AddTextureComp(const Texture & pTexture, const int pEntityID)
 }
 
 /// <summary>
-/// Adds a Transform component to the entity with a given name
+/// Adds a Transform component to the entity with a given ID
 /// </summary>
 /// <param name="pTransform">Transform component to add</param>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddTransformComp(const Transform & pTransform, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -372,10 +372,10 @@ void ECSManager::AddTransformComp(const Transform & pTransform, const int pEntit
 }
 
 /// <summary>
-/// 
+/// Adds a Velocity component to the entity with a given ID
 /// </summary>
-/// <param name="pVelocity"></param>
-/// <param name="pEntityID"></param>
+/// <param name="pVelocity">Velocity component to add</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::AddVelocityComp(const Velocity & pVelocity, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -385,9 +385,9 @@ void ECSManager::AddVelocityComp(const Velocity & pVelocity, const int pEntityID
 }
 
 /// <summary>
-/// 
+/// Removes an AI component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityID"></param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveAIComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -396,9 +396,9 @@ void ECSManager::RemoveAIComp(const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Removes an Audio component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityID"></param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveAudioComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -407,9 +407,9 @@ void ECSManager::RemoveAudioComp(const int pEntityID)
 }
 
 /// <summary>
-/// Removes a BoxCollider component from the entity with a given name
+/// Removes a BoxCollider component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveBoxColliderComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -419,9 +419,9 @@ void ECSManager::RemoveBoxColliderComp(const int pEntityID)
 
 
 /// <summary>
-/// Removes a Camera component from the entity with a given name
+/// Removes a Camera component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveCameraComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -430,9 +430,9 @@ void ECSManager::RemoveCameraComp(const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Removes a Colour component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityID"></param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveColourComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -442,9 +442,9 @@ void ECSManager::RemoveColourComp(const int pEntityID)
 
 
 /// <summary>
-/// Removes a Geometry component from the entity with a given name
+/// Removes a Geometry component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveGeometryComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -454,9 +454,9 @@ void ECSManager::RemoveGeometryComp(const int pEntityID)
 
 
 /// <summary>
-/// Removes a light component from the entity with a given name
+/// Removes a Light component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveLightComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -465,9 +465,9 @@ void ECSManager::RemoveLightComp(const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Removes a Ray component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityID"></param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveRayComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -477,9 +477,9 @@ void ECSManager::RemoveRayComp(const int pEntityID)
 
 
 /// <summary>
-/// Removes a Shader component from the entity with a given name
+/// Removes a Shader component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveShaderComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -488,9 +488,9 @@ void ECSManager::RemoveShaderComp(const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Removes a Sphere Collider component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityID"></param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveSphereColliderComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -499,9 +499,9 @@ void ECSManager::RemoveSphereColliderComp(const int pEntityID)
 }
 
 /// <summary>
-/// Removes a Texture component from the entity with a given name
+/// Removes a Texture component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveTextureComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -511,9 +511,9 @@ void ECSManager::RemoveTextureComp(const int pEntityID)
 
 
 /// <summary>
-/// Removes a Transform component from the entity with a given name
+/// Removes a Transform component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityName">Given name of the entity</param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveTransformComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -522,9 +522,9 @@ void ECSManager::RemoveTransformComp(const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Removes a Velocity component from the entity with a given ID
 /// </summary>
-/// <param name="pEntityID"></param>
+/// <param name="pEntityID">Given ID of the entity</param>
 void ECSManager::RemoveVelocityComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
@@ -533,20 +533,20 @@ void ECSManager::RemoveVelocityComp(const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Returns a modifiable handle to the AI component associated with the given entity ID
 /// </summary>
-/// <param name="pEntityID"></param>
-/// <returns></returns>
+/// <param name="pEntityID">Given entity ID</param>
+/// <returns>Modifiable handle to AI component</returns>
 AI * const ECSManager::AIComp(const int pEntityID)
 {
 	return &mAIs[pEntityID];
 }
 
 /// <summary>
-/// 
+/// Returns a modifiable handle to the Audio component associated with the given entity ID
 /// </summary>
-/// <param name="pEntityID"></param>
-/// <returns></returns>
+/// <param name="pEntityID">Given entity ID</param>
+/// <returns>Modifiable handle to Audio component</returns>
 Audio * const ECSManager::AudioComp(const int pEntityID)
 {
 	return &mAudios[pEntityID];
@@ -573,10 +573,10 @@ Camera * const ECSManager::CameraComp(const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Returns a modifiable handle to the Colour component associated with the given entity ID
 /// </summary>
-/// <param name="pEntityID"></param>
-/// <returns></returns>
+/// <param name="pEntityID">Given entity ID</param>
+/// <returns>Modifiable handle to Colour component</returns>
 Colour * const ECSManager::ColourComp(const int pEntityID)
 {
 	return &mColours[pEntityID];
@@ -613,10 +613,10 @@ Light * const ECSManager::LightComp(const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Returns a modifiable handle to the Ray component associated with the given entity ID
 /// </summary>
-/// <param name="pEntityID"></param>
-/// <returns></returns>
+/// <param name="pEntityID">Given entity ID</param>
+/// <returns>Modifiable handle to Ray component</returns>
 Ray * const ECSManager::RayComp(const int pEntityID)
 {
 	return &mRays[pEntityID];
@@ -633,10 +633,10 @@ Shader * const ECSManager::ShaderComp(const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Returns a modifiable handle to the Sphere Collider component associated with the given entity ID
 /// </summary>
-/// <param name="pEntityID"></param>
-/// <returns></returns>
+/// <param name="pEntityID">Given entity ID</param>
+/// <returns>Modifiable handle to Sphere Collider component</returns>
 SphereCollider * const ECSManager::SphereColliderComp(const int pEntityID)
 {
 	return &mSphereColliders[pEntityID];
@@ -663,10 +663,10 @@ Transform * const ECSManager::TransformComp(const int pEntityID)
 }
 
 /// <summary>
-/// 
+/// Returns a modifiable handle to the Velocity component associated with the given entity ID
 /// </summary>
-/// <param name="pEntityID"></param>
-/// <returns></returns>
+/// <param name="pEntityID">Given entity ID</param>
+/// <returns>Modifiable handle to Velocity component</returns>
 Velocity * const ECSManager::VelocityComp(const int pEntityID)
 {
 	return &mVelocities[pEntityID];

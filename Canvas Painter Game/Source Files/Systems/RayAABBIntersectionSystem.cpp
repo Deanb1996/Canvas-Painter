@@ -1,7 +1,9 @@
 #include "RayAABBIntersectionSystem.h"
 
 /// <summary>
-/// 
+/// Constructor
+/// Sets component mask to contain both a transform component and box collider component
+/// Resizes entity vector to 200000 entities
 /// </summary>
 RayAABBIntersectionSystem::RayAABBIntersectionSystem() : ISystem(ComponentType::COMPONENT_TRANSFORM | ComponentType::COMPONENT_BOXCOLLIDER)
 {
@@ -9,16 +11,16 @@ RayAABBIntersectionSystem::RayAABBIntersectionSystem() : ISystem(ComponentType::
 }
 
 /// <summary>
-/// 
+/// Default destructor
 /// </summary>
 RayAABBIntersectionSystem::~RayAABBIntersectionSystem()
 {
 }
 
 /// <summary>
-/// 
+/// Assigns entity to system if the entities mask matches the system mask
 /// </summary>
-/// <param name="pEntity"></param>
+/// <param name="pEntity">Entity to be assigned</param>
 void RayAABBIntersectionSystem::AssignEntity(const Entity & pEntity)
 {
 	//Checks if entity mask matches the box collider mask
@@ -47,9 +49,9 @@ void RayAABBIntersectionSystem::AssignEntity(const Entity & pEntity)
 }
 
 /// <summary>
-/// 
+/// Re-assigns entity to system when component is removed from entity
 /// </summary>
-/// <param name="pEntity"></param>
+/// <param name="pEntity">Entity to re-assign</param>
 void RayAABBIntersectionSystem::ReAssignEntity(const Entity & pEntity)
 {
 	//Checks if entity mask matches the box collider mask
@@ -88,7 +90,8 @@ void RayAABBIntersectionSystem::ReAssignEntity(const Entity & pEntity)
 }
 
 /// <summary>
-/// 
+/// Systems process function, core logic of system
+/// Calculates the ray AABB intersection between every ray and AABB
 /// </summary>
 void RayAABBIntersectionSystem::Process()
 {
@@ -103,10 +106,10 @@ void RayAABBIntersectionSystem::Process()
 		{
 			if (box.mID != -1)
 			{
-				float minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0;
+				float minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0, highestMin = 0, lowestMax = 0;
 				BoxCollider boxComp = *mEcsManager->BoxColliderComp(box.mID);
 
-				//Swap min and max of Y around depending on if the ray is travelling positive or negative direction
+				//Swap min and max of X around depending on if the ray is travelling positive or negative direction
 				if (inverseRayDir.X >= 0)
 				{
 					minX = (boxComp.mMinBounds.X - rayComp.mOrigin.X) * inverseRayDir.X;
@@ -130,7 +133,7 @@ void RayAABBIntersectionSystem::Process()
 					maxY = (boxComp.mMinBounds.Y - rayComp.mOrigin.Y) * inverseRayDir.Y;
 				}
 
-				//If min is greater than max, ray did not intersect and break
+				//If min is greater than max, ray did not intersect then continue
 				if ((minX > maxY) || (minY > maxX))
 				{
 					continue;
@@ -139,11 +142,11 @@ void RayAABBIntersectionSystem::Process()
 				//Find lowest max and highest min
 				if (minY > minX)
 				{
-					minX = minY;
+					highestMin = minY;
 				}
 				if (maxY < maxX)
 				{
-					maxX = maxY;
+					lowestMax = maxY;
 				}
 
 
@@ -159,17 +162,29 @@ void RayAABBIntersectionSystem::Process()
 					maxZ = (boxComp.mMinBounds.Z - rayComp.mOrigin.Z) * inverseRayDir.Z;
 				}
 
-				//If min is greater than max, ray did not intersect and break
-				//Else set rays intersected with property to the id of this box
+				//If min is greater than max, ray did not intersect then continue
 				if ((minX > maxZ) || (minZ > maxX))
 				{
 					continue;
 				}
-				else
+
+				//Set rays intersected with property to the id of this box
+				mEcsManager->RayComp(ray.mID)->mIntersectedWith = box.mID;
+
+				//Find lowest max and highest min
+				if (minZ > minX)
 				{
-					mEcsManager->RayComp(ray.mID)->mIntersectedWith = box.mID;
-					break;
+					highestMin = minZ;
 				}
+				if (maxZ < maxX)
+				{
+					lowestMax = maxZ;
+				}
+
+				//Set rays intersection point property to the point of intersection
+				MathsHelper::Vector3 intersection(rayComp.mOrigin + rayComp.mDirection * highestMin);
+				mEcsManager->RayComp(ray.mID)->mIntersectionPoint = intersection;
+				break;
 			}
 		}
 	}

@@ -35,16 +35,16 @@ void GameScene::CreateCamera()
 void GameScene::CreateLight()
 {
 	//Create light entity
-	mLightID = mEcsManager->CreateEntity();
+	int lightID = mEcsManager->CreateEntity();
 
 	//Create lights transform component
 	Transform transform;
 	transform.mTranslation = Vector4(0.0f, 10.0f, -5.0f, 1.0f);
-	mEcsManager->AddTransformComp(transform, mLightID);
+	mEcsManager->AddTransformComp(transform, lightID);
 
 	//Create lights light component
 	Light light{ Vector4(1.0f, 1.0f, 1.0f, 1.0f) };
-	mEcsManager->AddLightComp(light, mLightID);
+	mEcsManager->AddLightComp(light, lightID);
 }
 
 /// <summary>
@@ -96,6 +96,49 @@ void GameScene::CreateCanvas()
 /// <summary>
 /// 
 /// </summary>
+void GameScene::CameraControls()
+{
+	//Forwards
+	if (mInputManager->KeyHeld(KEYS::KEY_W))
+	{
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 0, 1, 0) * mSceneManager->DeltaTime();
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, 0, 1, 0)  * mSceneManager->DeltaTime();
+	}
+	//Left
+	if (mInputManager->KeyHeld(KEYS::KEY_A))
+	{
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(-1, 0, 0, 0) * mSceneManager->DeltaTime();
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(-1, 0, 0, 0)  * mSceneManager->DeltaTime();
+	}
+	//Backwards
+	if (mInputManager->KeyHeld(KEYS::KEY_S))
+	{
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 0, -1, 0) * mSceneManager->DeltaTime();
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, 0, -1, 0)  * mSceneManager->DeltaTime();
+	}
+	//Right
+	if (mInputManager->KeyHeld(KEYS::KEY_D))
+	{
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(1, 0, 0, 0)  * mSceneManager->DeltaTime();
+	}
+	//Up
+	if (mInputManager->KeyHeld(KEYS::KEY_SPACE))
+	{
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 1, 0, 0) * mSceneManager->DeltaTime();
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, 1, 0, 0)  * mSceneManager->DeltaTime();
+	}
+	//Down
+	if (mInputManager->KeyHeld(KEYS::KEY_LEFT_CTRL))
+	{
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, -1, 0, 0) * mSceneManager->DeltaTime();
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, -1, 0, 0)  * mSceneManager->DeltaTime();
+	}
+}
+
+/// <summary>
+/// 
+/// </summary>
 GameScene::GameScene()
 	:mRayID(-1)
 {
@@ -137,12 +180,9 @@ void GameScene::Update()
 		mRayID = -1;
 	}
 
-	if (mInputManager->KeyHeld(KEYS::KEY_D))
-	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
-		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(1, 0, 0, 0)  * mSceneManager->DeltaTime();
-	}
+	CameraControls();
 
+	//Cast ray on mouse click
 	if (mInputManager->KeyHeld(KEYS::MOUSE_BUTTON_LEFT))
 	{
 		//Converts mouse position into world co-ords for mouse picking
@@ -152,7 +192,7 @@ void GameScene::Update()
 		mRayID = mEcsManager->CreateEntity();
 
 		//Creates rays ray component
-		Ray rayComp{ mEcsManager->TransformComp(mCameraID)->mTranslation.XYZ(), ray.XYZ(), -1 };
+		Ray rayComp{ mEcsManager->TransformComp(mCameraID)->mTranslation.XYZ(), ray.XYZ(), MathsHelper::Vector3(), -1 };
 		mEcsManager->AddRayComp(rayComp, mRayID);
 	}
 }

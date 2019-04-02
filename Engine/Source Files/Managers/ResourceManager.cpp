@@ -3,11 +3,27 @@
 
 using namespace std;
 
-//TODO: Test singleton pattern works
+/// <summary>
+/// Default constructor
+/// </summary>
+ResourceManager::ResourceManager() 
+{
+}
 
-ResourceManager::ResourceManager() = default;
-ResourceManager::~ResourceManager() = default;
+/// <summary>
+/// Default destructor
+/// </summary>
+ResourceManager::~ResourceManager() 
+{
+}
 
+/// <summary>
+/// If texture is not already loaded, loads and stores texture file into texture object
+/// If texture is already loaded, retrieves the already created texture object
+/// </summary>
+/// <param name="pRenderer">The render system used for creation of texture object</param>
+/// <param name="pFilename">Filename of the texture</param>
+/// <returns>Handle to the texture object associated with the file name</returns>
 const TextureObject * const ResourceManager::LoadTexture(const RenderSystem * const pRenderer, const std::wstring & pFilename)
 {
 	auto hr{ S_OK };
@@ -34,6 +50,13 @@ const TextureObject * const ResourceManager::LoadTexture(const RenderSystem * co
 	return mTextures.back().second;
 }
 
+/// <summary>
+/// If geometry is not already loaded, loads and stores geometry file into geometry object
+/// If geometry is already loaded, retrieves the already created geometry object
+/// </summary>
+/// <param name="pRenderer">The render system used for the creation of the geometry object</param>
+/// <param name="pFilename">Filename of the geometry</param>
+/// <returns></returns>
 const VBO * const ResourceManager::LoadGeometry(const RenderSystem * const pRenderer, const std::wstring& pFilename)
 {
 	auto hr{ S_OK };
