@@ -3,7 +3,7 @@
 
 namespace MathsHelper
 {
-	const double PI = 3.141592653589793238463;
+	const float PI = 3.141592653589793238463f;
 
 	/// <summary>
 	/// Creates an identity matrix
@@ -463,7 +463,7 @@ namespace MathsHelper
 	/// <returns>Returns given angle in radians</returns>
 	static float DegreesToRadians(const float& pAngle)
 	{
-		return (pAngle * PI) / 180;
+		return (pAngle * PI) / 180.0f;
 	}
 
 	/// <summary>
@@ -472,6 +472,6 @@ namespace MathsHelper
 	/// <returns>Returns given angle in degrees</returns>
 	static float RadiansToDegrees(const float& pAngle)
 	{
-		return (pAngle * 180) / PI;
+		return (pAngle * 180.0f) / PI;
 	}
 }

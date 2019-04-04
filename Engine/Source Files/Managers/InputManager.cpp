@@ -60,7 +60,7 @@ bool InputManager::KeyHeld(const KEYS & pButton)
 /// Gets the value of the mouses scroll wheel this frame
 /// </summary>
 /// <returns>Value of the mouses scroll wheel</returns>
-const float & InputManager::ScrollWheel() const
+const int InputManager::ScrollWheel() const
 {
 	return mMouseWheelValue;
 }

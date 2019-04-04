@@ -44,8 +44,8 @@ class InputManager
 protected:
 	//Mouse and key states
 	std::vector<std::pair<KEYS, KEY_STATE>> mKeyStates;
-	MathsHelper::Vector2 mMousePosition; //Make vector 2 struct for this
-	float mMouseWheelValue;
+	MathsHelper::Vector2 mMousePosition;
+	int mMouseWheelValue;
 
 	virtual void KeyboardInput() = 0;
 	virtual void SinglePressKeys() = 0;
@@ -79,7 +79,7 @@ public:
     bool KeyHeld(const KEYS& pButton);
 
 	//Mouse
-	const float& ScrollWheel() const;
+	const int ScrollWheel() const;
 	const MathsHelper::Vector2& MousePos() const;
 	const MathsHelper::Vector4 RayFromMouse(const MathsHelper::Matrix4& pViewInverse, const MathsHelper::Matrix4& pProjInverse, const float& pWidth, const float& pHeight);
 };

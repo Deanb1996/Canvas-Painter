@@ -27,13 +27,13 @@ HRESULT VBO_DX::Create(const RenderSystem * pRenderer, const std::wstring& pFile
 	auto hr{ S_OK };
 
 	auto geometry = ObjLoader::LoadObject(pFilename);
-	mIndexCount = geometry.first.size();
+	mIndexCount = static_cast<int>(geometry.first.size());
 
 	//Create vertex buffer
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = geometry.second.size() * sizeof(Vertex);
+	bd.ByteWidth = static_cast<UINT>(geometry.first.size() * sizeof(Vertex));
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	D3D11_SUBRESOURCE_DATA initData;
@@ -45,7 +45,7 @@ HRESULT VBO_DX::Create(const RenderSystem * pRenderer, const std::wstring& pFile
 
 	//Create index buffer
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = geometry.first.size() * sizeof(unsigned);
+	bd.ByteWidth = static_cast<UINT>(geometry.first.size() * sizeof(unsigned));
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	initData.pSysMem = &(geometry.first[0]);

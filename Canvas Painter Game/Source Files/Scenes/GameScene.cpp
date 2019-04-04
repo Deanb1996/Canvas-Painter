@@ -64,7 +64,7 @@ void GameScene::CreateCanvas()
 
 				//Create cubes transform component
 				Transform transform;
-				transform.mTranslation = Vector4(i / 10, j / 10, k / 10, 1.0f);
+				transform.mTranslation = Vector4(i / 5, j / 5, k / 5, 1.0f);
 				transform.mTransform *= TranslationMatrix(transform.mTranslation) * ScaleMatrix(Vector4(0.1f, 0.1f, 0.1f, 1.0f));// *RotationMatrixX(DegreesToRadians(45)) * ScaleMatrix(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 				mEcsManager->AddTransformComp(transform, cubeID);
 

@@ -28,7 +28,7 @@ void SceneManager::Update()
 	}
 	mAverageDeltaTime = mAverageDeltaTime / mLast50Frames.size();
 
-	mFps = 1 / mAverageDeltaTime;
+	mFps = static_cast<int>(1 / mAverageDeltaTime);
 
 	mPreviousTime = mCurrentTime;
 }
