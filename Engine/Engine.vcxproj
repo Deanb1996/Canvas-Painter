@@ -39,6 +39,7 @@
     <ClInclude Include="Header Files\DataStructs\CullState.h" />
     <ClInclude Include="Header Files\DataStructs\DepthState.h" />
     <ClInclude Include="Header Files\DataStructs\Entity.h" />
+    <ClInclude Include="Header Files\DataStructs\InstanceData.h" />
     <ClInclude Include="Header Files\DataStructs\Vertex.h" />
     <ClInclude Include="Header Files\HelperClasses\ObjLoader.h" />
     <ClInclude Include="Header Files\HelperClasses\Scene.h" />
@@ -68,6 +69,7 @@
     <ClCompile Include="Source Files\HelperClasses\ObjLoader.cpp" />
     <ClCompile Include="Source Files\HelperClasses\ShaderObject_DX.cpp" />
     <ClCompile Include="Source Files\HelperClasses\TextureObject_DX.cpp" />
+    <ClCompile Include="Source Files\HelperClasses\VBO.cpp" />
     <ClCompile Include="Source Files\HelperClasses\VBO_DX.cpp" />
     <ClCompile Include="Source Files\Managers\ECSManager.cpp" />
     <ClCompile Include="Source Files\Managers\InputManager.cpp" />
@@ -213,6 +215,7 @@
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>"Header Files";"Header Files\MathsHelper";"Header Files\Systems";"Header Files\HelperClasses";"Header Files\Managers";"Header Files\Components";"Header Files\DataStructs";</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:twoPhase-</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

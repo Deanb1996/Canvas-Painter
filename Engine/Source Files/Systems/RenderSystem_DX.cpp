@@ -397,7 +397,26 @@ void RenderSystem_DX::AssignEntity(const Entity & pEntity)
 	//Checks if entity mask matches the renderable mask
 	if ((pEntity.mComponentMask & mMask) == mMask)
 	{
-		//If the entity matches renderable mask then update entry in systems entity list
+		//If entity doesn't already exist in the system, load the geometry into the resource manager
+		if (mEntities[pEntity.mID].mID != pEntity.mID)
+		{
+			std::wstring filename = mEcsManager->GeometryComp(pEntity.mID)->mFilename;
+
+			//See if renderer has already retrieved a handle to this geometries VBO from the resource manager and if not retrieve one and store it
+			auto it = find_if(mGeometries.begin(), mGeometries.end(), [&](const std::pair<std::wstring, VBO*> geometry) {return geometry.first == filename; });
+			if (it == mGeometries.end())
+			{
+				auto geometry = LoadGeometry(pEntity);
+				mGeometries.emplace_back(make_pair(filename, geometry));
+			}
+			//Else add another instance of this geometry to the VBO
+			else
+			{
+				it->second->AddInstance(pEntity.mID, mEcsManager->TransformComp(pEntity.mID)->mTranslation.XYZ(), mEcsManager->ColourComp(pEntity.mID)->Colour.XYZ());
+			}
+		}
+
+		//Update entry in systems entity list
 		mEntities[pEntity.mID] = pEntity;
 	}
 
@@ -443,6 +462,15 @@ void RenderSystem_DX::ReAssignEntity(const Entity & pEntity)
 	}
 	else
 	{
+		std::wstring filename = mEcsManager->GeometryComp(pEntity.mID)->mFilename;
+
+		//Remove instance of this entities geometry from the VBO
+		auto it = find_if(mGeometries.begin(), mGeometries.end(), [&](const std::pair<std::wstring, VBO*> geometry) {return geometry.first == filename; });
+		if (it == mGeometries.end())
+		{
+			it->second->RemoveInstance(pEntity.mID);
+		}
+
 		//If the mask doesn't match then set ID to -1
 		mEntities[pEntity.mID].mID = -1;
 	}
@@ -492,12 +520,6 @@ void RenderSystem_DX::Process()
 	{
 		if (entity.mID != -1)
 		{
-			//If geometry of entity is not already in the buffers, load entities geometry
-			if (mEcsManager->GeometryComp(entity.mID)->mFilename != mActiveGeometry)
-			{
-				mGeometry = LoadGeometry(entity);
-				mActiveGeometry = mEcsManager->GeometryComp(entity.mID)->mFilename;
-			}
 			//LoadTexture(entity);
 			//If shader of entity is not already in the buffers, load entities shader
 			if (mEcsManager->ShaderComp(entity.mID)->mFilename != mActiveShader)
@@ -508,15 +530,19 @@ void RenderSystem_DX::Process()
 
 			//Update constant buffer with world matrix and object colour
 			mCB.mWorld = XMFLOAT4X4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(entity.mID)->mTransform)));
-			mCB.mColour = XMFLOAT4(reinterpret_cast<float*>(&mEcsManager->ColourComp(entity.mID)->Colour));
 			mContext->UpdateSubresource(mConstantBuffer.Get(), 0, nullptr, &mCB, 0, 0);
 
 			//mContext->OMSetBlendState()
 			//mContext->OMSetDepthStencilState(NULL, 1);
 			mContext->RSSetState(mDefaultRasterizerState.Get());
-
-			mGeometry->Draw(this);
+			break;
 		}
+	}
+
+	for (const auto& geometry : mGeometries)
+	{
+		geometry.second->Load(this);
+		geometry.second->Draw(this);
 	}
 
 	SwapBuffers();
@@ -543,9 +569,9 @@ void RenderSystem_DX::SwapBuffers() const
 /// Loads the geometry for the given entity into a VBO object 
 /// </summary>
 /// <param name="pEntity">Entity to load geometry for</param>
-const VBO * const RenderSystem_DX::LoadGeometry(const Entity& pEntity) const
+VBO * const RenderSystem_DX::LoadGeometry(const Entity& pEntity) const
 {
-	const auto geometry = mResourceManager->LoadGeometry(this, mEcsManager->GeometryComp(pEntity.mID)->mFilename);
+	const auto geometry = mResourceManager->LoadGeometry(this, mEcsManager->GeometryComp(pEntity.mID)->mFilename, pEntity.mID);
 	geometry->Load(this);
 	return geometry;
 }

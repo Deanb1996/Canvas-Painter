@@ -4,7 +4,7 @@
 /// <summary>
 /// Default constructor
 /// </summary>
-VBO_DX::VBO_DX()
+VBO_DX::VBO_DX() : VBO() 
 {
 
 }
@@ -18,7 +18,7 @@ VBO_DX::~VBO_DX()
 }
 
 /// <summary>
-/// Creates the vertex and index buffers by loading in the obj file given a filename
+/// Creates the vertex, instance and index buffers by loading in the obj file given a filename
 /// </summary>
 /// <param name="pRenderer"> the renderer to use to create the buffers with </param>
 /// <param name="pFilename"> the filename of the geometry to load </param>
@@ -41,7 +41,9 @@ HRESULT VBO_DX::Create(const RenderSystem * pRenderer, const std::wstring& pFile
 	initData.pSysMem = &(geometry.second[0]);
 	hr = reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Device()->CreateBuffer(&bd, &initData, mVertices.GetAddressOf());
 	if (FAILED(hr))
+	{
 		return hr;
+	}
 
 	//Create index buffer
 	bd.Usage = D3D11_USAGE_DEFAULT;
@@ -51,31 +53,51 @@ HRESULT VBO_DX::Create(const RenderSystem * pRenderer, const std::wstring& pFile
 	initData.pSysMem = &(geometry.first[0]);
 	hr = reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Device()->CreateBuffer(&bd, &initData, mIndices.GetAddressOf());
 	if (FAILED(hr))
+	{
 		return hr;
+	}
 
 	return hr;
 }
 
 /// <summary>
-/// Loads the vertices and indices of the geometry into vertex and index buffers of the given directX device
+/// Loads the vertices, instances and indices of the geometry into vertex, instance and index buffers of the given directX device
 /// </summary>
 /// <param name="pRenderer">Renderer to retrieve the device from</param>
-void VBO_DX::Load(const RenderSystem* pRenderer) const
+void VBO_DX::Load(const RenderSystem* pRenderer)
 {
 	// Set vertex buffer
-	const UINT stride = sizeof(Vertex);
-	const UINT offset = 0;
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
 	reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Context()->IASetVertexBuffers(0, 1, mVertices.GetAddressOf(), &stride, &offset);
 
 	// Set index buffer
 	reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Context()->IASetIndexBuffer(mIndices.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+	//Create instance buffer
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(bd));
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(InstanceData) * static_cast<UINT>(mInstanceData.size());
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+	D3D11_SUBRESOURCE_DATA initData;
+	ZeroMemory(&initData, sizeof(initData));
+	initData.pSysMem = &(mInstanceData[0]);
+	ID3D11Buffer* instanceBuffer = nullptr;
+	reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Device()->CreateBuffer(&bd, &initData, mInstances.GetAddressOf());
+
+	//Set instance buffer
+	stride = sizeof(InstanceData);
+	offset = 0;
+	reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Context()->IASetVertexBuffers(1, 1, mInstances.GetAddressOf(), &stride, &offset);
 }
 
 /// <summary>
-/// Draws the vertices and indices in the VBO with the given directX device
+/// Draws the vertices, instances and indices in the VBO with the given directX device
 /// </summary>
 /// <param name="pRenderer">Renderer to retrieve the directX device from</param>
 void VBO_DX::Draw(const RenderSystem * pRenderer) const
 {
-	reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Context()->DrawIndexed(mIndexCount, 0, 0);
+	reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Context()->DrawIndexedInstanced(mIndexCount, static_cast<UINT>(mInstanceData.size()), 0, 0, 0);
 }

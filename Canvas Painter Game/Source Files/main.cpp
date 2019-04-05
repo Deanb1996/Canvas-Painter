@@ -39,8 +39,8 @@ int WINAPI wWinMain(_In_ const HINSTANCE pHInstance, _In_opt_ const HINSTANCE pH
 	//Get window height and width for scene manager
 	RECT rc;
 	GetClientRect(hWnd, &rc);
-	float width = rc.right - rc.left;
-	float height = rc.bottom - rc.top;
+	float width = static_cast<float>(rc.right - rc.left);
+	float height = static_cast<float>(rc.bottom - rc.top);
 	sceneManager->SetWindowWidthHeight(width, height);
 
 	//Render systems

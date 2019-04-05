@@ -1,9 +1,9 @@
 #pragma once
-#include <directxmath.h>
+#include "MathsHelper.h"
 
 struct Vertex
 {
-	DirectX::XMFLOAT3 mPosition;
-	DirectX::XMFLOAT3 mNormal;
-	DirectX::XMFLOAT2 mTexCoords;
+	MathsHelper::Vector3 mPosition;
+	MathsHelper::Vector3 mNormal;
+	MathsHelper::Vector2 mTexCoords;
 };

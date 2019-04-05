@@ -123,6 +123,7 @@
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>"Header Files";"Header Files\Components";"Header Files\Systems";"Header Files\Scenes";"../Engine/Header Files/MathsHelper";"../Engine/Header Files/Components";"../Engine/Header Files/DataStructs";"../Engine/Header Files/HelperClasses";"../Engine/Header Files/Managers";"../Engine/Header Files/Systems";</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:twoPhase-</AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

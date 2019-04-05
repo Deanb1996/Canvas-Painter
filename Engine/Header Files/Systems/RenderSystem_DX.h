@@ -20,12 +20,12 @@ struct ConstantBuffer
 	DirectX::XMFLOAT4 mLightColour;
 	DirectX::XMFLOAT4 mLightPosition;
 	DirectX::XMFLOAT4 mCameraPosition;
-	DirectX::XMFLOAT4 mColour;
 };
 
 class RenderSystem_DX : public RenderSystem
 {
 private:
+	std::vector<std::pair<std::wstring, VBO*>> mGeometries;
 	std::vector<Entity> mLights;
 	HWND mWindow;
 	UINT mWidth{};
@@ -34,7 +34,6 @@ private:
 	std::shared_ptr<ResourceManager>  mResourceManager = ResourceManager::Instance();
 	const Entity* mActiveCamera;
 	ConstantBuffer mCB;
-	const VBO* mGeometry;
 
 	std::wstring mActiveGeometry;
 	std::wstring mActiveShader;
@@ -72,7 +71,7 @@ private:
 
 	void ClearView() const override;
 	void SwapBuffers() const override;
-	const VBO * const LoadGeometry(const Entity& pEntity) const override;
+	VBO * const LoadGeometry(const Entity& pEntity) const override;
 	void LoadShaders(const Entity& pEntity) const override;
 	void LoadTexture(const Entity& pEntity) const override;
 

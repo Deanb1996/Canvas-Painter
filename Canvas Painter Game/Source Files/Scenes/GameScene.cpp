@@ -98,41 +98,43 @@ void GameScene::CreateCanvas()
 /// </summary>
 void GameScene::CameraControls()
 {
+	float deltaTime = static_cast<float>(mSceneManager->DeltaTime());
+
 	//Forwards
 	if (mInputManager->KeyHeld(KEYS::KEY_W))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 0, 1, 0) * mSceneManager->DeltaTime();
-		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, 0, 1, 0)  * mSceneManager->DeltaTime();
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 0, 1, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, 0, 1, 0)  * deltaTime;
 	}
 	//Left
 	if (mInputManager->KeyHeld(KEYS::KEY_A))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(-1, 0, 0, 0) * mSceneManager->DeltaTime();
-		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(-1, 0, 0, 0)  * mSceneManager->DeltaTime();
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(-1, 0, 0, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(-1, 0, 0, 0)  * deltaTime;
 	}
 	//Backwards
 	if (mInputManager->KeyHeld(KEYS::KEY_S))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 0, -1, 0) * mSceneManager->DeltaTime();
-		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, 0, -1, 0)  * mSceneManager->DeltaTime();
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 0, -1, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, 0, -1, 0)  * deltaTime;
 	}
 	//Right
 	if (mInputManager->KeyHeld(KEYS::KEY_D))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * mSceneManager->DeltaTime();
-		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(1, 0, 0, 0)  * mSceneManager->DeltaTime();
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(1, 0, 0, 0)  * deltaTime;
 	}
 	//Up
 	if (mInputManager->KeyHeld(KEYS::KEY_SPACE))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 1, 0, 0) * mSceneManager->DeltaTime();
-		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, 1, 0, 0)  * mSceneManager->DeltaTime();
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 1, 0, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, 1, 0, 0)  * deltaTime;
 	}
 	//Down
 	if (mInputManager->KeyHeld(KEYS::KEY_LEFT_CTRL))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, -1, 0, 0) * mSceneManager->DeltaTime();
-		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, -1, 0, 0)  * mSceneManager->DeltaTime();
+		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, -1, 0, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->mLookAt += Vector4(0, -1, 0, 0)  * deltaTime;
 	}
 }
 

@@ -177,6 +177,9 @@
     <ClInclude Include="Header Files\MathsHelper\Vector3.h">
       <Filter>Header Files\MathsHelper</Filter>
     </ClInclude>
+    <ClInclude Include="Header Files\DataStructs\InstanceData.h">
+      <Filter>Header Files\Data Structs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source Files\HelperClasses\ObjLoader.cpp">
@@ -223,6 +226,9 @@
     </ClCompile>
     <ClCompile Include="Source Files\MathsHelper\Vector3.cpp">
       <Filter>Source Files\MathsHelper</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\HelperClasses\VBO.cpp">
+      <Filter>Source Files\HelperClasses</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
