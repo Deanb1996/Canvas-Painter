@@ -80,7 +80,6 @@ HRESULT ShaderObject_DX::CreateVertex(const RenderSystem* pRenderer, const std::
 	}
 
 	// Creates the vertex shader
-	ID3D11VertexShader* vertexShader = nullptr;
 	hr = reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Device()->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), nullptr, mVertex.GetAddressOf());
 	if (FAILED(hr))
 	{
@@ -94,15 +93,10 @@ HRESULT ShaderObject_DX::CreateVertex(const RenderSystem* pRenderer, const std::
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		//{ "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		//{ "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "INSTANCEPOSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "INSTANCECOLOUR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 12, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 	};
 	UINT numElements = ARRAYSIZE(layout);
 
 	// Create the shader input layout
-	ID3D11InputLayout* vertexLayout = nullptr;
 	hr = reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Device()->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), mLayout.GetAddressOf());
 	pVSBlob->Release();
 	if (FAILED(hr))
@@ -135,7 +129,6 @@ HRESULT ShaderObject_DX::CreatePixel(const RenderSystem* pRenderer, const std::w
 	}
 
 	// Creates the pixel shader
-	ID3D11PixelShader* pixelShader = nullptr;
 	hr = reinterpret_cast<const RenderSystem_DX*>(pRenderer)->Device()->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), nullptr, mPixel.GetAddressOf());
 	pPSBlob->Release();
 	if (FAILED(hr))

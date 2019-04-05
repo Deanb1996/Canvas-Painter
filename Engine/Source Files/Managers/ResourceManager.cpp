@@ -57,7 +57,7 @@ const TextureObject * const ResourceManager::LoadTexture(const RenderSystem * co
 /// <param name="pRenderer">The render system used for the creation of the geometry object</param>
 /// <param name="pFilename">Filename of the geometry</param>
 /// <returns>Handle to the VBO associated with the file name</returns>
-VBO * const ResourceManager::LoadGeometry(const RenderSystem * const pRenderer, const std::wstring& pFilename, const int pEntityID)
+VBO * const ResourceManager::LoadGeometry(const RenderSystem * const pRenderer, const std::wstring& pFilename)
 {
 	auto hr{ S_OK };
 	//find and return from map
@@ -70,7 +70,6 @@ VBO * const ResourceManager::LoadGeometry(const RenderSystem * const pRenderer, 
 	}
 	//else create a new geometry
 	VBO* newGeometry = new VBO_DX();
-	newGeometry->AddInstance(pEntityID, mEcsManager->TransformComp(pEntityID)->mTranslation.XYZ(), mEcsManager->ColourComp(pEntityID)->Colour.XYZ());
 	hr = newGeometry->Create(pRenderer, pFilename);
 	if (FAILED(hr))
 	{

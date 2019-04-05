@@ -17,8 +17,6 @@ class RenderSystem;
 
 class ResourceManager
 {
-	std::shared_ptr<ECSManager> mEcsManager = ECSManager::Instance();
-
 	std::vector< std::pair< std::wstring, TextureObject*>> mTextures{};
 	std::vector< std::pair< std::wstring, VBO*>> mGeometries{};
 	std::vector< std::pair< std::wstring, ShaderObject*>> mShaders{};
@@ -33,7 +31,7 @@ public:
 	ResourceManager& operator=(ResourceManager const&) = delete;
 
 	const TextureObject * const LoadTexture(const RenderSystem * const pRenderer, const std::wstring& pFilename);
-	VBO * const LoadGeometry(const RenderSystem * const pRenderer, const std::wstring& pFilename, const int pEntityID);
+	VBO * const LoadGeometry(const RenderSystem * const pRenderer, const std::wstring& pFilename);
 	//AUDIOBUFFER LoadAudio(string filename);
 	const ShaderObject * const LoadShader(const RenderSystem * const pRenderer, const std::wstring& pFilename);
 

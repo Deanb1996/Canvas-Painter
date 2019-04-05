@@ -20,12 +20,12 @@ struct ConstantBuffer
 	DirectX::XMFLOAT4 mLightColour;
 	DirectX::XMFLOAT4 mLightPosition;
 	DirectX::XMFLOAT4 mCameraPosition;
+	DirectX::XMFLOAT4 mColour;
 };
 
 class RenderSystem_DX : public RenderSystem
 {
 private:
-	std::vector<std::pair<std::wstring, VBO*>> mGeometries;
 	std::vector<Entity> mLights;
 	HWND mWindow;
 	UINT mWidth{};
@@ -33,6 +33,7 @@ private:
 	std::shared_ptr<ECSManager> mEcsManager = ECSManager::Instance();
 	std::shared_ptr<ResourceManager>  mResourceManager = ResourceManager::Instance();
 	const Entity* mActiveCamera;
+	VBO* mGeometry;
 	ConstantBuffer mCB;
 
 	std::wstring mActiveGeometry;

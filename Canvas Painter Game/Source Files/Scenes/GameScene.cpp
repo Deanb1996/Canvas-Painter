@@ -12,7 +12,7 @@ void GameScene::CreateCamera()
 
 	//Create cameras transform component
 	Transform transform;
-	transform.mTranslation = Vector4(0.0f, 0.0f, -20.0f, 1.0f);
+	transform.mTranslation = Vector4(0.0f, 0.0f, -30.0f, 1.0f);
 	mEcsManager->AddTransformComp(transform, mCameraID);
 
 	//Creates cameras camera component
@@ -55,9 +55,9 @@ void GameScene::CreateCanvas()
 	int cubeID = 0;
 	for (float k = -2; k < 2; k++)
 	{
-		for (float j = -100; j < 100; j++)
+		for (float j = -70; j < 70; j++)
 		{
-			for (float i = -100; i < 100; i++)
+			for (float i = -130; i < 130; i++)
 			{
 				//Create cube entity
 				cubeID = mEcsManager->CreateEntity();
