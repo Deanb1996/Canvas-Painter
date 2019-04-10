@@ -1,8 +1,6 @@
 #pragma once
 #include <wrl.h>
 #include <string>
-#include <vector>
-#include <algorithm>
 
 class RenderSystem;
 

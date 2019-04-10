@@ -596,8 +596,8 @@ void RenderSystem_DX::SetViewProj()
 	//Calculates the view matrix and sets it in the constant buffer
 	const XMFLOAT4 position(reinterpret_cast<float*>(&(mEcsManager->TransformComp(mActiveCamera->mID)->mTranslation)));
 	mCB.mCameraPosition = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(mActiveCamera->mID)->mTranslation)));
-	const XMFLOAT4 lookAt(reinterpret_cast<float*>(&(mEcsManager->CameraComp(mActiveCamera->mID)->mLookAt)));
-	const XMFLOAT4 up(reinterpret_cast<float*>(&(mEcsManager->CameraComp(mActiveCamera->mID)->mUp)));
+	const XMFLOAT4 lookAt(reinterpret_cast<float*>(&(mEcsManager->CameraComp(mActiveCamera->mID)->lookAt)));
+	const XMFLOAT4 up(reinterpret_cast<float*>(&(mEcsManager->CameraComp(mActiveCamera->mID)->up)));
 
 	const XMVECTOR posVec = XMLoadFloat4(&position);
 	const XMVECTOR lookAtVec = XMLoadFloat4(&lookAt);
@@ -606,10 +606,10 @@ void RenderSystem_DX::SetViewProj()
 	XMStoreFloat4x4(&mCB.mView, XMMatrixTranspose(XMMatrixLookAtLH(posVec, lookAtVec, upVec)));
 
 	//Calculates the projection matrix and sets it in the constant buffer
-	const float fov = XMConvertToRadians(mEcsManager->CameraComp(mActiveCamera->mID)->mFOV);
+	const float fov = XMConvertToRadians(mEcsManager->CameraComp(mActiveCamera->mID)->FOV);
 	const float aspectRatio = static_cast<float>(mWidth) / static_cast<float>(mHeight);
-	const float nearClip = mEcsManager->CameraComp(mActiveCamera->mID)->mNear;
-	const float farClip = mEcsManager->CameraComp(mActiveCamera->mID)->mFar;
+	const float nearClip = mEcsManager->CameraComp(mActiveCamera->mID)->nearPlane;
+	const float farClip = mEcsManager->CameraComp(mActiveCamera->mID)->farPlane;
 
 	XMStoreFloat4x4(&mCB.mProj, XMMatrixTranspose(XMMatrixPerspectiveFovLH(fov, aspectRatio, nearClip, farClip)));
 }

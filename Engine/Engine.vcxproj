@@ -48,6 +48,7 @@
     <ClInclude Include="Header Files\HelperClasses\TextureObject_DX.h" />
     <ClInclude Include="Header Files\HelperClasses\VBO.h" />
     <ClInclude Include="Header Files\HelperClasses\VBO_DX.h" />
+    <ClInclude Include="Header Files\Managers\AntTweakManager.h" />
     <ClInclude Include="Header Files\Managers\ECSManager.h" />
     <ClInclude Include="Header Files\Managers\InputManager.h" />
     <ClInclude Include="Header Files\Managers\InputManager_DX.h" />
@@ -70,6 +71,7 @@
     <ClCompile Include="Source Files\HelperClasses\TextureObject_DX.cpp" />
     <ClCompile Include="Source Files\HelperClasses\VBO.cpp" />
     <ClCompile Include="Source Files\HelperClasses\VBO_DX.cpp" />
+    <ClCompile Include="Source Files\Managers\AntTweakManager.cpp" />
     <ClCompile Include="Source Files\Managers\ECSManager.cpp" />
     <ClCompile Include="Source Files\Managers\InputManager.cpp" />
     <ClCompile Include="Source Files\Managers\InputManager_DX.cpp" />
@@ -226,11 +228,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\directxtk_desktop_2015.2019.2.7.1\build\native\directxtk_desktop_2015.targets" Condition="Exists('..\packages\directxtk_desktop_2015.2019.2.7.1\build\native\directxtk_desktop_2015.targets')" />
+    <Import Project="..\packages\AntTweakBar.1.16.4\build\native\AntTweakBar.targets" Condition="Exists('..\packages\AntTweakBar.1.16.4\build\native\AntTweakBar.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\directxtk_desktop_2015.2019.2.7.1\build\native\directxtk_desktop_2015.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_desktop_2015.2019.2.7.1\build\native\directxtk_desktop_2015.targets'))" />
+    <Error Condition="!Exists('..\packages\AntTweakBar.1.16.4\build\native\AntTweakBar.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AntTweakBar.1.16.4\build\native\AntTweakBar.targets'))" />
   </Target>
 </Project>

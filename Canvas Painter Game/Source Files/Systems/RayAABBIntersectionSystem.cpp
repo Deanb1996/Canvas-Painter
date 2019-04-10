@@ -112,25 +112,25 @@ void RayAABBIntersectionSystem::Process()
 				//Swap min and max of X around depending on if the ray is travelling positive or negative direction
 				if (inverseRayDir.X >= 0)
 				{
-					minX = (boxComp.mMinBounds.X - rayComp.mOrigin.X) * inverseRayDir.X;
-					maxX = (boxComp.mMaxBounds.X - rayComp.mOrigin.X) * inverseRayDir.X;
+					minX = (boxComp.minBounds.X - rayComp.mOrigin.X) * inverseRayDir.X;
+					maxX = (boxComp.maxBounds.X - rayComp.mOrigin.X) * inverseRayDir.X;
 				}
 				else
 				{
-					minX = (boxComp.mMaxBounds.X - rayComp.mOrigin.X) * inverseRayDir.X;
-					maxX = (boxComp.mMinBounds.X - rayComp.mOrigin.X) * inverseRayDir.X;
+					minX = (boxComp.maxBounds.X - rayComp.mOrigin.X) * inverseRayDir.X;
+					maxX = (boxComp.minBounds.X - rayComp.mOrigin.X) * inverseRayDir.X;
 				}
 
 				//Swap min and max of Y around depending on if the ray is travelling positive or negative direction
 				if (inverseRayDir.Y >= 0)
 				{
-					minY = (boxComp.mMinBounds.Y - rayComp.mOrigin.Y) * inverseRayDir.Y;
-					maxY = (boxComp.mMaxBounds.Y - rayComp.mOrigin.Y) * inverseRayDir.Y;
+					minY = (boxComp.minBounds.Y - rayComp.mOrigin.Y) * inverseRayDir.Y;
+					maxY = (boxComp.maxBounds.Y - rayComp.mOrigin.Y) * inverseRayDir.Y;
 				}
 				else
 				{
-					minY = (boxComp.mMaxBounds.Y - rayComp.mOrigin.Y) * inverseRayDir.Y;
-					maxY = (boxComp.mMinBounds.Y - rayComp.mOrigin.Y) * inverseRayDir.Y;
+					minY = (boxComp.maxBounds.Y - rayComp.mOrigin.Y) * inverseRayDir.Y;
+					maxY = (boxComp.minBounds.Y - rayComp.mOrigin.Y) * inverseRayDir.Y;
 				}
 
 				//If min is greater than max, ray did not intersect then continue
@@ -161,13 +161,13 @@ void RayAABBIntersectionSystem::Process()
 				//Swap min and max of Z around depending on if the ray is travelling positive or negative direction
 				if (inverseRayDir.Z >= 0)
 				{
-					minZ = (boxComp.mMinBounds.Z - rayComp.mOrigin.Z) * inverseRayDir.Z;
-					maxZ = (boxComp.mMaxBounds.Z - rayComp.mOrigin.Z) * inverseRayDir.Z;
+					minZ = (boxComp.minBounds.Z - rayComp.mOrigin.Z) * inverseRayDir.Z;
+					maxZ = (boxComp.maxBounds.Z - rayComp.mOrigin.Z) * inverseRayDir.Z;
 				}
 				else
 				{
-					minZ = (boxComp.mMaxBounds.Z - rayComp.mOrigin.Z) * inverseRayDir.Z;
-					maxZ = (boxComp.mMinBounds.Z - rayComp.mOrigin.Z) * inverseRayDir.Z;
+					minZ = (boxComp.maxBounds.Z - rayComp.mOrigin.Z) * inverseRayDir.Z;
+					maxZ = (boxComp.minBounds.Z - rayComp.mOrigin.Z) * inverseRayDir.Z;
 				}
 
 				//If min is greater than max, ray did not intersect then continue

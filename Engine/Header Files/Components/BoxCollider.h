@@ -4,6 +4,6 @@
 
 struct BoxCollider
 {
-	MathsHelper::Vector3 mMinBounds;
-	MathsHelper::Vector3 mMaxBounds;
+	MathsHelper::Vector3 minBounds;
+	MathsHelper::Vector3 maxBounds;
 };
