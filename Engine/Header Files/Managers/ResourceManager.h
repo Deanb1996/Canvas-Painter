@@ -22,11 +22,15 @@ class ResourceManager
 	std::vector< std::pair< std::wstring, ShaderObject*>> mShaders{};
 	//std::vector< std::pair< std::wstring, Microsoft::WRL::ComPtr< ID3D11Buffer >>> mInstances{};
 	//std::vector< std::pair< string, AUDIOBUFFER>> mSounds;
+
+	//Private constructor for singleton pattern
 	ResourceManager();
 
 public:
 	~ResourceManager();
 
+	//Singleton pattern
+	//Deleted copy constructor and assignment operator so no copies of the singleton instance can be made
 	ResourceManager(const ResourceManager& pResourceManager) = delete;
 	ResourceManager& operator=(ResourceManager const&) = delete;
 
