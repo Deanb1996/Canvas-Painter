@@ -3,7 +3,7 @@
 
 struct Vertex
 {
-	MathsHelper::Vector3 mPosition;
-	MathsHelper::Vector3 mNormal;
-	MathsHelper::Vector2 mTexCoords;
+	MathsHelper::Vector3 position;
+	MathsHelper::Vector3 normal;
+	MathsHelper::Vector2 texCoords;
 };

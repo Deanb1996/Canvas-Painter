@@ -5,8 +5,8 @@
 
 struct Shader
 {
-	std::wstring mFilename;
-	BlendState mBlendState;
-	CullState mCullState;
-	DepthState  mDepthState;
+	std::wstring filename;
+	BlendState blendState;
+	CullState cullState;
+	DepthState  depthState;
 };

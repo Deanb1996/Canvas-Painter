@@ -3,8 +3,8 @@
 
 struct Ray
 {
-	MathsHelper::Vector3 mOrigin;
-	MathsHelper::Vector3 mDirection;
-	MathsHelper::Vector3 mIntersectionPoint;
-	int mIntersectedWith;
+	MathsHelper::Vector3 origin;
+	MathsHelper::Vector3 direction;
+	MathsHelper::Vector3 intersectionPoint;
+	int intersectedWith;
 };

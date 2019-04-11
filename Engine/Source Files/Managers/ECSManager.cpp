@@ -111,67 +111,67 @@ void ECSManager::DestroyEntity(const int pEntityID)
 
 	//Removes all components owned by this entity
 	//AI Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_AI) == ComponentType::COMPONENT_AI)
+	if ((entity->componentMask & ComponentType::COMPONENT_AI) == ComponentType::COMPONENT_AI)
 	{
 		RemoveAIComp(pEntityID);
 	}
 	//Audio Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_AUDIO) == ComponentType::COMPONENT_AUDIO)
+	if ((entity->componentMask & ComponentType::COMPONENT_AUDIO) == ComponentType::COMPONENT_AUDIO)
 	{
 		RemoveAudioComp(pEntityID);
 	}
 	//BoxCollider Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_BOXCOLLIDER) == ComponentType::COMPONENT_BOXCOLLIDER)
+	if ((entity->componentMask & ComponentType::COMPONENT_BOXCOLLIDER) == ComponentType::COMPONENT_BOXCOLLIDER)
 	{
 		RemoveBoxColliderComp(pEntityID);
 	}
 	//Camera Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_CAMERA) == ComponentType::COMPONENT_CAMERA)
+	if ((entity->componentMask & ComponentType::COMPONENT_CAMERA) == ComponentType::COMPONENT_CAMERA)
 	{
 		RemoveCameraComp(pEntityID);
 	}
 	//Colour Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_COLOUR) == ComponentType::COMPONENT_COLOUR)
+	if ((entity->componentMask & ComponentType::COMPONENT_COLOUR) == ComponentType::COMPONENT_COLOUR)
 	{
 		RemoveColourComp(pEntityID);
 	}
 	//Geometry Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_GEOMETRY) == ComponentType::COMPONENT_GEOMETRY)
+	if ((entity->componentMask & ComponentType::COMPONENT_GEOMETRY) == ComponentType::COMPONENT_GEOMETRY)
 	{
 		RemoveGeometryComp(pEntityID);
 	}
 	//Light Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_LIGHT) == ComponentType::COMPONENT_LIGHT)
+	if ((entity->componentMask & ComponentType::COMPONENT_LIGHT) == ComponentType::COMPONENT_LIGHT)
 	{
 		RemoveLightComp(pEntityID);
 	}
 	//Ray Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_RAY) == ComponentType::COMPONENT_RAY)
+	if ((entity->componentMask & ComponentType::COMPONENT_RAY) == ComponentType::COMPONENT_RAY)
 	{
 		RemoveRayComp(pEntityID);
 	}
 	//Shader Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_SHADER) == ComponentType::COMPONENT_SHADER)
+	if ((entity->componentMask & ComponentType::COMPONENT_SHADER) == ComponentType::COMPONENT_SHADER)
 	{
 		RemoveShaderComp(pEntityID);
 	}
 	//SphereCollider Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_SPHERECOLLIDER) == ComponentType::COMPONENT_SPHERECOLLIDER)
+	if ((entity->componentMask & ComponentType::COMPONENT_SPHERECOLLIDER) == ComponentType::COMPONENT_SPHERECOLLIDER)
 	{
 		RemoveSphereColliderComp(pEntityID);
 	}
 	//Texture Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_TEXTURE) == ComponentType::COMPONENT_TEXTURE)
+	if ((entity->componentMask & ComponentType::COMPONENT_TEXTURE) == ComponentType::COMPONENT_TEXTURE)
 	{
 		RemoveTextureComp(pEntityID);
 	}
 	//Transform Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_TRANSFORM) == ComponentType::COMPONENT_TRANSFORM)
+	if ((entity->componentMask & ComponentType::COMPONENT_TRANSFORM) == ComponentType::COMPONENT_TRANSFORM)
 	{
 		RemoveTransformComp(pEntityID);
 	}
 	//Velocity Comp
-	if ((entity->mComponentMask & ComponentType::COMPONENT_VELOCITY) == ComponentType::COMPONENT_VELOCITY)
+	if ((entity->componentMask & ComponentType::COMPONENT_VELOCITY) == ComponentType::COMPONENT_VELOCITY)
 	{
 		RemoveVelocityComp(pEntityID);
 	}
@@ -224,7 +224,7 @@ void ECSManager::AddAIComp(const AI & pAI, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
 	mAIs[pEntityID] = pAI;
-	entity->mComponentMask |= ComponentType::COMPONENT_AI;
+	entity->componentMask |= ComponentType::COMPONENT_AI;
 	AssignEntity(*entity);
 }
 
@@ -237,7 +237,7 @@ void ECSManager::AddAudioComp(const Audio & pAudio, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
 	mAudios[pEntityID] = pAudio;
-	entity->mComponentMask |= ComponentType::COMPONENT_AUDIO;
+	entity->componentMask |= ComponentType::COMPONENT_AUDIO;
 	AssignEntity(*entity);
 }
 
@@ -250,7 +250,7 @@ void ECSManager::AddBoxColliderComp(const BoxCollider & pBoxCollider, const int 
 {
 	Entity* entity = &mEntities[pEntityID];
 	mBoxColliders[pEntityID] = pBoxCollider;
-	entity->mComponentMask |= ComponentType::COMPONENT_BOXCOLLIDER;
+	entity->componentMask |= ComponentType::COMPONENT_BOXCOLLIDER;
 	AssignEntity(*entity);
 }
 
@@ -263,7 +263,7 @@ void ECSManager::AddCameraComp(const Camera & pCamera, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
 	mCameras[pEntityID] = pCamera;
-	entity->mComponentMask |= ComponentType::COMPONENT_CAMERA;
+	entity->componentMask |= ComponentType::COMPONENT_CAMERA;
 	AssignEntity(*entity);
 }
 
@@ -276,7 +276,7 @@ void ECSManager::AddColourComp(const Colour & pColour, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
 	mColours[pEntityID] = pColour;
-	entity->mComponentMask |= ComponentType::COMPONENT_COLOUR;
+	entity->componentMask |= ComponentType::COMPONENT_COLOUR;
 	AssignEntity(*entity);
 }
 
@@ -289,7 +289,7 @@ void ECSManager::AddGeometryComp(const Geometry & pGeometry, const int pEntityID
 {
 	Entity* entity = &mEntities[pEntityID];
 	mGeometries[pEntityID] = pGeometry;
-	entity->mComponentMask |= ComponentType::COMPONENT_GEOMETRY;
+	entity->componentMask |= ComponentType::COMPONENT_GEOMETRY;
 	AssignEntity(*entity);
 }
 
@@ -302,7 +302,7 @@ void ECSManager::AddLightComp(const Light & pLight, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
 	mLights[pEntityID] = pLight;
-	entity->mComponentMask |= ComponentType::COMPONENT_LIGHT;
+	entity->componentMask |= ComponentType::COMPONENT_LIGHT;
 	AssignEntity(*entity);
 }
 
@@ -315,7 +315,7 @@ void ECSManager::AddRayComp(const Ray & pRay, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
 	mRays[pEntityID] = pRay;
-	entity->mComponentMask |= ComponentType::COMPONENT_RAY;
+	entity->componentMask |= ComponentType::COMPONENT_RAY;
 	AssignEntity(*entity);
 }
 
@@ -328,7 +328,7 @@ void ECSManager::AddShaderComp(const Shader & pShader, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
 	mShaders[pEntityID] = pShader;
-	entity->mComponentMask |= ComponentType::COMPONENT_SHADER;
+	entity->componentMask |= ComponentType::COMPONENT_SHADER;
 	AssignEntity(*entity);
 }
 
@@ -341,7 +341,7 @@ void ECSManager::AddSphereColliderComp(const SphereCollider & pSphereCollider, c
 {
 	Entity* entity = &mEntities[pEntityID];
 	mSphereColliders[pEntityID] = pSphereCollider;
-	entity->mComponentMask |= ComponentType::COMPONENT_SPHERECOLLIDER;
+	entity->componentMask |= ComponentType::COMPONENT_SPHERECOLLIDER;
 	AssignEntity(*entity);
 }
 
@@ -354,7 +354,7 @@ void ECSManager::AddTextureComp(const Texture & pTexture, const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
 	mTextures[pEntityID] = pTexture;
-	entity->mComponentMask |= ComponentType::COMPONENT_TEXTURE;
+	entity->componentMask |= ComponentType::COMPONENT_TEXTURE;
 	AssignEntity(*entity);
 }
 
@@ -367,7 +367,7 @@ void ECSManager::AddTransformComp(const Transform & pTransform, const int pEntit
 {
 	Entity* entity = &mEntities[pEntityID];
 	mTransforms[pEntityID] = pTransform;
-	entity->mComponentMask |= ComponentType::COMPONENT_TRANSFORM;
+	entity->componentMask |= ComponentType::COMPONENT_TRANSFORM;
 	AssignEntity(*entity);
 }
 
@@ -380,7 +380,7 @@ void ECSManager::AddVelocityComp(const Velocity & pVelocity, const int pEntityID
 {
 	Entity* entity = &mEntities[pEntityID];
 	mVelocities[pEntityID] = pVelocity;
-	entity->mComponentMask |= ComponentType::COMPONENT_VELOCITY;
+	entity->componentMask |= ComponentType::COMPONENT_VELOCITY;
 	AssignEntity(*entity);
 }
 
@@ -391,7 +391,7 @@ void ECSManager::AddVelocityComp(const Velocity & pVelocity, const int pEntityID
 void ECSManager::RemoveAIComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_AI; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_AI; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -402,7 +402,7 @@ void ECSManager::RemoveAIComp(const int pEntityID)
 void ECSManager::RemoveAudioComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_AUDIO; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_AUDIO; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -413,7 +413,7 @@ void ECSManager::RemoveAudioComp(const int pEntityID)
 void ECSManager::RemoveBoxColliderComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_BOXCOLLIDER; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_BOXCOLLIDER; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -425,7 +425,7 @@ void ECSManager::RemoveBoxColliderComp(const int pEntityID)
 void ECSManager::RemoveCameraComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_CAMERA; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_CAMERA; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -436,7 +436,7 @@ void ECSManager::RemoveCameraComp(const int pEntityID)
 void ECSManager::RemoveColourComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_COLOUR; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_COLOUR; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -448,7 +448,7 @@ void ECSManager::RemoveColourComp(const int pEntityID)
 void ECSManager::RemoveGeometryComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_GEOMETRY; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_GEOMETRY; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -460,7 +460,7 @@ void ECSManager::RemoveGeometryComp(const int pEntityID)
 void ECSManager::RemoveLightComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_LIGHT; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_LIGHT; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -471,7 +471,7 @@ void ECSManager::RemoveLightComp(const int pEntityID)
 void ECSManager::RemoveRayComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_RAY; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_RAY; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -483,7 +483,7 @@ void ECSManager::RemoveRayComp(const int pEntityID)
 void ECSManager::RemoveShaderComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_SHADER; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_SHADER; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -494,7 +494,7 @@ void ECSManager::RemoveShaderComp(const int pEntityID)
 void ECSManager::RemoveSphereColliderComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_SPHERECOLLIDER; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_SPHERECOLLIDER; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -505,7 +505,7 @@ void ECSManager::RemoveSphereColliderComp(const int pEntityID)
 void ECSManager::RemoveTextureComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_TEXTURE; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_TEXTURE; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -517,7 +517,7 @@ void ECSManager::RemoveTextureComp(const int pEntityID)
 void ECSManager::RemoveTransformComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_TRANSFORM; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_TRANSFORM; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -528,7 +528,7 @@ void ECSManager::RemoveTransformComp(const int pEntityID)
 void ECSManager::RemoveVelocityComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
-	entity->mComponentMask = entity->mComponentMask &= ~ComponentType::COMPONENT_VELOCITY; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_VELOCITY; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -540,7 +540,7 @@ void ECSManager::RemoveVelocityComp(const int pEntityID)
 AI * const ECSManager::AIComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_AI) == ComponentType::COMPONENT_AI)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_AI) == ComponentType::COMPONENT_AI)
 	{
 		return &mAIs[pEntityID];
 	}
@@ -555,7 +555,7 @@ AI * const ECSManager::AIComp(const int pEntityID)
 Audio * const ECSManager::AudioComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_AUDIO) == ComponentType::COMPONENT_AUDIO)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_AUDIO) == ComponentType::COMPONENT_AUDIO)
 	{
 		return &mAudios[pEntityID];
 	}
@@ -570,7 +570,7 @@ Audio * const ECSManager::AudioComp(const int pEntityID)
 BoxCollider * const ECSManager::BoxColliderComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_BOXCOLLIDER) == ComponentType::COMPONENT_BOXCOLLIDER)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_BOXCOLLIDER) == ComponentType::COMPONENT_BOXCOLLIDER)
 	{
 		return &mBoxColliders[pEntityID];
 	}
@@ -585,7 +585,7 @@ BoxCollider * const ECSManager::BoxColliderComp(const int pEntityID)
 Camera * const ECSManager::CameraComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_CAMERA) == ComponentType::COMPONENT_CAMERA)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_CAMERA) == ComponentType::COMPONENT_CAMERA)
 	{
 		return &mCameras[pEntityID];
 	}
@@ -600,7 +600,7 @@ Camera * const ECSManager::CameraComp(const int pEntityID)
 Colour * const ECSManager::ColourComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_COLOUR) == ComponentType::COMPONENT_COLOUR)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_COLOUR) == ComponentType::COMPONENT_COLOUR)
 	{
 		return &mColours[pEntityID];
 	}
@@ -615,7 +615,7 @@ Colour * const ECSManager::ColourComp(const int pEntityID)
 Geometry * const ECSManager::GeometryComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_GEOMETRY) == ComponentType::COMPONENT_GEOMETRY)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_GEOMETRY) == ComponentType::COMPONENT_GEOMETRY)
 	{
 		return &mGeometries[pEntityID];
 	}
@@ -630,7 +630,7 @@ Geometry * const ECSManager::GeometryComp(const int pEntityID)
 Gravity * const ECSManager::GravityComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_GRAVITY) == ComponentType::COMPONENT_GRAVITY)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_GRAVITY) == ComponentType::COMPONENT_GRAVITY)
 	{
 		return &mGravities[pEntityID];
 	}
@@ -645,7 +645,7 @@ Gravity * const ECSManager::GravityComp(const int pEntityID)
 Light * const ECSManager::LightComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_LIGHT) == ComponentType::COMPONENT_LIGHT)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_LIGHT) == ComponentType::COMPONENT_LIGHT)
 	{
 		return &mLights[pEntityID];
 	}
@@ -660,7 +660,7 @@ Light * const ECSManager::LightComp(const int pEntityID)
 Ray * const ECSManager::RayComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_RAY) == ComponentType::COMPONENT_RAY)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_RAY) == ComponentType::COMPONENT_RAY)
 	{
 		return &mRays[pEntityID];
 	}
@@ -675,7 +675,7 @@ Ray * const ECSManager::RayComp(const int pEntityID)
 Shader * const ECSManager::ShaderComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_SHADER) == ComponentType::COMPONENT_SHADER)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_SHADER) == ComponentType::COMPONENT_SHADER)
 	{
 		return &mShaders[pEntityID];
 	}
@@ -690,7 +690,7 @@ Shader * const ECSManager::ShaderComp(const int pEntityID)
 SphereCollider * const ECSManager::SphereColliderComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_SPHERECOLLIDER) == ComponentType::COMPONENT_SPHERECOLLIDER)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_SPHERECOLLIDER) == ComponentType::COMPONENT_SPHERECOLLIDER)
 	{
 		return &mSphereColliders[pEntityID];
 	}
@@ -705,7 +705,7 @@ SphereCollider * const ECSManager::SphereColliderComp(const int pEntityID)
 Texture * const ECSManager::TextureComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_TEXTURE) == ComponentType::COMPONENT_TEXTURE)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_TEXTURE) == ComponentType::COMPONENT_TEXTURE)
 	{
 		return &mTextures[pEntityID];
 	}
@@ -720,7 +720,7 @@ Texture * const ECSManager::TextureComp(const int pEntityID)
 Transform * const ECSManager::TransformComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_TRANSFORM) == ComponentType::COMPONENT_TRANSFORM)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_TRANSFORM) == ComponentType::COMPONENT_TRANSFORM)
 	{
 		return &mTransforms[pEntityID];
 	}
@@ -735,7 +735,7 @@ Transform * const ECSManager::TransformComp(const int pEntityID)
 Velocity * const ECSManager::VelocityComp(const int pEntityID)
 {
 	//Checks if entity actually owns a component of this type
-	if ((mEntities[pEntityID].mComponentMask & ComponentType::COMPONENT_VELOCITY) == ComponentType::COMPONENT_VELOCITY)
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_VELOCITY) == ComponentType::COMPONENT_VELOCITY)
 	{
 		return &mVelocities[pEntityID];
 	}

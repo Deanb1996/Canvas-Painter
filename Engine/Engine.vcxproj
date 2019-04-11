@@ -40,21 +40,28 @@
     <ClInclude Include="Header Files\DataStructs\DepthState.h" />
     <ClInclude Include="Header Files\DataStructs\Entity.h" />
     <ClInclude Include="Header Files\DataStructs\Vertex.h" />
+    <ClInclude Include="Header Files\HelperClasses\NetworkListener.h" />
     <ClInclude Include="Header Files\HelperClasses\ObjLoader.h" />
     <ClInclude Include="Header Files\HelperClasses\Scene.h" />
     <ClInclude Include="Header Files\HelperClasses\ShaderObject.h" />
     <ClInclude Include="Header Files\HelperClasses\ShaderObject_DX.h" />
+    <ClInclude Include="Header Files\HelperClasses\ShaderObject_GL.h" />
     <ClInclude Include="Header Files\HelperClasses\TextureObject.h" />
     <ClInclude Include="Header Files\HelperClasses\TextureObject_DX.h" />
+    <ClInclude Include="Header Files\HelperClasses\TextureObject_GL.h" />
     <ClInclude Include="Header Files\HelperClasses\VBO.h" />
     <ClInclude Include="Header Files\HelperClasses\VBO_DX.h" />
+    <ClInclude Include="Header Files\HelperClasses\VBO_GL.h" />
     <ClInclude Include="Header Files\Managers\AntTweakManager.h" />
     <ClInclude Include="Header Files\Managers\ECSManager.h" />
     <ClInclude Include="Header Files\Managers\InputManager.h" />
     <ClInclude Include="Header Files\Managers\InputManager_DX.h" />
+    <ClInclude Include="Header Files\Managers\InputManager_GL.h" />
     <ClInclude Include="Header Files\Managers\Managers.h" />
+    <ClInclude Include="Header Files\Managers\NetworkManager.h" />
     <ClInclude Include="Header Files\Managers\ResourceManager.h" />
     <ClInclude Include="Header Files\Managers\SceneManager.h" />
+    <ClInclude Include="Header Files\Managers\ThreadManager.h" />
     <ClInclude Include="Header Files\MathsHelper\MathsHelper.h" />
     <ClInclude Include="Header Files\MathsHelper\Matrix4.h" />
     <ClInclude Include="Header Files\MathsHelper\Vector2.h" />
@@ -63,26 +70,35 @@
     <ClInclude Include="Header Files\Systems\ISystem.h" />
     <ClInclude Include="Header Files\Systems\RenderSystem.h" />
     <ClInclude Include="Header Files\Systems\RenderSystem_DX.h" />
+    <ClInclude Include="Header Files\Systems\RenderSystem_GL.h" />
     <ClInclude Include="Header Files\Systems\Systems.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source Files\HelperClasses\NetworkListener.cpp" />
     <ClCompile Include="Source Files\HelperClasses\ObjLoader.cpp" />
     <ClCompile Include="Source Files\HelperClasses\ShaderObject_DX.cpp" />
+    <ClCompile Include="Source Files\HelperClasses\ShaderObject_GL.cpp" />
     <ClCompile Include="Source Files\HelperClasses\TextureObject_DX.cpp" />
+    <ClCompile Include="Source Files\HelperClasses\TextureObject_GL.cpp" />
     <ClCompile Include="Source Files\HelperClasses\VBO.cpp" />
     <ClCompile Include="Source Files\HelperClasses\VBO_DX.cpp" />
+    <ClCompile Include="Source Files\HelperClasses\VBO_GL.cpp" />
     <ClCompile Include="Source Files\Managers\AntTweakManager.cpp" />
     <ClCompile Include="Source Files\Managers\ECSManager.cpp" />
     <ClCompile Include="Source Files\Managers\InputManager.cpp" />
     <ClCompile Include="Source Files\Managers\InputManager_DX.cpp" />
+    <ClCompile Include="Source Files\Managers\InputManager_GL.cpp" />
+    <ClCompile Include="Source Files\Managers\NetworkManager.cpp" />
     <ClCompile Include="Source Files\Managers\ResourceManager.cpp" />
     <ClCompile Include="Source Files\Managers\SceneManager.cpp" />
+    <ClCompile Include="Source Files\Managers\ThreadManager.cpp" />
     <ClCompile Include="Source Files\MathsHelper\Matrix4.cpp" />
     <ClCompile Include="Source Files\MathsHelper\Vector2.cpp" />
     <ClCompile Include="Source Files\MathsHelper\Vector3.cpp" />
     <ClCompile Include="Source Files\MathsHelper\Vector4.cpp" />
     <ClCompile Include="Source Files\Systems\RenderSystem.cpp" />
     <ClCompile Include="Source Files\Systems\RenderSystem_DX.cpp" />
+    <ClCompile Include="Source Files\Systems\RenderSystem_GL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -4,6 +4,6 @@
 
 struct Entity
 {
-	int mID;
-	ComponentType mComponentMask;
+	int ID;
+	ComponentType componentMask;
 };

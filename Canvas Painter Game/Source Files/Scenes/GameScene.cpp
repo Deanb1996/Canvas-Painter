@@ -12,7 +12,7 @@ void GameScene::CreateCamera()
 
 	//Create cameras transform component
 	Transform transform;
-	transform.mTranslation = Vector4(0.0f, 0.0f, -30.0f, 1.0f);
+	transform.translation = Vector4(0.0f, 0.0f, -30.0f, 1.0f);
 	mEcsManager->AddTransformComp(transform, mCameraID);
 
 	//Creates cameras camera component
@@ -22,7 +22,7 @@ void GameScene::CreateCamera()
 	//Sets camera variables for scene
 	mActiveCamera = *mEcsManager->CameraComp(mCameraID);
 
-	mLookAt = LookAt(transform.mTranslation, mActiveCamera.lookAt, mActiveCamera.up);
+	mLookAt = LookAt(transform.translation, mActiveCamera.lookAt, mActiveCamera.up);
 	mInverseLookAt = Inverse(mLookAt);
 
 	mProjection = Projection(DegreesToRadians(60), mSceneManager->WindowWidth() / mSceneManager->WindowHeight(), 1, 500);
@@ -39,7 +39,7 @@ void GameScene::CreateLight()
 
 	//Create lights transform component
 	Transform transform;
-	transform.mTranslation = Vector4(0.0f, 10.0f, -20.0f, 1.0f);
+	transform.translation = Vector4(0.0f, 10.0f, -20.0f, 1.0f);
 	mEcsManager->AddTransformComp(transform, lightID);
 
 	//Create lights light component
@@ -55,17 +55,17 @@ void GameScene::CreateCanvas()
 	int cubeID = 0;
 	for (float k = -2; k < 2; k++)
 	{
-		for (float j = -70; j < 70; j++)
+		for (float j = -75; j < 75; j++)
 		{
-			for (float i = -130; i < 130; i++)
+			for (float i = -135; i < 135; i++)
 			{
 				//Create cube entity
 				cubeID = mEcsManager->CreateEntity();
 
 				//Create cubes transform component
 				Transform transform;
-				transform.mTranslation = Vector4(i / 5, j / 5, k / 5, 1.0f);
-				transform.mTransform *= TranslationMatrix(transform.mTranslation) * ScaleMatrix(Vector4(0.1f, 0.1f, 0.1f, 1.0f));// *RotationMatrixX(DegreesToRadians(45)) * ScaleMatrix(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+				transform.translation = Vector4(i / 5, j / 5, k / 5, 1.0f);
+				transform.transform *= TranslationMatrix(transform.translation) * ScaleMatrix(Vector4(0.1f, 0.1f, 0.1f, 1.0f));// *RotationMatrixX(DegreesToRadians(45)) * ScaleMatrix(Vector4(0.5f, 0.5f, 0.5f, 1.0f));
 				mEcsManager->AddTransformComp(transform, cubeID);
 
 				//Creates cubes geometry component
@@ -84,10 +84,12 @@ void GameScene::CreateCanvas()
 				//Cubes are 2 width, height and depth, scaled by 0.1 to 0.2 width, height and depth.
 				//+/- half the width, height and depth to cubes translation to get max/min bounds of box collider
 				BoxCollider boxCollider{
-					Vector3(transform.mTranslation.X - 0.1f, transform.mTranslation.Y - 0.1f, transform.mTranslation.Z - 0.1f),
-					Vector3(transform.mTranslation.X + 0.1f, transform.mTranslation.Y + 0.1f, transform.mTranslation.Z + 0.1f)
+					Vector3(transform.translation.X - 0.1f, transform.translation.Y - 0.1f, transform.translation.Z - 0.1f),
+					Vector3(transform.translation.X + 0.1f, transform.translation.Y + 0.1f, transform.translation.Z + 0.1f)
 				};
 				mEcsManager->AddBoxColliderComp(boxCollider, cubeID);
+
+				mCubeCount++;
 			}
 		}
 	}
@@ -103,37 +105,37 @@ void GameScene::CameraControls()
 	//Forwards
 	if (mInputManager->KeyHeld(KEYS::KEY_W))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 0, 1, 0) * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, 0, 1, 0) * deltaTime;
 		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, 0, 1, 0)  * deltaTime;
 	}
 	//Left
 	if (mInputManager->KeyHeld(KEYS::KEY_A))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(-1, 0, 0, 0) * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(-1, 0, 0, 0) * deltaTime;
 		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(-1, 0, 0, 0)  * deltaTime;
 	}
 	//Backwards
 	if (mInputManager->KeyHeld(KEYS::KEY_S))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 0, -1, 0) * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, 0, -1, 0) * deltaTime;
 		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, 0, -1, 0)  * deltaTime;
 	}
 	//Right
 	if (mInputManager->KeyHeld(KEYS::KEY_D))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(1, 0, 0, 0) * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(1, 0, 0, 0) * deltaTime;
 		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(1, 0, 0, 0)  * deltaTime;
 	}
 	//Up
 	if (mInputManager->KeyHeld(KEYS::KEY_SPACE))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, 1, 0, 0) * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, 1, 0, 0) * deltaTime;
 		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, 1, 0, 0)  * deltaTime;
 	}
 	//Down
 	if (mInputManager->KeyHeld(KEYS::KEY_LEFT_CTRL))
 	{
-		mEcsManager->TransformComp(mCameraID)->mTranslation += Vector4(0, -1, 0, 0) * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, -1, 0, 0) * deltaTime;
 		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, -1, 0, 0)  * deltaTime;
 	}
 }
@@ -142,7 +144,7 @@ void GameScene::CameraControls()
 /// Default constructor
 /// </summary>
 GameScene::GameScene()
-	:mRayID(-1)
+	:mCameraID(-1), mRayID(-1), mCubeCount(0)
 {
 }
 
@@ -164,10 +166,10 @@ void GameScene::Update()
 		Ray rayComp = *mEcsManager->RayComp(mRayID);
 
 		//If ray has intersected with a cube, set colour of intersected cube
-		int intersectedCube = rayComp.mIntersectedWith;
+		int intersectedCube = rayComp.intersectedWith;
 		if (intersectedCube != -1)
 		{
-			mEcsManager->ColourComp(intersectedCube)->Colour = mPlayerColour;
+			mEcsManager->ColourComp(intersectedCube)->colour = mPlayerColour;
 		}
 
 		//Destroy ray once done with it
@@ -187,7 +189,7 @@ void GameScene::Update()
 		mRayID = mEcsManager->CreateEntity();
 
 		//Creates rays ray component
-		Ray rayComp{ mEcsManager->TransformComp(mCameraID)->mTranslation.XYZ(), ray.XYZ(), MathsHelper::Vector3(), -1 };
+		Ray rayComp{ mEcsManager->TransformComp(mCameraID)->translation.XYZ(), ray.XYZ(), MathsHelper::Vector3(), -1 };
 		mEcsManager->AddRayComp(rayComp, mRayID);
 	}
 }
@@ -198,6 +200,11 @@ void GameScene::Update()
 void GameScene::OnLoad()
 {
 	mPlayerColour = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	mAntTweakManager->AddBar("Game stats");
+
+	mAntTweakManager->AddVariable("Game stats", "FPS", TW_TYPE_INT32, &mSceneManager->Fps(), "");
+	mAntTweakManager->AddVariable("Game stats", "Cube Count", TW_TYPE_INT32, &mCubeCount, "");
 
 	CreateCamera();
 	CreateCanvas();

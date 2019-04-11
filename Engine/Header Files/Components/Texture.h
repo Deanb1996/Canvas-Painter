@@ -2,7 +2,7 @@
 
 struct Texture
 {
-	std::wstring mDiffuse;
-	std::wstring mNormal;
-	std::wstring mHeight;
+	std::wstring diffuse;
+	std::wstring normal;
+	std::wstring height;
 };

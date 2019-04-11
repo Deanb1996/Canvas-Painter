@@ -3,5 +3,5 @@
 
 struct Colour
 {
-	MathsHelper::Vector4 Colour;
+	MathsHelper::Vector4 colour;
 };

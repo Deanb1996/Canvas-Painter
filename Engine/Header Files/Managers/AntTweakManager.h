@@ -24,10 +24,10 @@ public:
 
 	static std::shared_ptr<AntTweakManager> Instance();
 
-	void Init(const TwGraphAPI& graphicsAPI, ID3D11Device* const dXDevice, const int& width, const int& height) const;
-	void AddBar(const std::string& barName);
+	void Init(const TwGraphAPI& pGraphicsAPI, void* const pDevice, const int& pWidth, const int& pHeight) const;
+	void AddBar(const std::string& pBarName);
 	void AddVariable(const std::string & pBarName, const std::string & pVariableName, const TwType & pVariableType, const void * const pVariable, const std::string & pBehaviourDefinition);
-	void DeleteBar(const std::string& barName);
+	void DeleteBar(const std::string& pBarName);
 	void Draw();
 	void Cleanup() const;
 };

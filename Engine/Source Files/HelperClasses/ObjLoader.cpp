@@ -63,9 +63,9 @@ pair<vector<unsigned>, vector<Vertex>> ObjLoader::LoadObject(const wstring & pFi
 					//if it hasnt been created, add the vertex, and add a new index
 					addedInd.emplace_back(make_tuple(posIndex, texIndex, normIndex));
 					Vertex v{};
-					v.mPosition = positions[posIndex - 1];
-					v.mNormal = normals[normIndex - 1];
-					v.mTexCoords = texCoords[texIndex - 1];
+					v.position = positions[posIndex - 1];
+					v.normal = normals[normIndex - 1];
+					v.texCoords = texCoords[texIndex - 1];
 					vertices.push_back(v);
 					indices.push_back(indexCount);
 					++indexCount;

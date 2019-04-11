@@ -11,10 +11,12 @@ private:
 	std::shared_ptr<ECSManager> mEcsManager = ECSManager::Instance();
 	std::shared_ptr<InputManager_DX> mInputManager = InputManager_DX::Instance();
 	std::shared_ptr<SceneManager> mSceneManager = SceneManager::Instance();
+	std::shared_ptr<AntTweakManager> mAntTweakManager = AntTweakManager::Instance();
 
 	//Entity IDs
 	int mCameraID;
 	int mRayID;
+	int mCubeCount;
 
 	//Camera
 	Camera mActiveCamera;

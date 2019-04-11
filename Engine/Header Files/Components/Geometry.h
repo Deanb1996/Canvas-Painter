@@ -2,5 +2,5 @@
 
 struct Geometry
 {
-	std::wstring mFilename;
+	std::wstring filename;
 };

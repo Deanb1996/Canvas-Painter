@@ -5,11 +5,11 @@
 
 struct Transform
 {
-	MathsHelper::Matrix4 mTransform;
-	MathsHelper::Vector4 mTranslation;
-	MathsHelper::Vector4 mRotation;
-	MathsHelper::Vector4 mScale;
-	MathsHelper::Vector4 mForward;
-	MathsHelper::Vector4 mRight;
-	MathsHelper::Vector4 mUp;
+	MathsHelper::Matrix4 transform;
+	MathsHelper::Vector4 translation;
+	MathsHelper::Vector4 rotation;
+	MathsHelper::Vector4 scale;
+	MathsHelper::Vector4 forward;
+	MathsHelper::Vector4 right;
+	MathsHelper::Vector4 up;
 };

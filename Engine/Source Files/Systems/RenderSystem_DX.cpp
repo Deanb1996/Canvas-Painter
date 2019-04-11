@@ -44,11 +44,13 @@ HRESULT RenderSystem_DX::Init()
 	RECT rc;
 	GetClientRect(mWindow, &rc);
 	mWidth = rc.right - rc.left;
-	mHeight = rc.bottom - rc.top;
+	height = rc.bottom - rc.top;
 
 	hr = CreateDevice();
 	if (FAILED(hr))
 		return hr;
+
+	mAntTweakManager->Init(TW_DIRECT3D11, mDevice.Get(), mWidth, height);
 
 	hr = CreateSwapChain();
 	if (FAILED(hr))
@@ -179,7 +181,7 @@ HRESULT RenderSystem_DX::CreateSwapChain()
 		DXGI_SWAP_CHAIN_DESC1 sd;
 		ZeroMemory(&sd, sizeof(sd));
 		sd.Width = mWidth;
-		sd.Height = mHeight;
+		sd.Height = height;
 		sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		sd.SampleDesc.Count = 1;
 		sd.SampleDesc.Quality = 0;
@@ -200,7 +202,7 @@ HRESULT RenderSystem_DX::CreateSwapChain()
 		ZeroMemory(&sd, sizeof(sd));
 		sd.BufferCount = 1;
 		sd.BufferDesc.Width = mWidth;
-		sd.BufferDesc.Height = mHeight;
+		sd.BufferDesc.Height = height;
 		sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		sd.BufferDesc.RefreshRate.Numerator = 60;
 		sd.BufferDesc.RefreshRate.Denominator = 1;
@@ -254,7 +256,7 @@ HRESULT RenderSystem_DX::CreateDepth()
 	D3D11_TEXTURE2D_DESC depthDesc;
 	ZeroMemory(&depthDesc, sizeof(depthDesc));
 	depthDesc.Width = mWidth;
-	depthDesc.Height = mHeight;
+	depthDesc.Height = height;
 	depthDesc.MipLevels = 1;
 	depthDesc.ArraySize = 1;
 	depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -348,7 +350,7 @@ void RenderSystem_DX::CreateViewport() const
 	// Setup the viewport
 	D3D11_VIEWPORT vp;
 	vp.Width = static_cast<float>(mWidth);
-	vp.Height = static_cast<float>(mHeight);
+	vp.Height = static_cast<float>(height);
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;
@@ -386,6 +388,7 @@ HRESULT RenderSystem_DX::CreateConstantBuffers()
 /// </summary>
 void RenderSystem_DX::Cleanup()
 {
+	mAntTweakManager->Cleanup();
 }
 
 /// <summary>
@@ -395,17 +398,17 @@ void RenderSystem_DX::Cleanup()
 void RenderSystem_DX::AssignEntity(const Entity & pEntity)
 {
 	//Checks if entity mask matches the renderable mask
-	if ((pEntity.mComponentMask & mMask) == mMask)
+	if ((pEntity.componentMask & mMask) == mMask)
 	{
 		//Update entry in systems entity list
-		mEntities[pEntity.mID] = pEntity;
+		mEntities[pEntity.ID] = pEntity;
 	}
 
 	//Checks if entity mask matches the light mask
-	if ((pEntity.mComponentMask & ComponentType::COMPONENT_LIGHT) == ComponentType::COMPONENT_LIGHT)
+	if ((pEntity.componentMask & ComponentType::COMPONENT_LIGHT) == ComponentType::COMPONENT_LIGHT)
 	{
 		//If the entity has a light component then find it in the lights
-		const auto entity = find_if(mLights.begin(), mLights.end(), [&](const Entity& entity) {return entity.mID == pEntity.mID; });
+		const auto entity = find_if(mLights.begin(), mLights.end(), [&](const Entity& entity) {return entity.ID == pEntity.ID; });
 		if (entity == mLights.end())
 		{
 			//If not found then add it
@@ -414,18 +417,18 @@ void RenderSystem_DX::AssignEntity(const Entity & pEntity)
 		else
 		{
 			//If already in the list, then update mask
-			entity->mComponentMask = pEntity.mComponentMask;
+			entity->componentMask = pEntity.componentMask;
 		}
 	}
 
 	//If the entity is marked as a camera set it to the active camera
 	//TODO: Implement multiple cameras
-	if ((pEntity.mComponentMask & ComponentType::COMPONENT_CAMERA) == ComponentType::COMPONENT_CAMERA)
+	if ((pEntity.componentMask & ComponentType::COMPONENT_CAMERA) == ComponentType::COMPONENT_CAMERA)
 	{
 		mActiveCamera = &pEntity;
 
 		//if already in the list, then update mask
-		//mActiveCamera->mComponentMask = pEntity.mComponentMask;
+		//mActiveCamera->componentMask = pEntity.componentMask;
 	}
 }
 
@@ -436,22 +439,22 @@ void RenderSystem_DX::AssignEntity(const Entity & pEntity)
 void RenderSystem_DX::ReAssignEntity(const Entity & pEntity)
 {
 	//Checks if entity mask matches the renderable mask
-	if ((pEntity.mComponentMask & mMask) == mMask)
+	if ((pEntity.componentMask & mMask) == mMask)
 	{
 		//If the entity matches renderable mask then update entry in systems entity list
-		mEntities[pEntity.mID] = pEntity;
+		mEntities[pEntity.ID] = pEntity;
 	}
 	else
 	{
 		//If the mask doesn't match then set ID to -1
-		mEntities[pEntity.mID].mID = -1;
+		mEntities[pEntity.ID].ID = -1;
 	}
 
 	//Checks if entity mask matches the light mask
-	if ((pEntity.mComponentMask & ComponentType::COMPONENT_LIGHT) == ComponentType::COMPONENT_LIGHT)
+	if ((pEntity.componentMask & ComponentType::COMPONENT_LIGHT) == ComponentType::COMPONENT_LIGHT)
 	{
 		//If the entity has a light component then find it in the lights
-		const auto entity = find_if(mLights.begin(), mLights.end(), [&](const Entity& entity) {return entity.mID == pEntity.mID; });
+		const auto entity = find_if(mLights.begin(), mLights.end(), [&](const Entity& entity) {return entity.ID == pEntity.ID; });
 		if (entity == mLights.end())
 		{
 			//If not found then add it
@@ -460,13 +463,13 @@ void RenderSystem_DX::ReAssignEntity(const Entity & pEntity)
 		else
 		{
 			//If already in the list, then update mask
-			entity->mComponentMask = pEntity.mComponentMask;
+			entity->componentMask = pEntity.componentMask;
 		}
 	}
 	else
 	{
 		//If the mask doesn't match then remove it (if it wasn't in the list then the remove acts as a search to confirm it is not there)
-		mLights.erase(remove_if(mLights.begin(), mLights.end(), [&](const Entity& entity) {return entity.mID == pEntity.mID; }), mLights.end());
+		mLights.erase(remove_if(mLights.begin(), mLights.end(), [&](const Entity& entity) {return entity.ID == pEntity.ID; }), mLights.end());
 	}
 
 	//TODO: Implement multiple cameras
@@ -490,26 +493,26 @@ void RenderSystem_DX::Process()
 	}
 	for (const Entity& entity : mEntities)
 	{
-		if (entity.mID != -1)
+		if (entity.ID != -1)
 		{
 			//If geometry of entity is not already in the buffers, load entities geometry
-			if (mEcsManager->GeometryComp(entity.mID)->mFilename != mActiveGeometry)
+			if (mEcsManager->GeometryComp(entity.ID)->filename != mActiveGeometry)
 			{
 				mGeometry = LoadGeometry(entity);
 				mGeometry->Load(this);
-				mActiveGeometry = mEcsManager->GeometryComp(entity.mID)->mFilename;
+				mActiveGeometry = mEcsManager->GeometryComp(entity.ID)->filename;
 			}
 			//LoadTexture(entity);
 			//If shader of entity is not already in the buffers, load entities shader
-			if (mEcsManager->ShaderComp(entity.mID)->mFilename != mActiveShader)
+			if (mEcsManager->ShaderComp(entity.ID)->filename != mActiveShader)
 			{
 				LoadShaders(entity);
-				mActiveShader = mEcsManager->ShaderComp(entity.mID)->mFilename;
+				mActiveShader = mEcsManager->ShaderComp(entity.ID)->filename;
 			}
 
 			//Update constant buffer with world matrix and object colour
-			mCB.mWorld = XMFLOAT4X4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(entity.mID)->mTransform)));
-			mCB.mColour = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->ColourComp(entity.mID)->Colour)));
+			mCB.mWorld = XMFLOAT4X4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(entity.ID)->transform)));
+			mCB.colour = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->ColourComp(entity.ID)->colour)));
 			mContext->UpdateSubresource(mConstantBuffer.Get(), 0, nullptr, &mCB, 0, 0);
 
 			//mContext->OMSetBlendState()
@@ -519,6 +522,8 @@ void RenderSystem_DX::Process()
 			mGeometry->Draw(this);
 		}
 	}
+
+	mAntTweakManager->Draw();
 
 	SwapBuffers();
 }
@@ -546,7 +551,7 @@ void RenderSystem_DX::SwapBuffers() const
 /// <param name="pEntity">Entity to load geometry for</param>
 VBO * const RenderSystem_DX::LoadGeometry(const Entity& pEntity) const
 {
-	const auto geometry = mResourceManager->LoadGeometry(this, mEcsManager->GeometryComp(pEntity.mID)->mFilename);
+	const auto geometry = mResourceManager->LoadGeometry(this, mEcsManager->GeometryComp(pEntity.ID)->filename);
 	return geometry;
 }
 
@@ -556,7 +561,7 @@ VBO * const RenderSystem_DX::LoadGeometry(const Entity& pEntity) const
 /// <param name="pEntity">Entity to load shader for</param>
 void RenderSystem_DX::LoadShaders(const Entity & pEntity) const
 {
-	const auto shader = mResourceManager->LoadShader(this, mEcsManager->ShaderComp(pEntity.mID)->mFilename);
+	const auto shader = mResourceManager->LoadShader(this, mEcsManager->ShaderComp(pEntity.ID)->filename);
 	shader->Load(this);
 }
 
@@ -567,21 +572,21 @@ void RenderSystem_DX::LoadShaders(const Entity & pEntity) const
 void RenderSystem_DX::LoadTexture(const Entity & pEntity) const
 {
 	//Loads diffuse texture from texture component
-	auto texture = mResourceManager->LoadTexture(this, mEcsManager->TextureComp(pEntity.mID)->mDiffuse);
+	auto texture = mResourceManager->LoadTexture(this, mEcsManager->TextureComp(pEntity.ID)->diffuse);
 	if (texture)
 	{
 		texture->Load(this, 0);
 	}
 
 	//Loads normal map texture from texture component
-	texture = mResourceManager->LoadTexture(this, mEcsManager->TextureComp(pEntity.mID)->mNormal);
+	texture = mResourceManager->LoadTexture(this, mEcsManager->TextureComp(pEntity.ID)->normal);
 	if (texture)
 	{
 		texture->Load(this, 1);
 	}
 
 	//Loads height map texture from texture component
-	texture = mResourceManager->LoadTexture(this, mEcsManager->TextureComp(pEntity.mID)->mHeight);
+	texture = mResourceManager->LoadTexture(this, mEcsManager->TextureComp(pEntity.ID)->height);
 	if (texture)
 	{
 		texture->Load(this, 2);
@@ -594,10 +599,10 @@ void RenderSystem_DX::LoadTexture(const Entity & pEntity) const
 void RenderSystem_DX::SetViewProj()
 {
 	//Calculates the view matrix and sets it in the constant buffer
-	const XMFLOAT4 position(reinterpret_cast<float*>(&(mEcsManager->TransformComp(mActiveCamera->mID)->mTranslation)));
-	mCB.mCameraPosition = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(mActiveCamera->mID)->mTranslation)));
-	const XMFLOAT4 lookAt(reinterpret_cast<float*>(&(mEcsManager->CameraComp(mActiveCamera->mID)->lookAt)));
-	const XMFLOAT4 up(reinterpret_cast<float*>(&(mEcsManager->CameraComp(mActiveCamera->mID)->up)));
+	const XMFLOAT4 position(reinterpret_cast<float*>(&(mEcsManager->TransformComp(mActiveCamera->ID)->translation)));
+	mCB.mCameraPosition = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(mActiveCamera->ID)->translation)));
+	const XMFLOAT4 lookAt(reinterpret_cast<float*>(&(mEcsManager->CameraComp(mActiveCamera->ID)->lookAt)));
+	const XMFLOAT4 up(reinterpret_cast<float*>(&(mEcsManager->CameraComp(mActiveCamera->ID)->up)));
 
 	const XMVECTOR posVec = XMLoadFloat4(&position);
 	const XMVECTOR lookAtVec = XMLoadFloat4(&lookAt);
@@ -606,10 +611,10 @@ void RenderSystem_DX::SetViewProj()
 	XMStoreFloat4x4(&mCB.mView, XMMatrixTranspose(XMMatrixLookAtLH(posVec, lookAtVec, upVec)));
 
 	//Calculates the projection matrix and sets it in the constant buffer
-	const float fov = XMConvertToRadians(mEcsManager->CameraComp(mActiveCamera->mID)->FOV);
-	const float aspectRatio = static_cast<float>(mWidth) / static_cast<float>(mHeight);
-	const float nearClip = mEcsManager->CameraComp(mActiveCamera->mID)->nearPlane;
-	const float farClip = mEcsManager->CameraComp(mActiveCamera->mID)->farPlane;
+	const float fov = XMConvertToRadians(mEcsManager->CameraComp(mActiveCamera->ID)->FOV);
+	const float aspectRatio = static_cast<float>(mWidth) / static_cast<float>(height);
+	const float nearClip = mEcsManager->CameraComp(mActiveCamera->ID)->nearPlane;
+	const float farClip = mEcsManager->CameraComp(mActiveCamera->ID)->farPlane;
 
 	XMStoreFloat4x4(&mCB.mProj, XMMatrixTranspose(XMMatrixPerspectiveFovLH(fov, aspectRatio, nearClip, farClip)));
 }
@@ -619,7 +624,7 @@ void RenderSystem_DX::SetViewProj()
 /// </summary>
 void RenderSystem_DX::SetLights()
 {
-	mCB.mLightPosition = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(mLights[0].mID)->mTranslation)));
-	mCB.mLightColour = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->LightComp(mLights[0].mID)->mColour)));
+	mCB.mLightPosition = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(mLights[0].ID)->translation)));
+	mCB.mLightColour = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->LightComp(mLights[0].ID)->colour)));
 }
 

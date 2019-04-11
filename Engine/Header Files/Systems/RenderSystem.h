@@ -2,12 +2,14 @@
 #include "ISystem.h"
 #include "wrl.h"
 #include "VBO.h"
+#include "AntTweakManager.h"
 
 class RenderSystem : public ISystem
 {
 protected:
 	RenderSystem(const ComponentType& pMask);
 
+	std::shared_ptr<AntTweakManager> mAntTweakManager = AntTweakManager::Instance();
 public:
 	virtual ~RenderSystem() {};
 

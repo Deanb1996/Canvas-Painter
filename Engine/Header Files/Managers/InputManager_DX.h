@@ -5,6 +5,7 @@
 #include <Mouse.h>
 #include <memory>
 #include "InputManager.h"
+#include "AntTweakBar.h"
 
 class InputManager_DX : public InputManager
 {
