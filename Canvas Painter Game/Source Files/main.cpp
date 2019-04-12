@@ -1,6 +1,6 @@
+#include "Managers.h"
 #include <windows.h>
 #include <memory>
-#include "Managers.h"
 #include "Systems.h"
 #include "GameScene.h"
 #include "RayAABBIntersectionSystem.h"
@@ -44,7 +44,11 @@ int WINAPI wWinMain(_In_ const HINSTANCE pHInstance, _In_opt_ const HINSTANCE pH
 	sceneManager->SetWindowWidthHeight(width, height);
 
 	//Render systems
+#ifdef DIRECTX
 	std::shared_ptr<ISystem> system = std::make_shared<RenderSystem_DX>(hWnd);
+#elif OPENGL
+	std::shared_ptr<ISystem> system = std::make_shared<RenderSystem_GL>(hWnd);
+#endif
 	ecsManager->AddRenderSystem(system);
 
 	//Update systems
@@ -85,7 +89,11 @@ HRESULT InitWindow(const HINSTANCE pHInstance, const int pNCmdShow)
 	WNDCLASSEX wcex;
 	wcex.cbSize = sizeof(WNDCLASSEX);
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
+#ifdef  DIRECTX
 	wcex.lpfnWndProc = InputManager_DX::WndProc;
+#elif OPENGL
+	wcex.lpfnWndProc = InputManager_GL::WndProc;
+#endif
 	wcex.cbClsExtra = 0;
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = pHInstance;

@@ -11,6 +11,8 @@
 #include "VBO_DX.h"
 #include "ShaderObject_DX.h"
 #include "TextureObject_DX.h"
+#include "ShaderObject_GL.h"
+#include "TextureObject_GL.h"
 #include "ECSManager.h"
 
 class RenderSystem;

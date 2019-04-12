@@ -29,10 +29,10 @@ std::shared_ptr<AntTweakManager> AntTweakManager::Instance()
 /// Initialises anttweak GUI
 /// </summary>
 /// <param name="graphicsAPI">Graphics API used in application</param>
-/// <param name="dXDevice">Pointer to graphics device</param>
+/// <param name="pDevice">Pointer to graphics device</param>
 /// <param name="width">Width of window</param>
 /// <param name="height">Height of window</param>
-void AntTweakManager::Init(const TwGraphAPI & pGraphicsAPI, void * const pDevice, const int & pWidth, const int & pHeight) const
+void AntTweakManager::Init(const TwGraphAPI & pGraphicsAPI, void * const pDevice, const int pWidth, const int pHeight) const
 {
 	TwInit(pGraphicsAPI, pDevice);
 	TwWindowSize(pWidth, pHeight);

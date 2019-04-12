@@ -36,7 +36,12 @@ const TextureObject * const ResourceManager::LoadTexture(const RenderSystem * co
 		}
 	}
 	//else create a new texture
+
+#ifdef  DIRECTX
 	TextureObject* newTexture = new TextureObject_DX();
+#elif OPENGL
+	TextureObject* newTexture = new TextureObject_GL();
+#endif
 	hr = newTexture->Create(pRenderer, pFilename);
 
 	if (FAILED(hr))
@@ -69,7 +74,11 @@ VBO * const ResourceManager::LoadGeometry(const RenderSystem * const pRenderer, 
 		}
 	}
 	//else create a new geometry
+#ifdef  DIRECTX
 	VBO* newGeometry = new VBO_DX();
+#elif OPENGL
+	VBO* newGeometry = new VBO_GL();
+#endif
 	hr = newGeometry->Create(pRenderer, pFilename);
 	if (FAILED(hr))
 	{
@@ -100,7 +109,11 @@ const ShaderObject * const ResourceManager::LoadShader(const RenderSystem * cons
 		}
 	}
 	//else create a new shader
-	ShaderObject* newShader = new ShaderObject_DX();
+#ifdef  DIRECTX
+	ShaderObject* newShader =  new ShaderObject_DX();
+#elif OPENGL
+	ShaderObject* newShader = new ShaderObject_GL();
+#endif
 	hr = newShader->CreateVertex(pRenderer, pFilename, "VS", "vs_5_0");
 	if (FAILED(hr))
 	{

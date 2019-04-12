@@ -9,7 +9,11 @@ class GameScene : public Scene
 private:
 	//Managers
 	std::shared_ptr<ECSManager> mEcsManager = ECSManager::Instance();
+#ifdef  DIRECTX
 	std::shared_ptr<InputManager_DX> mInputManager = InputManager_DX::Instance();
+#elif OPENGL
+	std::shared_ptr<InputManager_GL> mInputManager = InputManager_GL::Instance();
+#endif
 	std::shared_ptr<SceneManager> mSceneManager = SceneManager::Instance();
 	std::shared_ptr<AntTweakManager> mAntTweakManager = AntTweakManager::Instance();
 
