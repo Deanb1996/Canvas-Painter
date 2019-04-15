@@ -72,12 +72,13 @@
     <ClInclude Include="Header Files\DataStructs\DepthState.h" />
     <ClInclude Include="Header Files\DataStructs\Entity.h" />
     <ClInclude Include="Header Files\DataStructs\Vertex.h" />
-    <ClInclude Include="Header Files\HelperClasses\NetworkListener.h" />
     <ClInclude Include="Header Files\HelperClasses\ObjLoader.h" />
     <ClInclude Include="Header Files\HelperClasses\Scene.h" />
     <ClInclude Include="Header Files\HelperClasses\ShaderObject.h" />
     <ClInclude Include="Header Files\HelperClasses\ShaderObject_DX.h" />
     <ClInclude Include="Header Files\HelperClasses\ShaderObject_GL.h" />
+    <ClInclude Include="Header Files\HelperClasses\Task.h" />
+    <ClInclude Include="Header Files\HelperClasses\Thread.h" />
     <ClInclude Include="Header Files\HelperClasses\TextureObject.h" />
     <ClInclude Include="Header Files\HelperClasses\TextureObject_DX.h" />
     <ClInclude Include="Header Files\HelperClasses\TextureObject_GL.h" />
@@ -106,10 +107,11 @@
     <ClInclude Include="Header Files\Systems\Systems.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source Files\HelperClasses\NetworkListener.cpp" />
     <ClCompile Include="Source Files\HelperClasses\ObjLoader.cpp" />
     <ClCompile Include="Source Files\HelperClasses\ShaderObject_DX.cpp" />
     <ClCompile Include="Source Files\HelperClasses\ShaderObject_GL.cpp" />
+    <ClCompile Include="Source Files\HelperClasses\Task.cpp" />
+    <ClCompile Include="Source Files\HelperClasses\Thread.cpp" />
     <ClCompile Include="Source Files\HelperClasses\TextureObject_DX.cpp" />
     <ClCompile Include="Source Files\HelperClasses\TextureObject_GL.cpp" />
     <ClCompile Include="Source Files\HelperClasses\VBO.cpp" />

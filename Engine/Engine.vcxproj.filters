@@ -195,14 +195,17 @@
     <ClInclude Include="Header Files\Managers\InputManager_GL.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Header Files\HelperClasses\NetworkListener.h">
-      <Filter>Header Files\HelperClasses</Filter>
-    </ClInclude>
     <ClInclude Include="Header Files\Managers\NetworkManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
     <ClInclude Include="Header Files\Managers\ThreadManager.h">
       <Filter>Header Files\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\HelperClasses\Thread.h">
+      <Filter>Header Files\HelperClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\HelperClasses\Task.h">
+      <Filter>Header Files\HelperClasses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -278,7 +281,10 @@
     <ClCompile Include="Source Files\Managers\ThreadManager.cpp">
       <Filter>Source Files\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="Source Files\HelperClasses\NetworkListener.cpp">
+    <ClCompile Include="Source Files\HelperClasses\Thread.cpp">
+      <Filter>Source Files\HelperClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="Source Files\HelperClasses\Task.cpp">
       <Filter>Source Files\HelperClasses</Filter>
     </ClCompile>
   </ItemGroup>

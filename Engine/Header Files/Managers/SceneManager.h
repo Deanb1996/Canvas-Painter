@@ -10,6 +10,7 @@ class SceneManager
 private:
 	//Managers
 	std::shared_ptr<ECSManager> mEcsManager = ECSManager::Instance();
+	std::shared_ptr<ThreadManager> mThreadManager = ThreadManager::Instance();
 #ifdef  DIRECTX
 	std::shared_ptr<InputManager_DX> mInputManager = InputManager_DX::Instance();
 #elif OPENGL

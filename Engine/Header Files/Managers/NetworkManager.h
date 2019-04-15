@@ -1,15 +1,23 @@
 #pragma once
-#include "NetworkListener.h"
+#include <WinSock2.h>
 #include <memory>
+#include <iostream>
+#include "ThreadManager.h"
 
 class NetworkManager
 {
 private:
 
-	//Private constructor for singleton pattern
-	NetworkManager();
+	std::shared_ptr<ThreadManager> mThreadManager = ThreadManager::Instance();
 
-	void InitWinSock();
+	SOCKET mListenSocket;
+	SOCKET mPeerSocket;
+	sockaddr_in mPort;
+
+	//Private constructor for singleton pattern
+	NetworkManager(const int pPort);
+
+	void InitWinSock(const int pPort);
 public:
 	~NetworkManager();
 
@@ -19,5 +27,5 @@ public:
 	NetworkManager& operator=(NetworkManager const&) = delete;
 
 
-	static std::shared_ptr< NetworkManager > Instance();
+	static std::shared_ptr< NetworkManager > Instance(const int pPort);
 };

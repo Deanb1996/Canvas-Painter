@@ -14,6 +14,17 @@ void SceneManager::Update()
 	mScene->Update();
 	mInputManager->Update();
 
+	mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #0"); }, 1);
+	mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #1"); }, 1);
+	mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #2"); }, 1);
+	mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #3"); }, 1);
+	mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #4"); }, 1);
+	mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #5"); }, 1);
+	mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #6"); }, 1);
+	mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #7"); }, 1);
+
+	mThreadManager->ProcessTasks();
+
 	// Average the fps over n frames.
 	mAverageDeltaTime = 0;
 	for (auto i = 0; i < mLast50Frames.size() - 1; i++)
