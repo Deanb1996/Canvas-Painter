@@ -7,6 +7,7 @@
 /// </summary>
 /// <param name="pPort"></param>
 NetworkManager::NetworkManager(const int pPort)
+	:mPeers(0)
 {
 	InitWinSock(pPort);
 }
@@ -16,13 +17,14 @@ NetworkManager::NetworkManager(const int pPort)
 /// 
 /// </summary>
 /// <param name="pPeerSocket"></param>
-void ProcessPeer(SOCKET pPeerSocket)
+void NetworkManager::ProcessPeer(void* pPeerSocket)
 {
 	char buffer;
+	SOCKET peerSocket = *(SOCKET*)pPeerSocket;
 	//Handle communication until the peer disconnects
 	do
 	{
-		if (recv(pPeerSocket, &buffer, 1, 0) == SOCKET_ERROR)
+		if (recv(peerSocket, &buffer, 1, 0) == SOCKET_ERROR)
 		{
 			std::cerr << "Receive failed with " << WSAGetLastError() << std::endl;
 			break;
@@ -31,7 +33,7 @@ void ProcessPeer(SOCKET pPeerSocket)
 		{
 			std::cout << "Message = " << buffer << std::endl;
 
-			if (send(pPeerSocket, "Hi", 2, 0) == SOCKET_ERROR)
+			if (send(peerSocket, "Hi", 2, 0) == SOCKET_ERROR)
 			{
 				std::cerr << "Send failed with " << WSAGetLastError() << std::endl;
 			}
@@ -54,11 +56,8 @@ NetworkManager::~NetworkManager()
 /// <summary>
 /// 
 /// </summary>
-/// <param name="pListenSocket"></param>
-/// <param name="pThreadManager"></param>
-void Update(SOCKET pListenSocket, std::shared_ptr<ThreadManager> pThreadManager)
+void NetworkManager::Update()
 {
-	int peers = 0;
 	while (true)
 	{
 		SOCKET peerSocket = SOCKET_ERROR;
@@ -66,7 +65,8 @@ void Update(SOCKET pListenSocket, std::shared_ptr<ThreadManager> pThreadManager)
 		//Wait for new peer and create socket for peer when peer connects
 		while (peerSocket == SOCKET_ERROR)
 		{
-			peerSocket = accept(pListenSocket, NULL, NULL);
+			OutputDebugString(L"Listening for peer!");
+			peerSocket = accept(mListenSocket, NULL, NULL);
 		}
 
 		//Verify acception of socket
@@ -80,7 +80,8 @@ void Update(SOCKET pListenSocket, std::shared_ptr<ThreadManager> pThreadManager)
 			std::cout << "New peer connected!" << std::endl;
 
 			//Add peer socket to thread
-			peers++;
+			mThreadManager->AddTask(std::bind(&NetworkManager::ProcessPeer, this, std::placeholders::_1), &peerSocket, nullptr, 1);
+			mPeers++;
 		}
 	}
 }
@@ -123,6 +124,7 @@ void NetworkManager::InitWinSock(const int pPort)
 	else
 	{
 		//Add listener to thread
+		mThreadManager->AddTask(std::bind(&NetworkManager::Update, this), nullptr, nullptr, 1);
 	}
 }
 

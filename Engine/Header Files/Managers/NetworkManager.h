@@ -13,11 +13,14 @@ private:
 	SOCKET mListenSocket;
 	SOCKET mPeerSocket;
 	sockaddr_in mPort;
+	int mPeers;
 
 	//Private constructor for singleton pattern
 	NetworkManager(const int pPort);
 
 	void InitWinSock(const int pPort);
+	void Update();
+	void ProcessPeer(void* pPeerSocket);
 public:
 	~NetworkManager();
 

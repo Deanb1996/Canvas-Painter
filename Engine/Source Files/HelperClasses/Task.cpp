@@ -4,8 +4,8 @@
 /// 
 /// </summary>
 /// <param name="mFunction"></param>
-Task::Task(void(*pFunction)(), const int pThreadAffinity)
-	:mFunction(pFunction), mAffinity(pThreadAffinity)
+Task::Task(std::function<void(void* param1, void* param2)> pFunction, void* pParam1, void* pParam2, const int pThreadAffinity)
+	:mParam1(pParam1), mParam2(pParam2), mFunction(pFunction), mAffinity(pThreadAffinity)
 {
 }
 
@@ -21,7 +21,7 @@ Task::~Task()
 /// </summary>
 void Task::Run()
 {
-	mFunction();
+	mFunction(mParam1, mParam2);
 	mIsDone = true;
 }
 

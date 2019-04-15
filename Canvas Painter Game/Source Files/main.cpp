@@ -36,7 +36,7 @@ int WINAPI wWinMain(_In_ const HINSTANCE pHInstance, _In_opt_ const HINSTANCE pH
 	std::shared_ptr<ECSManager> ecsManager = ECSManager::Instance();
 	std::shared_ptr<SceneManager> sceneManager = SceneManager::Instance();
 	std::shared_ptr<ThreadManager> threadManager = ThreadManager::Instance();
-	//std::shared_ptr<NetworkManager> networkManager = NetworkManager::Instance(9171);
+	std::shared_ptr<NetworkManager> networkManager = NetworkManager::Instance(9171);
 
 	//Get window height and width for scene manager
 	RECT rc;

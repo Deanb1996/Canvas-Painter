@@ -1,14 +1,17 @@
 #pragma once
+#include <functional>
 
 class Task
 {
 private:
-	void(*mFunction)() = nullptr;
+	std::function<void(void* param1, void* param2)> mFunction = nullptr;
+	void* mParam1;
+	void* mParam2;
 	int mAffinity;
 	bool mIsDone;
 
 public:
-	Task(void(*pFunction)(), const int pThreadAffinity);
+	Task(std::function<void(void* param1, void* param2)> pFunction, void* pParam1, void* pParam2, const int pThreadAffinity);
 	~Task();
 
 	void Run();

@@ -29,9 +29,9 @@ ThreadManager::~ThreadManager()
 /// </summary>
 /// <param name="pFunction"></param>
 /// <param name="pThreadAffinity"></param>
-const Task* const  ThreadManager::AddTask(void(*pFunction)(), const int pThreadAffinity)
+const Task* const  ThreadManager::AddTask(std::function<void(void* param1, void* param2)> pFunction, void* pParam1, void* pParam2, const int pThreadAffinity)
 {
-	Task* task = new Task(pFunction, pThreadAffinity);
+	Task* task = new Task(pFunction, pParam1, pParam2, pThreadAffinity);
 
 	mTasks.push(task);
 
