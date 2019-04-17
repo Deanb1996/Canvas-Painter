@@ -1,15 +1,18 @@
 #include "Thread.h"
 
+/// <summary>
+/// The main function for the thread
+/// Calls the run function of the thread class
+/// </summary>
 auto threadMain = [](Thread* pThread)
 {
 	pThread->Run();
-	return 0;
 };
 
 /// <summary>
-/// 
+/// Constructor for the thread class
+/// Calls the start method upon construction, creating a new thread
 /// </summary>
-/// <param name="pID"></param>
 Thread::Thread()
 	:mTask(nullptr), mNeedsTask(true)
 {
@@ -17,14 +20,14 @@ Thread::Thread()
 }
 
 /// <summary>
-/// 
+/// Default destructor
 /// </summary>
 Thread::~Thread()
 {
 }
 
 /// <summary>
-/// 
+/// Creates a C++ std:thread that runs the threadMain function and passes this thread class as a parameter so it can call the functions of the thread class
 /// </summary>
 void Thread::Start()
 {
@@ -32,9 +35,9 @@ void Thread::Start()
 }
 
 /// <summary>
-/// 
+/// Sets the task of the thread to a given task
 /// </summary>
-/// <param name="pTask"></param>
+/// <param name="pTask">The given task to assign to the thread</param>
 void Thread::SetTask(Task* pTask)
 {
 	mTask = pTask;
@@ -42,7 +45,7 @@ void Thread::SetTask(Task* pTask)
 }
 
 /// <summary>
-/// 
+/// The run method of the thread that contains all the logic executed on the thread
 /// </summary>
 void Thread::Run()
 {
@@ -50,33 +53,35 @@ void Thread::Run()
 	{
 		if (mTask)
 		{
+			//Sets thread affinity to the affinity specified in the task, runs the task and then sets thread to requiring new task
 			SetThreadAffinity(mTask->ThreadAffinity());
 			mTask->Run();
 			mTask = nullptr;
-		}
-		else
-		{
 			mNeedsTask = true;
 		}
+		//Sleep to prevent thread taking 100% cpu with a busy while
 		Sleep(1);
 	}
 }
 
 /// <summary>
-/// 
+/// Get method for the Threads need task status
 /// </summary>
-/// <returns></returns>
+/// <returns>A bool determining whether the thread needs a task or not</returns>
 bool Thread::NeedsTask()
 {
 	return mNeedsTask;;
 }
 
 /// <summary>
-/// 
+/// Sets the thread affinity to the given core
 /// </summary>
-/// <param name="pCore"></param>
+/// <param name="pCore">Core to set the threads affinity to</param>
 void Thread::SetThreadAffinity(const int pCore)
 {
-	DWORD_PTR mask = (1 << pCore);
-	SetThreadAffinityMask(mThread.native_handle(), mask);
+	if (!(pCore < 0))
+	{
+		DWORD_PTR mask = (1 << pCore);
+		SetThreadAffinityMask(mThread.native_handle(), mask);
+	}
 }

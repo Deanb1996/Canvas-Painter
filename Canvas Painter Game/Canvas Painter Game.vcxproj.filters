@@ -39,6 +39,9 @@
     <ClCompile Include="Source Files\Systems\RayAABBIntersectionSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Source Files\Systems\NetworkSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -48,6 +51,9 @@
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Header Files\Systems\RayAABBIntersectionSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\Systems\NetworkSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>

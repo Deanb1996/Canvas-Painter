@@ -1,4 +1,5 @@
 #include "ECSManager.h"
+#include "RenderSystem_DX.h"
 
 using namespace std;
 
@@ -211,6 +212,18 @@ void ECSManager::ProcessSystems()
 
 	for (auto & system : mRenderSystems)
 	{
+		//if (mRenderTask)
+		//{
+		//	if (mRenderTask->IsDone())
+		//	{
+		//		mRenderTask->CleanUpTask();
+		//		mRenderTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
+		//	}
+		//}
+		//else
+		//{
+		//	mRenderTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
+		//}
 		system->Process();
 	}
 }

@@ -11,6 +11,7 @@ private:
 	bool mIsDone;
 
 public:
+	//Structors
 	Task(std::function<void(void* param1, void* param2)> pFunction, void* pParam1, void* pParam2, const int pThreadAffinity);
 	~Task();
 

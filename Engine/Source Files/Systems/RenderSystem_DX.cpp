@@ -481,51 +481,51 @@ void RenderSystem_DX::ReAssignEntity(const Entity & pEntity)
 /// </summary>
 void RenderSystem_DX::Process()
 {
-	ClearView();
+		ClearView();
 
-	if (mActiveCamera)
-	{
-		SetViewProj();
-	}
-	if (mLights.size() > 0)
-	{
-		SetLights();
-	}
-	for (const Entity& entity : mEntities)
-	{
-		if (entity.ID != -1)
+		if (mActiveCamera)
 		{
-			//If geometry of entity is not already in the buffers, load entities geometry
-			if (mEcsManager->GeometryComp(entity.ID)->filename != mActiveGeometry)
-			{
-				mGeometry = LoadGeometry(entity);
-				mGeometry->Load(this);
-				mActiveGeometry = mEcsManager->GeometryComp(entity.ID)->filename;
-			}
-			//LoadTexture(entity);
-			//If shader of entity is not already in the buffers, load entities shader
-			if (mEcsManager->ShaderComp(entity.ID)->filename != mActiveShader)
-			{
-				LoadShaders(entity);
-				mActiveShader = mEcsManager->ShaderComp(entity.ID)->filename;
-			}
-
-			//Update constant buffer with world matrix and object colour
-			mCB.mWorld = XMFLOAT4X4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(entity.ID)->transform)));
-			mCB.colour = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->ColourComp(entity.ID)->colour)));
-			mContext->UpdateSubresource(mConstantBuffer.Get(), 0, nullptr, &mCB, 0, 0);
-
-			//mContext->OMSetBlendState()
-			//mContext->OMSetDepthStencilState(NULL, 1);
-			mContext->RSSetState(mDefaultRasterizerState.Get());
-
-			mGeometry->Draw(this);
+			SetViewProj();
 		}
-	}
+		if (mLights.size() > 0)
+		{
+			SetLights();
+		}
+		for (const Entity& entity : mEntities)
+		{
+			if (entity.ID != -1)
+			{
+				//If geometry of entity is not already in the buffers, load entities geometry
+				if (mEcsManager->GeometryComp(entity.ID)->filename != mActiveGeometry)
+				{
+					mGeometry = LoadGeometry(entity);
+					mGeometry->Load(this);
+					mActiveGeometry = mEcsManager->GeometryComp(entity.ID)->filename;
+				}
+				//LoadTexture(entity);
+				//If shader of entity is not already in the buffers, load entities shader
+				if (mEcsManager->ShaderComp(entity.ID)->filename != mActiveShader)
+				{
+					LoadShaders(entity);
+					mActiveShader = mEcsManager->ShaderComp(entity.ID)->filename;
+				}
 
-	mAntTweakManager->Draw();
+				//Update constant buffer with world matrix and object colour
+				mCB.mWorld = XMFLOAT4X4(reinterpret_cast<float*>(&(mEcsManager->TransformComp(entity.ID)->transform)));
+				mCB.colour = XMFLOAT4(reinterpret_cast<float*>(&(mEcsManager->ColourComp(entity.ID)->colour)));
+				mContext->UpdateSubresource(mConstantBuffer.Get(), 0, nullptr, &mCB, 0, 0);
 
-	SwapBuffers();
+				//mContext->OMSetBlendState()
+				//mContext->OMSetDepthStencilState(NULL, 1);
+				mContext->RSSetState(mDefaultRasterizerState.Get());
+
+				mGeometry->Draw(this);
+			}
+		}
+
+		mAntTweakManager->Draw();
+
+		SwapBuffers();
 }
 
 /// <summary>

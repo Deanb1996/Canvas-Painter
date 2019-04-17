@@ -14,14 +14,7 @@ void SceneManager::Update()
 	mScene->Update();
 	mInputManager->Update();
 
-	//mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #0"); }, 0);
-	//mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #1"); }, 0);
-	//mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #2"); }, 0);
-	//mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #3"); }, 0);
-	//mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #4"); }, 0);
-	//mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #5"); }, 0);
-	//mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #6"); }, 0);
-	//mThreadManager->AddTask([]() {OutputDebugString(L"'Ello m8 #7"); }, 0);
+	//mThreadManager->AddTask([](void*, void*) {OutputDebugString(L"'Ello m8"); }, nullptr, nullptr, 0);
 
 	mThreadManager->ProcessTasks();
 

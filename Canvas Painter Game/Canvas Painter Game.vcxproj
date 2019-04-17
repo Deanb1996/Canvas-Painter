@@ -376,6 +376,7 @@
   <ItemGroup>
     <ClCompile Include="Source Files\main.cpp" />
     <ClCompile Include="Source Files\Scenes\GameScene.cpp" />
+    <ClCompile Include="Source Files\Systems\NetworkSystem.cpp" />
     <ClCompile Include="Source Files\Systems\RayAABBIntersectionSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -383,6 +384,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header Files\Scenes\GameScene.h" />
+    <ClInclude Include="Header Files\Systems\NetworkSystem.h" />
     <ClInclude Include="Header Files\Systems\RayAABBIntersectionSystem.h" />
   </ItemGroup>
   <ItemGroup>

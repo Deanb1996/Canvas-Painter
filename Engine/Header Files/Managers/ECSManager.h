@@ -6,10 +6,15 @@
 #include "Entity.h"
 #include <algorithm>
 #include <string>
+#include "ThreadManager.h"
+
+class RenderSystem_DX;
 
 class ECSManager
 {
 private:
+	std::shared_ptr<ThreadManager> mThreadManager = ThreadManager::Instance();
+
 	//Entities and free ID list
 	std::vector<Entity> mEntities;
 	std::vector<int> mFreeEntityIDs;
@@ -35,6 +40,7 @@ private:
 	std::vector<std::shared_ptr<ISystem>> mRenderSystems;
 	std::vector<std::shared_ptr<ISystem>> mUpdateSystems;
 
+	Task* mRenderTask = nullptr;
 
 	//Entity management
 	void AssignEntity(const Entity& pEntity);
