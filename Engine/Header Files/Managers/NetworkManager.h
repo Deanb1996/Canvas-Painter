@@ -1,10 +1,13 @@
 #pragma once
 #include <WinSock2.h>
+#include <Ws2tcpip.h>
 #include <memory>
 #include <iostream>
 #include "ThreadManager.h"
 #include <queue>
 #include <string>
+#include <fstream>
+#include <sstream>
 
 class NetworkManager
 {
@@ -12,24 +15,29 @@ private:
 	std::shared_ptr<ThreadManager> mThreadManager = ThreadManager::Instance();
 
 	std::queue<std::string> mMessagesToSend;
+	std::queue<std::string> mMessagesToSend2;
+	std::queue<std::string>* mActiveQueue;
+	std::queue<std::string>* mFlushingQueue;
+
 	std::queue<std::string> mMessagesReceived;
 	std::vector<SOCKET> mPeers;
+	int mPeerCount;
 
 	const std::string mIdentifier = "$DB$";
 	const std::string mTerminator = "*DB*";
 
 	SOCKET mListenSocket;
-	sockaddr_in mPort;
+	sockaddr_in mListenAddress;
 
 	std::mutex mx;
 
 	//Private constructor for singleton pattern
-	NetworkManager(const int pPort);
+	NetworkManager();
 
-	void InitWinSock(const int pPort);
 	void Listen();
-	void ProcessPeer(void* pPeerSocket);
+	void ListenToPeer(void* pPeerSocket);
 	void SendMessages();
+	void FindPeers();
 public:
 	~NetworkManager();
 
@@ -38,8 +46,9 @@ public:
 	NetworkManager(const NetworkManager& NetworkManager) = delete;
 	NetworkManager& operator=(NetworkManager const&) = delete;
 
+	void InitWinSock(const int pPort);
 	void AddMessage(const std::string& pMessage);
-	std::queue<std::string>& ReadMessages();
+	std::queue<std::string> ReadMessages();
 
-	static std::shared_ptr< NetworkManager > Instance(const int pPort);
+	static std::shared_ptr< NetworkManager > Instance();
 };

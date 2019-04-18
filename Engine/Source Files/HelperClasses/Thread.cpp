@@ -81,7 +81,7 @@ void Thread::SetThreadAffinity(const int pCore)
 {
 	if (!(pCore < 0))
 	{
-		DWORD_PTR mask = (1 << pCore);
+		DWORD_PTR mask = (1i64 << pCore);
 		SetThreadAffinityMask(mThread.native_handle(), mask);
 	}
 }

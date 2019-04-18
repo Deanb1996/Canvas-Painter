@@ -170,6 +170,7 @@ void GameScene::Update()
 		if (intersectedCube != -1)
 		{
 			mEcsManager->ColourComp(intersectedCube)->colour = mPlayerColour;
+			mNetworkManager->AddMessage("CLICKED:" + std::to_string(intersectedCube) + ":RED");
 		}
 
 		//Destroy ray once done with it

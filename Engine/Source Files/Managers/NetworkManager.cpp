@@ -6,10 +6,10 @@
 /// 
 /// </summary>
 /// <param name="pPort"></param>
-NetworkManager::NetworkManager(const int pPort)
-	:mPeers(0)
+NetworkManager::NetworkManager()
+	:mMessagesToSend(), mMessagesToSend2(), mActiveQueue(&mMessagesToSend), mFlushingQueue(&mMessagesToSend2), mPeerCount(0)
 {
-	InitWinSock(pPort);
+	mPeers.reserve(5);
 }
 
 
@@ -17,10 +17,10 @@ NetworkManager::NetworkManager(const int pPort)
 /// 
 /// </summary>
 /// <param name="pPeerSocket"></param>
-void NetworkManager::ProcessPeer(void* pPeerSocket)
+void NetworkManager::ListenToPeer(void* pPeerSocket)
 {
 	char buffer;
-	SOCKET peerSocket = *(SOCKET*)pPeerSocket;
+	SOCKET peerSocket = *(int*)pPeerSocket;
 	bool readingMessage = false;
 	std::string message;
 
@@ -29,7 +29,8 @@ void NetworkManager::ProcessPeer(void* pPeerSocket)
 	{
 		if (recv(peerSocket, &buffer, 1, 0) == SOCKET_ERROR)
 		{
-			OutputDebugString(L"Receive failed with " + WSAGetLastError());
+			OutputDebugString(L"Receive failed with ");
+			OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
 			break;
 		}
 		else
@@ -37,7 +38,8 @@ void NetworkManager::ProcessPeer(void* pPeerSocket)
 			//Check for identifier at beginning of message
 			if (buffer == '$' && readingMessage == false)
 			{
-				char tempBuffer[4];
+				char tempBuffer[5];
+				tempBuffer[4] = '\0';
 				tempBuffer[0] = buffer;
 				recv(peerSocket, &tempBuffer[1], 3, 0);
 
@@ -48,13 +50,15 @@ void NetworkManager::ProcessPeer(void* pPeerSocket)
 				{
 					readingMessage = true;
 					OutputDebugString(L"Reading message!");
+					buffer = '\0';
 				}
 			}
 
 			//Check for terminator at end of messsage
 			if (buffer == '*' && readingMessage == true)
 			{
-				char tempBuffer[4];
+				char tempBuffer[5];
+				tempBuffer[4] = '\0';
 				tempBuffer[0] = buffer;
 				recv(peerSocket, &tempBuffer[1], 3, 0);
 
@@ -75,7 +79,7 @@ void NetworkManager::ProcessPeer(void* pPeerSocket)
 					message += tempBuffer;
 				}
 			}
-			else if (readingMessage == true)
+			else if (readingMessage == true && buffer != '\0')
 			{
 				//Add buffer to message
 				message += buffer;
@@ -91,7 +95,99 @@ void NetworkManager::ProcessPeer(void* pPeerSocket)
 /// </summary>
 void NetworkManager::SendMessages()
 {
+	while (true)
+	{
+		{
+			std::lock_guard<std::mutex> lock(mx);
+			std::queue<std::string>* temp = mActiveQueue;
+			mActiveQueue = mFlushingQueue;
+			mFlushingQueue = temp;
+		}
 
+		int messagesToSend = static_cast<int>(mFlushingQueue->size());
+		for (int j = 0; j < messagesToSend; j++)
+		{
+			int peerCount = static_cast<int>(mPeers.size());
+			for (int i = 0; i < peerCount; i++)
+			{
+				OutputDebugString(L"Sending message!");
+				if (send(mPeers[i], mFlushingQueue->front().c_str(), static_cast<int>(mFlushingQueue->front().length()), 0) == SOCKET_ERROR)
+				{
+					OutputDebugString(L"Send failed with ");
+					OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
+				}
+				else
+				{
+					OutputDebugString(L"Send succeeded!");
+				}
+			}
+
+			mFlushingQueue->pop();
+		}
+	}
+}
+
+/// <summary>
+/// 
+/// </summary>
+void NetworkManager::FindPeers()
+{
+	std::vector<std::string> ipAddresses;
+	std::vector<int> ports;
+	std::string line;
+	std::ifstream fin("Config.txt");
+	bool lineTwo = false;
+
+	while (std::getline(fin, line))
+	{
+		if (!lineTwo)
+		{
+			ipAddresses.push_back(line);
+			lineTwo = true;
+		}
+		else
+		{
+			ports.push_back(std::stoi(line));
+			lineTwo = false;
+		}
+	}
+
+	sockaddr_in address;
+	address.sin_family = AF_INET;
+
+	for (int i = 0; i < ipAddresses.size(); i++)
+	{
+		address.sin_port = htons(ports[i]);
+		inet_pton(address.sin_family, ipAddresses[i].c_str(), &address.sin_addr);
+
+		//Create peer socket
+		SOCKET peerSocket = socket(AF_INET, SOCK_STREAM, 0);
+		if (peerSocket == INVALID_SOCKET)
+		{
+			OutputDebugString(L"Create socket failed with ");
+			OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
+		}
+		else if (connect(peerSocket, (sockaddr *)&address, sizeof(address)) == SOCKET_ERROR)
+		{
+			OutputDebugString(L"Connecting to peer failed with ");
+			OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
+		}
+		else
+		{
+			std::string message = mIdentifier + "CONNECT: " + mTerminator;
+			if (send(peerSocket, message.c_str(), 17, 0) == SOCKET_ERROR)
+			{
+				OutputDebugString(L"Send failed with ");
+				OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
+			}
+			else
+			{
+				mPeers.push_back(peerSocket);
+				mThreadManager->AddTask(std::bind(&NetworkManager::ListenToPeer, this, std::placeholders::_1), &mPeers[mPeerCount], nullptr, 1);
+				mPeerCount++;
+			}
+		}
+	}
 }
 
 /// <summary>
@@ -122,7 +218,8 @@ void NetworkManager::Listen()
 		//Verify acception of socket
 		if (peerSocket == INVALID_SOCKET)
 		{
-			OutputDebugString(L"Accept failed with " + WSAGetLastError());
+			OutputDebugString(L"Accept failed with ");
+			OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
 			break;
 		}
 		else
@@ -130,8 +227,9 @@ void NetworkManager::Listen()
 			OutputDebugString(L"New peer connected!");
 
 			//Add peer socket to thread
-			mThreadManager->AddTask(std::bind(&NetworkManager::ProcessPeer, this, std::placeholders::_1), &peerSocket, nullptr, 1);
 			mPeers.push_back(peerSocket);
+			mThreadManager->AddTask(std::bind(&NetworkManager::ListenToPeer, this, std::placeholders::_1), &mPeers[mPeerCount], nullptr, 1);
+			mPeerCount++;
 		}
 	}
 }
@@ -152,29 +250,58 @@ void NetworkManager::InitWinSock(const int pPort)
 		OutputDebugString(L"Socket initialisation failed");
 	}
 
+	FindPeers();
+
 	//Set port
-	mPort.sin_family = AF_INET;
-	mPort.sin_port = htons(pPort);
-	mPort.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+	mListenAddress.sin_family = AF_INET;
+	mListenAddress.sin_port = htons(pPort);
+	mListenAddress.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 
 	//Create listening socket
 	mListenSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (mListenSocket == INVALID_SOCKET)
 	{
-		OutputDebugString(L"Create socket failed with " + WSAGetLastError());
+		OutputDebugString(L"Create socket failed with ");
+		OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
 	}
-	else if (bind(mListenSocket, (sockaddr *)&mPort, sizeof(mPort)) == SOCKET_ERROR)
+	else if (bind(mListenSocket, (sockaddr *)&mListenAddress, sizeof(mListenAddress)) == SOCKET_ERROR)
 	{
-		OutputDebugString(L"Bind failed with " + WSAGetLastError());
+		OutputDebugString(L"Bind failed with ");
+		OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
+
+		//Try binding socket on secondary port (THIS IS FOR DEBUGGING PURPOSES ON A SINGLE MACHINE)
+		mListenAddress.sin_family = AF_INET;
+		mListenAddress.sin_port = htons(9172);
+		mListenAddress.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+
+		//Create listening socket
+		mListenSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+		if (bind(mListenSocket, (sockaddr *)&mListenAddress, sizeof(mListenAddress)) == SOCKET_ERROR)
+		{
+			OutputDebugString(L"Secondary bind failed with ");
+			OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
+		}
+		else
+		{
+			//Listen on socket
+			listen(mListenSocket, 5);
+
+			//Add listener and sender to threads
+			mThreadManager->AddTask(std::bind(&NetworkManager::Listen, this), nullptr, nullptr, 1);
+			mThreadManager->AddTask(std::bind(&NetworkManager::SendMessages, this), nullptr, nullptr, 1);
+		}
 	}
 	else if (listen(mListenSocket, 5) == SOCKET_ERROR)
 	{
-		OutputDebugString(L"Listen failed with " + WSAGetLastError());
+		OutputDebugString(L"Listen failed with ");
+		OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
 	}
 	else
 	{
-		//Add listener to thread
+		//Add listener and sender to threads
 		mThreadManager->AddTask(std::bind(&NetworkManager::Listen, this), nullptr, nullptr, 1);
+		mThreadManager->AddTask(std::bind(&NetworkManager::SendMessages, this), nullptr, nullptr, 1);
 	}
 }
 
@@ -185,16 +312,19 @@ void NetworkManager::InitWinSock(const int pPort)
 void NetworkManager::AddMessage(const std::string & pMessage)
 {
 	std::lock_guard<std::mutex> lock(mx);
-	mMessagesToSend.push(mIdentifier + pMessage + mTerminator);
+	mActiveQueue->push(mIdentifier + pMessage + mTerminator);
 }
 
 /// <summary>
 /// 
 /// </summary>
 /// <returns></returns>
-std::queue<std::string>& NetworkManager::ReadMessages()
+std::queue<std::string> NetworkManager::ReadMessages()
 {
-	return mMessagesReceived;
+	std::queue<std::string> messages;
+	std::lock_guard<std::mutex> lock(mx);
+	mMessagesReceived.swap(messages);
+	return messages;
 }
 
 /// <summary>
@@ -202,8 +332,8 @@ std::queue<std::string>& NetworkManager::ReadMessages()
 /// </summary>
 /// <param name="pPort"></param>
 /// <returns></returns>
-std::shared_ptr<NetworkManager> NetworkManager::Instance(const int pPort)
+std::shared_ptr<NetworkManager> NetworkManager::Instance()
 {
-	static std::shared_ptr<NetworkManager> instance{ new NetworkManager(pPort) };
+	static std::shared_ptr<NetworkManager> instance{ new NetworkManager() };
 	return instance;
 }

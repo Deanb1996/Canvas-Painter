@@ -9,6 +9,7 @@ class GameScene : public Scene
 private:
 	//Managers
 	std::shared_ptr<ECSManager> mEcsManager = ECSManager::Instance();
+	std::shared_ptr<NetworkManager> mNetworkManager = NetworkManager::Instance();
 #ifdef  DIRECTX
 	std::shared_ptr<InputManager_DX> mInputManager = InputManager_DX::Instance();
 #elif OPENGL

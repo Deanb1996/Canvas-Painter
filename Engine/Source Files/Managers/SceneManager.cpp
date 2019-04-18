@@ -10,13 +10,13 @@ void SceneManager::Update()
 	mCurrentTime = std::chrono::high_resolution_clock::now();
 	mDeltaTime = mCurrentTime - mPreviousTime;
 
-	mEcsManager->ProcessSystems();
-	mScene->Update();
 	mInputManager->Update();
+	mScene->Update();
+	mEcsManager->ProcessSystems();
+	mThreadManager->ProcessTasks();
 
 	//mThreadManager->AddTask([](void*, void*) {OutputDebugString(L"'Ello m8"); }, nullptr, nullptr, 0);
 
-	mThreadManager->ProcessTasks();
 
 	// Average the fps over n frames.
 	mAverageDeltaTime = 0;
