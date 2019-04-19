@@ -59,6 +59,7 @@ ECSManager::ECSManager()
 	mTextures.resize(200000);
 	mTransforms.resize(200000);
 	mVelocities.resize(200000);
+	mWeights.resize(200000);
 }
 
 /// <summary>
@@ -175,6 +176,11 @@ void ECSManager::DestroyEntity(const int pEntityID)
 	if ((entity->componentMask & ComponentType::COMPONENT_VELOCITY) == ComponentType::COMPONENT_VELOCITY)
 	{
 		RemoveVelocityComp(pEntityID);
+	}
+	//Weight Comp
+	if ((entity->componentMask & ComponentType::COMPONENT_WEIGHT) == ComponentType::COMPONENT_WEIGHT)
+	{
+		RemoveWeightComp(pEntityID);
 	}
 
 	//Finds the entity with the matching ID and removes it from the entities vector
@@ -398,6 +404,19 @@ void ECSManager::AddVelocityComp(const Velocity & pVelocity, const int pEntityID
 }
 
 /// <summary>
+/// Adds a Weight component to the entity with a given ID
+/// </summary>
+/// <param name="pVelocity">Weight component to add</param>
+/// <param name="pEntityID">Given ID of the entity</param>
+void ECSManager::AddWeightComp(const Weight & pWeight, const int pEntityID)
+{
+	Entity* entity = &mEntities[pEntityID];
+	mWeights[pEntityID] = pWeight;
+	entity->componentMask |= ComponentType::COMPONENT_WEIGHT;
+	AssignEntity(*entity);
+}
+
+/// <summary>
 /// Removes an AI component from the entity with a given ID
 /// </summary>
 /// <param name="pEntityID">Given ID of the entity</param>
@@ -542,6 +561,17 @@ void ECSManager::RemoveVelocityComp(const int pEntityID)
 {
 	Entity* entity = &mEntities[pEntityID];
 	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_VELOCITY; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
+	ReAssignEntity(*entity);
+}
+
+/// <summary>
+/// Removes a Weight component from the entity with a given ID
+/// </summary>
+/// <param name="pEntityID">Given ID of the entity</param>
+void ECSManager::RemoveWeightComp(const int pEntityID)
+{
+	Entity* entity = &mEntities[pEntityID];
+	entity->componentMask = entity->componentMask &= ~ComponentType::COMPONENT_WEIGHT; //Performs a bitwise & between the entities mask and the bitwise complement of the components mask
 	ReAssignEntity(*entity);
 }
 
@@ -751,6 +781,21 @@ Velocity * const ECSManager::VelocityComp(const int pEntityID)
 	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_VELOCITY) == ComponentType::COMPONENT_VELOCITY)
 	{
 		return &mVelocities[pEntityID];
+	}
+	return nullptr;
+}
+
+/// <summary>
+/// Returns a modifiable handle to the Weight component associated with the given entity ID
+/// </summary>
+/// <param name="pEntityID">Given entity ID</param>
+/// <returns>Modifiable handle to Weight component</returns>
+Weight * const ECSManager::WeightComp(const int pEntityID)
+{
+	//Checks if entity actually owns a component of this type
+	if ((mEntities[pEntityID].componentMask & ComponentType::COMPONENT_WEIGHT) == ComponentType::COMPONENT_WEIGHT)
+	{
+		return &mWeights[pEntityID];
 	}
 	return nullptr;
 }

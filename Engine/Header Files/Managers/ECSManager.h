@@ -35,6 +35,7 @@ private:
 	std::vector<Texture> mTextures;
 	std::vector<Transform> mTransforms;
 	std::vector<Velocity> mVelocities;
+	std::vector<Weight> mWeights;
 
 	//Systems
 	std::vector<std::shared_ptr<ISystem>> mRenderSystems;
@@ -81,6 +82,7 @@ public:
 	void AddTextureComp(const Texture& pTexture, const int pEntityID);
 	void AddTransformComp(const Transform& pTransform, const int pEntityID);
 	void AddVelocityComp(const Velocity& pVelocity, const int pEntityID);
+	void AddWeightComp(const Weight& pWeight, const int pEntityID);
 
 	//Remove methods for components
 	void RemoveAIComp(const int pEntityID);
@@ -96,6 +98,7 @@ public:
 	void RemoveTextureComp(const int pEntityID);
 	void RemoveTransformComp(const int pEntityID);
 	void RemoveVelocityComp(const int pEntityID);
+	void RemoveWeightComp(const int pEntityID);
 
 
 	//Accessors
@@ -113,4 +116,5 @@ public:
 	Texture* const TextureComp(const int pEntityID);
 	Transform* const TransformComp(const int pEntityID);
 	Velocity* const VelocityComp(const int pEntityID);
+	Weight* const WeightComp(const int pEntityID);
 };

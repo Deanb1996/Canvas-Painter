@@ -207,6 +207,9 @@
     <ClInclude Include="Header Files\HelperClasses\Task.h">
       <Filter>Header Files\HelperClasses</Filter>
     </ClInclude>
+    <ClInclude Include="Header Files\Components\Weight.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source Files\HelperClasses\ObjLoader.cpp">

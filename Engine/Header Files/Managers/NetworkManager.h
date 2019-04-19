@@ -14,10 +14,10 @@ class NetworkManager
 private:
 	std::shared_ptr<ThreadManager> mThreadManager = ThreadManager::Instance();
 
-	std::queue<std::string> mMessagesToSend;
-	std::queue<std::string> mMessagesToSend2;
-	std::queue<std::string>* mActiveQueue;
-	std::queue<std::string>* mFlushingQueue;
+	std::queue<std::pair<std::string, int>> mMessagesToSend;
+	std::queue<std::pair<std::string, int>> mMessagesToSend2;
+	std::queue<std::pair<std::string, int>>* mActiveQueue;
+	std::queue<std::pair<std::string, int>>* mFlushingQueue;
 
 	std::queue<std::string> mMessagesReceived;
 	std::vector<SOCKET> mPeers;
@@ -47,8 +47,9 @@ public:
 	NetworkManager& operator=(NetworkManager const&) = delete;
 
 	void InitWinSock(const int pPort);
-	void AddMessage(const std::string& pMessage);
+	void AddMessage(const std::string& pMessage, int pPeer);
 	std::queue<std::string> ReadMessages();
+	int PlayerCount();
 
 	static std::shared_ptr< NetworkManager > Instance();
 };

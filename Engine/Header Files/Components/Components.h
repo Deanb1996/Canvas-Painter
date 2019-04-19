@@ -14,3 +14,4 @@
 #include "Velocity.h"
 #include "Colour.h"
 #include "Ray.h"
+#include "Weight.h"

@@ -3,6 +3,28 @@
 using namespace MathsHelper;
 
 /// <summary>
+/// 
+/// </summary>
+void GameScene::CreatePlayer()
+{
+	//Create player entity
+	mPlayerEntity = mEcsManager->CreateEntity();
+
+	//Creates players colour component
+	Colour colour{ Vector4(1.0f, 1.0f, 1.0f, 1.0f) };
+	mPlayerColour = colour.colour;
+
+	//Set red if first player
+	if (mNetworkManager->PlayerCount() == 1)
+	{
+		mPlayerColour = colour.colour = Vector4(0.5f, 0.0f, 0.0f, 1.0f);
+	}
+	mPlayerNumber = mNetworkManager->PlayerCount();
+
+	mEcsManager->AddColourComp(colour, mPlayerEntity);
+}
+
+/// <summary>
 /// Creates the camera for the scene
 /// </summary>
 void GameScene::CreateCamera()
@@ -77,8 +99,12 @@ void GameScene::CreateCanvas()
 				mEcsManager->AddShaderComp(shader, cubeID);
 
 				//Creates cubes colour component
-				Colour colour{Vector4(1.0f, 1.0f, 1.0f, 1.0f)};
+				Colour colour{mPlayerColour};
 				mEcsManager->AddColourComp(colour, cubeID);
+
+				//Creates cubes weight component
+				Weight weight{1};
+				mEcsManager->AddWeightComp(weight, cubeID);
 
 				//Creates cubes box collider component
 				//Cubes are 2 width, height and depth, scaled by 0.1 to 0.2 width, height and depth.
@@ -141,10 +167,46 @@ void GameScene::CameraControls()
 }
 
 /// <summary>
+/// 
+/// </summary>
+void GameScene::ColourCanvas()
+{
+	for (int i = 1; i < mCubeCount; i++)
+	{
+		mEcsManager->ColourComp(i)->colour = mPlayerColour;
+	}
+}
+
+/// <summary>
+/// 
+/// </summary>
+void GameScene::CubeClicked()
+{
+	//If ray existed, retrieve intersection result
+	if (mRayID != -1)
+	{
+		Ray rayComp = *mEcsManager->RayComp(mRayID);
+
+		//If ray has intersected with a cube, send clicked message
+		int intersectedCube = rayComp.intersectedWith;
+		if (intersectedCube != -1)
+		{
+			int playerToStealFrom = rand() % (mPlayerCount - 1);
+
+			mNetworkManager->AddMessage("CLICKED:" + std::to_string(intersectedCube) + ":" + std::to_string(mPlayerNumber), playerToStealFrom);
+		}
+
+		//Destroy ray once done with it
+		mEcsManager->DestroyEntity(mRayID);
+		mRayID = -1;
+	}
+}
+
+/// <summary>
 /// Default constructor
 /// </summary>
 GameScene::GameScene()
-	:mCameraID(-1), mRayID(-1), mCubeCount(0)
+	:mCameraID(-1), mRayID(-1), mCubeCount(0), mPlayerCount(1)
 {
 }
 
@@ -160,24 +222,18 @@ GameScene::~GameScene()
 /// </summary>
 void GameScene::Update()
 {
-	//If ray existed, retrieve intersection result
-	if (mRayID != -1)
+	if (mPlayerCount != mNetworkManager->PlayerCount())
 	{
-		Ray rayComp = *mEcsManager->RayComp(mRayID);
-
-		//If ray has intersected with a cube, set colour of intersected cube
-		int intersectedCube = rayComp.intersectedWith;
-		if (intersectedCube != -1)
-		{
-			mEcsManager->ColourComp(intersectedCube)->colour = mPlayerColour;
-			mNetworkManager->AddMessage("CLICKED:" + std::to_string(intersectedCube) + ":RED");
-		}
-
-		//Destroy ray once done with it
-		mEcsManager->DestroyEntity(mRayID);
-		mRayID = -1;
+	mPlayerCount = mNetworkManager->PlayerCount();
 	}
 
+	if (mPlayerColour.X != mEcsManager->ColourComp(0)->colour.X)
+	{
+		mPlayerColour = mEcsManager->ColourComp(0)->colour;
+		ColourCanvas();
+	}
+
+	CubeClicked();
 	CameraControls();
 
 	//Cast ray on mouse click
@@ -200,15 +256,16 @@ void GameScene::Update()
 /// </summary>
 void GameScene::OnLoad()
 {
-	mPlayerColour = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-
+	//AntTweak
 	mAntTweakManager->AddBar("Game stats");
-
 	mAntTweakManager->AddVariable("Game stats", "FPS", TW_TYPE_INT32, &mSceneManager->Fps(), "");
 	mAntTweakManager->AddVariable("Game stats", "Cube Count", TW_TYPE_INT32, &mCubeCount, "");
+	mAntTweakManager->AddVariable("Game stats", "Player Count", TW_TYPE_INT32, &mPlayerCount, "");
 
-	CreateCamera();
+	//Create game entities
+	CreatePlayer();
 	CreateCanvas();
+	CreateCamera();
 	CreateLight();
 }
 

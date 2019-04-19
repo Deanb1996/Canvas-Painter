@@ -22,6 +22,7 @@ private:
 	int mCameraID;
 	int mRayID;
 	int mCubeCount;
+	int mPlayerEntity;
 
 	//Camera
 	Camera mActiveCamera;
@@ -30,14 +31,22 @@ private:
 	MathsHelper::Matrix4 mProjection;
 	MathsHelper::Matrix4 mInverseProjection;
 
+	//Game stats
 	MathsHelper::Vector4 mPlayerColour;
+	int mPlayerCount;
+	int mPlayerNumber;
 
 	//On load functions
+	void CreatePlayer();
 	void CreateCamera();
 	void CreateLight();
 	void CreateCanvas();
 
+	//Game logic functions
 	void CameraControls();
+	void ColourCanvas();
+	void CubeClicked();
+
 public:
 	//Structors
 	GameScene();

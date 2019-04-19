@@ -3,9 +3,9 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 /// <summary>
-/// 
+/// Constructor
+/// Reserves space for up to 5 peers
 /// </summary>
-/// <param name="pPort"></param>
 NetworkManager::NetworkManager()
 	:mMessagesToSend(), mMessagesToSend2(), mActiveQueue(&mMessagesToSend), mFlushingQueue(&mMessagesToSend2), mPeerCount(0)
 {
@@ -14,9 +14,10 @@ NetworkManager::NetworkManager()
 
 
 /// <summary>
-/// 
+/// Listens for messages from a single connected peer
+/// Adds all received messages to the received messages queue to be processed later
 /// </summary>
-/// <param name="pPeerSocket"></param>
+/// <param name="pPeerSocket">The socket of the peer to listen to</param>
 void NetworkManager::ListenToPeer(void* pPeerSocket)
 {
 	char buffer;
@@ -87,48 +88,61 @@ void NetworkManager::ListenToPeer(void* pPeerSocket)
 		}
 	} while (true);
 
+	//When peer disconnects
+	mPeerCount--;
+	mPeers.erase(remove(mPeers.begin(), mPeers.end(), peerSocket), mPeers.end());
 	OutputDebugString(L"Peer disconnected!");
 }
 
 /// <summary>
-/// 
+/// Sends all the messages in the messages queue
 /// </summary>
 void NetworkManager::SendMessages()
 {
 	while (true)
 	{
 		{
+			//Switches the active queue and the flushing queue so while messages are being flushed new messages can be put on the queue
 			std::lock_guard<std::mutex> lock(mx);
-			std::queue<std::string>* temp = mActiveQueue;
+			std::queue<std::pair<std::string, int>>* temp = mActiveQueue;
 			mActiveQueue = mFlushingQueue;
 			mFlushingQueue = temp;
 		}
 
+		//Loops through all the messages in the queue
 		int messagesToSend = static_cast<int>(mFlushingQueue->size());
 		for (int j = 0; j < messagesToSend; j++)
 		{
+			//Loops through all the peers
 			int peerCount = static_cast<int>(mPeers.size());
 			for (int i = 0; i < peerCount; i++)
 			{
-				OutputDebugString(L"Sending message!");
-				if (send(mPeers[i], mFlushingQueue->front().c_str(), static_cast<int>(mFlushingQueue->front().length()), 0) == SOCKET_ERROR)
+				//Only sends the message to the designated peers, or all the peers if no peers are designated
+				if (i == (mFlushingQueue->front().second) || mFlushingQueue->front().second == -1)
 				{
-					OutputDebugString(L"Send failed with ");
-					OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
-				}
-				else
-				{
-					OutputDebugString(L"Send succeeded!");
+					OutputDebugString(L"Sending message!");
+					if (send(mPeers[i], mFlushingQueue->front().first.c_str(), static_cast<int>(mFlushingQueue->front().first.length()), 0) == SOCKET_ERROR)
+					{
+						OutputDebugString(L"Send failed with ");
+						OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
+					}
+					else
+					{
+						OutputDebugString(L"Send succeeded!");
+					}
 				}
 			}
 
+			//Pop message off queue
 			mFlushingQueue->pop();
 		}
 	}
 }
 
 /// <summary>
-/// 
+/// Reads all the peers IPs and ports from a file
+/// Sends a message out to all peers requesting a connection
+/// If connection is accepted creates a socket for communication with that peer
 /// </summary>
 void NetworkManager::FindPeers()
 {
@@ -138,6 +152,7 @@ void NetworkManager::FindPeers()
 	std::ifstream fin("Config.txt");
 	bool lineTwo = false;
 
+	//Reads the peers addresses and ports from file
 	while (std::getline(fin, line))
 	{
 		if (!lineTwo)
@@ -155,6 +170,7 @@ void NetworkManager::FindPeers()
 	sockaddr_in address;
 	address.sin_family = AF_INET;
 
+	//Loops through all the addresses and attempts to make a connection with the peer at this address
 	for (int i = 0; i < ipAddresses.size(); i++)
 	{
 		address.sin_port = htons(ports[i]);
@@ -167,6 +183,7 @@ void NetworkManager::FindPeers()
 			OutputDebugString(L"Create socket failed with ");
 			OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
 		}
+		//Connect to peer
 		else if (connect(peerSocket, (sockaddr *)&address, sizeof(address)) == SOCKET_ERROR)
 		{
 			OutputDebugString(L"Connecting to peer failed with ");
@@ -174,7 +191,8 @@ void NetworkManager::FindPeers()
 		}
 		else
 		{
-			std::string message = mIdentifier + "CONNECT: " + mTerminator;
+			//Upon successful connection send the connect command to the peer to register the connection
+			std::string message = mIdentifier + "CONNECT:" + mTerminator;
 			if (send(peerSocket, message.c_str(), 17, 0) == SOCKET_ERROR)
 			{
 				OutputDebugString(L"Send failed with ");
@@ -182,6 +200,7 @@ void NetworkManager::FindPeers()
 			}
 			else
 			{
+				//If connect command was sent successfully, add the peer listener to a thread to handle communication with this peer
 				mPeers.push_back(peerSocket);
 				mThreadManager->AddTask(std::bind(&NetworkManager::ListenToPeer, this, std::placeholders::_1), &mPeers[mPeerCount], nullptr, 1);
 				mPeerCount++;
@@ -191,7 +210,8 @@ void NetworkManager::FindPeers()
 }
 
 /// <summary>
-/// 
+/// Destructor
+/// Cleans up Windows Sockets
 /// </summary>
 NetworkManager::~NetworkManager()
 {
@@ -200,7 +220,8 @@ NetworkManager::~NetworkManager()
 }
 
 /// <summary>
-/// 
+/// Listens for incoming connection requests on the given port from any address using the TCP protocol
+/// Creates a new peer when a a new connection request is received and adds the peer to a new thread
 /// </summary>
 void NetworkManager::Listen()
 {
@@ -235,7 +256,9 @@ void NetworkManager::Listen()
 }
 
 /// <summary>
-/// 
+/// Initialises a win sock environment
+/// Creates a tcp listener on the given port
+/// Adds the listener and message sender to new threads
 /// </summary>
 /// <param name="pPort"></param>
 void NetworkManager::InitWinSock(const int pPort)
@@ -306,21 +329,22 @@ void NetworkManager::InitWinSock(const int pPort)
 }
 
 /// <summary>
-/// 
+/// Adds a given message to the message queue
 /// </summary>
-/// <param name="pMessage"></param>
-void NetworkManager::AddMessage(const std::string & pMessage)
+/// <param name="pMessage">Given message to add</param>
+void NetworkManager::AddMessage(const std::string & pMessage, int pPeer)
 {
 	std::lock_guard<std::mutex> lock(mx);
-	mActiveQueue->push(mIdentifier + pMessage + mTerminator);
+	mActiveQueue->push(std::make_pair(mIdentifier + pMessage + mTerminator, pPeer));
 }
 
 /// <summary>
-/// 
+/// Retrieves the messages to be processed from the network manager
 /// </summary>
-/// <returns></returns>
+/// <returns>Queue of messaged to be processed</returns>
 std::queue<std::string> NetworkManager::ReadMessages()
 {
+	//Swaps the queue with an empty queue to empty the current queue and returns the queue containing messages
 	std::queue<std::string> messages;
 	std::lock_guard<std::mutex> lock(mx);
 	mMessagesReceived.swap(messages);
@@ -328,10 +352,18 @@ std::queue<std::string> NetworkManager::ReadMessages()
 }
 
 /// <summary>
-/// 
+/// Gets the count of players currently connected
 /// </summary>
-/// <param name="pPort"></param>
-/// <returns></returns>
+/// <returns>Count of players currently connected</returns>
+int NetworkManager::PlayerCount()
+{
+	return mPeerCount + 1;
+}
+
+/// <summary>
+/// If an instance of the network manager does not already exists, creates one and then provides a pointer to it
+/// </summary>
+/// <returns>Pointer to the network manager instance</returns>
 std::shared_ptr<NetworkManager> NetworkManager::Instance()
 {
 	static std::shared_ptr<NetworkManager> instance{ new NetworkManager() };

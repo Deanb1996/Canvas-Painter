@@ -12,8 +12,8 @@ void SceneManager::Update()
 
 	mInputManager->Update();
 	mScene->Update();
-	mEcsManager->ProcessSystems();
 	mThreadManager->ProcessTasks();
+	mEcsManager->ProcessSystems();
 
 	//mThreadManager->AddTask([](void*, void*) {OutputDebugString(L"'Ello m8"); }, nullptr, nullptr, 0);
 

@@ -8,6 +8,11 @@ private:
 	std::shared_ptr<ECSManager> mEcsManager = ECSManager::Instance();
 	std::shared_ptr<NetworkManager> mNetworkManager = NetworkManager::Instance();
 
+	int mPlayerNumber;
+	std::string mPlayerColour;
+	bool mColourAssigner;
+	std::vector<std::string> mAvailableColours;
+
 public:
 	explicit NetworkSystem();
 	virtual ~NetworkSystem();

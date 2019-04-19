@@ -17,6 +17,7 @@ enum class ComponentType : int
 	COMPONENT_TEXTURE = 1 << 12,
 	COMPONENT_TRANSFORM = 1 << 13,
 	COMPONENT_VELOCITY = 1 << 14,
+	COMPONENT_WEIGHT = 1 << 15,
 };
 
 inline ComponentType operator| (const ComponentType& lhs, const ComponentType& rhs) { return static_cast<ComponentType>(static_cast<int>(lhs) | static_cast<int>(rhs)); }
