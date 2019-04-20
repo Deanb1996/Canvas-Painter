@@ -1,9 +1,9 @@
 #include "GameScene.h"
 
-using namespace MathsHelper;
+using namespace KodeboldsMath;
 
 /// <summary>
-/// 
+/// Creates a player entity so the network system can access and update the player colour
 /// </summary>
 void GameScene::CreatePlayer()
 {
@@ -15,11 +15,11 @@ void GameScene::CreatePlayer()
 	mPlayerColour = colour.colour;
 
 	//Set red if first player
-	if (mNetworkManager->PlayerCount() == 1)
+	if (mNetworkManager->PeerCount() == 0)
 	{
 		mPlayerColour = colour.colour = Vector4(0.5f, 0.0f, 0.0f, 1.0f);
+		mPlayerNumber = 1;
 	}
-	mPlayerNumber = mNetworkManager->PlayerCount();
 
 	mEcsManager->AddColourComp(colour, mPlayerEntity);
 }
@@ -131,46 +131,47 @@ void GameScene::CameraControls()
 	//Forwards
 	if (mInputManager->KeyHeld(KEYS::KEY_W))
 	{
-		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, 0, 1, 0) * deltaTime;
-		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, 0, 1, 0)  * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, 0, mMoveSpeed, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, 0, mMoveSpeed, 0)  * deltaTime;
 	}
 	//Left
 	if (mInputManager->KeyHeld(KEYS::KEY_A))
 	{
-		mEcsManager->TransformComp(mCameraID)->translation += Vector4(-1, 0, 0, 0) * deltaTime;
-		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(-1, 0, 0, 0)  * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(-mMoveSpeed, 0, 0, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(-mMoveSpeed, 0, 0, 0)  * deltaTime;
 	}
 	//Backwards
 	if (mInputManager->KeyHeld(KEYS::KEY_S))
 	{
-		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, 0, -1, 0) * deltaTime;
-		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, 0, -1, 0)  * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, 0, -mMoveSpeed, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, 0, -mMoveSpeed, 0)  * deltaTime;
 	}
 	//Right
 	if (mInputManager->KeyHeld(KEYS::KEY_D))
 	{
-		mEcsManager->TransformComp(mCameraID)->translation += Vector4(1, 0, 0, 0) * deltaTime;
-		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(1, 0, 0, 0)  * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(mMoveSpeed, 0, 0, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(mMoveSpeed, 0, 0, 0)  * deltaTime;
 	}
 	//Up
 	if (mInputManager->KeyHeld(KEYS::KEY_SPACE))
 	{
-		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, 1, 0, 0) * deltaTime;
-		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, 1, 0, 0)  * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, mMoveSpeed, 0, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, mMoveSpeed, 0, 0)  * deltaTime;
 	}
 	//Down
 	if (mInputManager->KeyHeld(KEYS::KEY_LEFT_CTRL))
 	{
-		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, -1, 0, 0) * deltaTime;
-		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, -1, 0, 0)  * deltaTime;
+		mEcsManager->TransformComp(mCameraID)->translation += Vector4(0, -mMoveSpeed, 0, 0) * deltaTime;
+		mEcsManager->CameraComp(mCameraID)->lookAt += Vector4(0, -mMoveSpeed, 0, 0)  * deltaTime;
 	}
 }
 
 /// <summary>
-/// 
+/// Colours the canvas to match the assigned player colour
 /// </summary>
 void GameScene::ColourCanvas()
 {
+	//Loops through every voxel of the canvas and colours it
 	for (int i = 1; i < mCubeCount; i++)
 	{
 		mEcsManager->ColourComp(i)->colour = mPlayerColour;
@@ -178,7 +179,7 @@ void GameScene::ColourCanvas()
 }
 
 /// <summary>
-/// 
+/// Handles the response for cube clicks
 /// </summary>
 void GameScene::CubeClicked()
 {
@@ -191,9 +192,25 @@ void GameScene::CubeClicked()
 		int intersectedCube = rayComp.intersectedWith;
 		if (intersectedCube != -1)
 		{
-			int playerToStealFrom = rand() % (mPlayerCount - 1);
+			//If game is multiplayer, handle multiplayer interaction
+			if (mPeerCount > 0)
+			{
+				//Randomly choose a player to steal from
+				int playerToStealFrom = 0;
+				do
+				{
+					playerToStealFrom = rand() % mPlayerCount + 1;
+				} 
+				while (playerToStealFrom == mPlayerNumber);
 
-			mNetworkManager->AddMessage("CLICKED:" + std::to_string(intersectedCube) + ":" + std::to_string(mPlayerNumber), playerToStealFrom);
+				//Send message to the chosen player requesting to steal a voxel
+				mNetworkManager->AddMessage("CLICKED:" + std::to_string(intersectedCube) + ":" + std::to_string(playerToStealFrom) + ":" + std::to_string(mPlayerNumber));
+			}
+			//If single player, just draw
+			else
+			{
+				mEcsManager->ColourComp(intersectedCube)->colour = Vector4(1, 1, 1, 1);
+			}
 		}
 
 		//Destroy ray once done with it
@@ -203,10 +220,53 @@ void GameScene::CubeClicked()
 }
 
 /// <summary>
+/// Updates the frequency of the rendering and networking based on the user inputs
+/// </summary>
+void GameScene::ControlFrequency()
+{
+	//Increase rendering frequency
+	if (mInputManager->KeyDown(KEYS::KEY_U))
+	{
+		mEcsManager->TargetRenderingFrequency()++;
+	}
+	//Decrease rendering frequency
+	if (mInputManager->KeyDown(KEYS::KEY_J))
+	{
+		mEcsManager->TargetRenderingFrequency()--;
+	}
+	//Increase networking frequency
+	if (mInputManager->KeyDown(KEYS::KEY_Y))
+	{
+		mEcsManager->TargetNetworkingFrequency()++;
+	}
+	//Decrease networking frequency
+	if (mInputManager->KeyDown(KEYS::KEY_H))
+	{
+		mEcsManager->TargetNetworkingFrequency()--;
+	}
+}
+
+/// <summary>
+/// 
+/// </summary>
+void GameScene::IntegrityCheck()
+{
+
+}
+
+/// <summary>
+/// 
+/// </summary>
+void GameScene::Reset()
+{
+
+}
+
+/// <summary>
 /// Default constructor
 /// </summary>
 GameScene::GameScene()
-	:mCameraID(-1), mRayID(-1), mCubeCount(0), mPlayerCount(1)
+	:mCameraID(-1), mRayID(-1), mCubeCount(0), mPeerCount(0), mPlayerCount(1), mPlayerNumber(0), mTotalMass(0)
 {
 }
 
@@ -222,19 +282,36 @@ GameScene::~GameScene()
 /// </summary>
 void GameScene::Update()
 {
-	if (mPlayerCount != mNetworkManager->PlayerCount())
+	//Keep games peer count and player count up to date
+	if (mPeerCount != mNetworkManager->PeerCount())
 	{
-	mPlayerCount = mNetworkManager->PlayerCount();
+		mPeerCount = mNetworkManager->PeerCount();
+		mPlayerCount = mPeerCount + 1;
 	}
 
+	//Keep games player colour and player number up to date
 	if (mPlayerColour.X != mEcsManager->ColourComp(0)->colour.X)
 	{
 		mPlayerColour = mEcsManager->ColourComp(0)->colour;
+		mPlayerNumber = static_cast<int>(mEcsManager->ColourComp(0)->colour.W);
 		ColourCanvas();
 	}
 
 	CubeClicked();
 	CameraControls();
+	ControlFrequency();
+
+	//Run integrity check when M is pressed
+	if (mInputManager->KeyHeld(KEYS::KEY_M))
+	{
+		IntegrityCheck();
+	}
+
+	//Reset canvas when R is press
+	if (mInputManager->KeyHeld(KEYS::KEY_R))
+	{
+		Reset();
+	}
 
 	//Cast ray on mouse click
 	if (mInputManager->KeyHeld(KEYS::MOUSE_BUTTON_LEFT))
@@ -246,7 +323,7 @@ void GameScene::Update()
 		mRayID = mEcsManager->CreateEntity();
 
 		//Creates rays ray component
-		Ray rayComp{ mEcsManager->TransformComp(mCameraID)->translation.XYZ(), ray.XYZ(), MathsHelper::Vector3(), -1 };
+		Ray rayComp{ mEcsManager->TransformComp(mCameraID)->translation.XYZ(), ray.XYZ(), KodeboldsMath::Vector3(), -1 };
 		mEcsManager->AddRayComp(rayComp, mRayID);
 	}
 }
@@ -258,13 +335,20 @@ void GameScene::OnLoad()
 {
 	//AntTweak
 	mAntTweakManager->AddBar("Game stats");
-	mAntTweakManager->AddVariable("Game stats", "FPS", TW_TYPE_INT32, &mSceneManager->Fps(), "");
-	mAntTweakManager->AddVariable("Game stats", "Cube Count", TW_TYPE_INT32, &mCubeCount, "");
-	mAntTweakManager->AddVariable("Game stats", "Player Count", TW_TYPE_INT32, &mPlayerCount, "");
+	mAntTweakManager->AddVariable("Game stats", "Player Count", TW_TYPE_INT32, &mPlayerCount, "group=PlayerStats");
+	mAntTweakManager->AddVariable("Game stats", "Player Number", TW_TYPE_INT32, &mPlayerNumber, "group=PlayerStats");
+	mAntTweakManager->AddVariable("Game stats", "Mass on PC", TW_TYPE_INT32, &mCubeCount, "group=CubeMass");
+	mAntTweakManager->AddVariable("Game stats", "Starting Mass", TW_TYPE_INT32, &mStartingMass, "group=CubeMass");
+	mAntTweakManager->AddVariable("Game stats", "Total Mass", TW_TYPE_INT32, &mTotalMass, "group=CubeMass");
+	mAntTweakManager->AddVariable("Game stats", "Target Rendering Frequency", TW_TYPE_INT32, &mEcsManager->TargetRenderingFrequency(), "group=Frequencies");
+	mAntTweakManager->AddVariable("Game stats", "Target Networking Frequency", TW_TYPE_INT32, &mEcsManager->TargetNetworkingFrequency(), "group=Frequencies");
+	mAntTweakManager->AddVariable("Game stats", "Actual Rendering Frequency", TW_TYPE_INT32, &mEcsManager->RenderingFrequency(), "group=Frequencies");
+	mAntTweakManager->AddVariable("Game stats", "Actual Networking Frequency", TW_TYPE_INT32, &mEcsManager->NetworkingFrequency(), "group=Frequencies");
 
 	//Create game entities
 	CreatePlayer();
 	CreateCanvas();
+	mStartingMass = mCubeCount * 4;
 	CreateCamera();
 	CreateLight();
 }

@@ -1,6 +1,6 @@
 #include "Vector3.h"
 
-using namespace MathsHelper;
+using namespace KodeboldsMath;
 
 /// <summary>
 /// Default constructor for Vector4, initialises all values to 0

@@ -1,9 +1,9 @@
 #pragma once
-#include "MathsHelper.h"
+#include "KodeboldsMath.h"
 
 struct Vertex
 {
-	MathsHelper::Vector3 position;
-	MathsHelper::Vector3 normal;
-	MathsHelper::Vector2 texCoords;
+	KodeboldsMath::Vector3 position;
+	KodeboldsMath::Vector3 normal;
+	KodeboldsMath::Vector2 texCoords;
 };

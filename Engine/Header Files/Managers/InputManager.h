@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-#include "MathsHelper.h"
+#include "KodeboldsMath.h"
 
 //Keys enum
 enum class KEYS
@@ -44,7 +44,7 @@ class InputManager
 protected:
 	//Mouse and key states
 	std::vector<std::pair<KEYS, KEY_STATE>> mKeyStates;
-	MathsHelper::Vector2 mMousePosition;
+	KodeboldsMath::Vector2 mMousePosition;
 	int mMouseWheelValue;
 
 	virtual void KeyboardInput() = 0;
@@ -80,6 +80,6 @@ public:
 
 	//Mouse
 	const int ScrollWheel() const;
-	const MathsHelper::Vector2& MousePos() const;
-	const MathsHelper::Vector4 RayFromMouse(const MathsHelper::Matrix4& pViewInverse, const MathsHelper::Matrix4& pProjInverse, const float& pWidth, const float& pHeight);
+	const KodeboldsMath::Vector2& MousePos() const;
+	const KodeboldsMath::Vector4 RayFromMouse(const KodeboldsMath::Matrix4& pViewInverse, const KodeboldsMath::Matrix4& pProjInverse, const float& pWidth, const float& pHeight);
 };

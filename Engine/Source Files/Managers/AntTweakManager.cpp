@@ -59,7 +59,7 @@ void AntTweakManager::AddBar(const std::string & pBarName)
 void AntTweakManager::AddVariable(const std::string & pBarName, const std::string & pVariableName, const TwType & pVariableType, const void * const pVariable, const std::string & pBehaviourDefinition)
 {
 	auto it = std::find_if(mBars.begin(), mBars.end(), [&](const std::pair<std::string, TwBar*> bar) { return bar.first == pBarName; });
-	TwAddVarRW(it->second, pVariableName.c_str(), pVariableType, const_cast<void*>(pVariable), pBehaviourDefinition.c_str());
+	TwAddVarRO(it->second, pVariableName.c_str(), pVariableType, const_cast<void*>(pVariable), pBehaviourDefinition.c_str());
 }
 
 /// <summary>

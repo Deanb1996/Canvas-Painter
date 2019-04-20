@@ -122,7 +122,7 @@ void InputManager_DX::MouseInput()
 	mMouseTracker.Update(mMouseState);
 
 	//Mouse position
-	mMousePosition = MathsHelper::Vector2(static_cast<float>(mMouse->GetState().x), static_cast<float>(mMouse->GetState().y));
+	mMousePosition = KodeboldsMath::Vector2(static_cast<float>(mMouse->GetState().x), static_cast<float>(mMouse->GetState().y));
 
 	//Scroll wheel
 	mMouseWheelValue = mMouse->GetState().scrollWheelValue;

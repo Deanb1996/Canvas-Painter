@@ -42,7 +42,7 @@ void ECSManager::ReAssignEntity(const Entity & pEntity)
 /// Resizes entity and component vectors upon construction to a reasonably large size to avoid performance overhead of resizing
 /// </summary>
 ECSManager::ECSManager()
-	:mEntityID(0)
+	:mEntityID(0), mTargetRenderingFrequency(60), mTargetNetworkingFrequency(10)
 {
 	mEntities.reserve(200000);
 	mAIs.resize(200000);
@@ -78,6 +78,42 @@ std::shared_ptr<ECSManager> ECSManager::Instance()
 {
 	static std::shared_ptr<ECSManager> instance{ new ECSManager };
 	return instance;
+}
+
+/// <summary>
+/// Get/Set method for the target rendering frequency
+/// </summary>
+/// <returns>Modifiable handle to </returns>
+int & ECSManager::TargetRenderingFrequency()
+{
+	return mTargetRenderingFrequency;
+}
+
+/// <summary>
+/// Get/Set method for the target networking frequency
+/// </summary>
+/// <returns>Modifiable handle to the networking frequency</returns>
+int & ECSManager::TargetNetworkingFrequency()
+{
+	return mTargetNetworkingFrequency;
+}
+
+/// <summary>
+/// Get method for the rendering frequency
+/// </summary>
+/// <returns>Rendering frequency</returns>
+const int& ECSManager::RenderingFrequency()
+{
+	return mRenderingFrequency;
+}
+
+/// <summary>
+/// Get method for the networking frequency
+/// </summary>
+/// <returns>Networking frequency</returns>
+const int& ECSManager::NetworkingFrequency()
+{
+	return mNetworkingFrequency;
 }
 
 /// <summary>
@@ -207,6 +243,15 @@ void ECSManager::AddRenderSystem(shared_ptr<ISystem> pSystem)
 }
 
 /// <summary>
+/// Adds the given system to the network system vector
+/// </summary>
+/// <param name="pSystem">Pointer to the given system</param>
+void ECSManager::AddNetworkSystem(std::shared_ptr<ISystem> pSystem)
+{
+	mNetworkSystems.push_back(pSystem);
+}
+
+/// <summary>
 /// Calls the process method for all systems in the ECS
 /// </summary>
 void ECSManager::ProcessSystems()
@@ -218,19 +263,43 @@ void ECSManager::ProcessSystems()
 
 	for (auto & system : mRenderSystems)
 	{
-		//if (mRenderTask)
-		//{
-		//	if (mRenderTask->IsDone())
-		//	{
-		//		mRenderTask->CleanUpTask();
-		//		mRenderTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
-		//	}
-		//}
-		//else
-		//{
-		//	mRenderTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
-		//}
-		system->Process();
+		//If render task has already been assigned
+		if (mRenderTask)
+		{
+			//Check if render task has been completed
+			if (mRenderTask->IsDone())
+			{
+				//Clean up the task and create new task
+				mRenderTask->CleanUpTask();
+				mRenderTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
+			}
+		}
+		else
+		{
+			//Create render task
+			mRenderTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
+		}
+		//system->Process();
+	}
+
+	for (auto & system : mNetworkSystems)
+	{
+		//If network task has already been assigned
+		if (mNetworkingTask)
+		{
+			//Check if network task has been completed
+			if (mNetworkingTask->IsDone())
+			{
+				//Clean up the task and create new task
+				mNetworkingTask->CleanUpTask();
+				mNetworkingTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
+			}
+		}
+		else
+		{
+			//Create network task
+			mNetworkingTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
+		}
 	}
 }
 

@@ -3,6 +3,7 @@
 /// <summary>
 /// Updates the input and ecsManager every frame
 /// Updates the scene every frame
+/// Assigns the threads tasks every frame
 /// Calculates all the timing of the scene
 /// </summary>
 void SceneManager::Update()
@@ -10,10 +11,10 @@ void SceneManager::Update()
 	mCurrentTime = std::chrono::high_resolution_clock::now();
 	mDeltaTime = mCurrentTime - mPreviousTime;
 
-	mInputManager->Update();
-	mScene->Update();
 	mThreadManager->ProcessTasks();
 	mEcsManager->ProcessSystems();
+	mInputManager->Update();
+	mScene->Update();
 
 	//mThreadManager->AddTask([](void*, void*) {OutputDebugString(L"'Ello m8"); }, nullptr, nullptr, 0);
 

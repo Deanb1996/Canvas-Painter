@@ -1,7 +1,7 @@
-#include "MathsHelper.h"
+#include "KodeboldsMath.h"
 #include "Matrix4.h"
 
-using namespace MathsHelper;
+using namespace KodeboldsMath;
 
 /// <summary>
 /// Default constructor that initialises the matrix to an identity matrix

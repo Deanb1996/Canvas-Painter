@@ -8,7 +8,7 @@
 /// <param name="pParam2">The second parameter of the function</param>
 /// <param name="pThreadAffinity">Thread affinity of the task</param>
 Task::Task(std::function<void(void* param1, void* param2)> pFunction, void* pParam1, void* pParam2, const int pThreadAffinity)
-	:mParam1(pParam1), mParam2(pParam2), mFunction(pFunction), mAffinity(pThreadAffinity)
+	:mParam1(pParam1), mParam2(pParam2), mFunction(pFunction), mAffinity(pThreadAffinity), mIsDone(false)
 {
 }
 

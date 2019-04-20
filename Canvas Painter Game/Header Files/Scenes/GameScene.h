@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include <memory>
 #include "Managers.h"
-#include "MathsHelper.h"
+#include "KodeboldsMath.h"
 
 class GameScene : public Scene
 {
@@ -26,15 +26,19 @@ private:
 
 	//Camera
 	Camera mActiveCamera;
-	MathsHelper::Matrix4 mLookAt;
-	MathsHelper::Matrix4 mInverseLookAt;
-	MathsHelper::Matrix4 mProjection;
-	MathsHelper::Matrix4 mInverseProjection;
+	KodeboldsMath::Matrix4 mLookAt;
+	KodeboldsMath::Matrix4 mInverseLookAt;
+	KodeboldsMath::Matrix4 mProjection;
+	KodeboldsMath::Matrix4 mInverseProjection;
 
 	//Game stats
-	MathsHelper::Vector4 mPlayerColour;
+	KodeboldsMath::Vector4 mPlayerColour;
+	int mPeerCount;
 	int mPlayerCount;
 	int mPlayerNumber;
+	const float mMoveSpeed = 5;
+	int mStartingMass;
+	int mTotalMass;
 
 	//On load functions
 	void CreatePlayer();
@@ -46,6 +50,9 @@ private:
 	void CameraControls();
 	void ColourCanvas();
 	void CubeClicked();
+	void ControlFrequency();
+	void IntegrityCheck();
+	void Reset();
 
 public:
 	//Structors

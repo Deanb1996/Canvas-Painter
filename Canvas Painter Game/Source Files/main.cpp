@@ -8,7 +8,7 @@
 
 #pragma comment(lib, "Engine.lib")
 
-using namespace MathsHelper;
+using namespace KodeboldsMath;
 
 HINSTANCE hInst = nullptr;
 HWND hWnd = nullptr;
@@ -38,6 +38,8 @@ int WINAPI wWinMain(_In_ const HINSTANCE pHInstance, _In_opt_ const HINSTANCE pH
 	std::shared_ptr<SceneManager> sceneManager = SceneManager::Instance();
 	std::shared_ptr<ThreadManager> threadManager = ThreadManager::Instance();
 	std::shared_ptr<NetworkManager> networkManager = NetworkManager::Instance();
+
+	//Initialise winsock
 	networkManager->InitWinSock(9171);
 
 	//Get window height and width for scene manager
@@ -55,12 +57,13 @@ int WINAPI wWinMain(_In_ const HINSTANCE pHInstance, _In_opt_ const HINSTANCE pH
 #endif
 	ecsManager->AddRenderSystem(system);
 
-	//Update systems
+	//Ray box collision system
 	system = std::make_shared<RayAABBIntersectionSystem>();
 	ecsManager->AddUpdateSystem(system);
 
+	//Network system
 	system = std::make_shared<NetworkSystem>();
-	ecsManager->AddUpdateSystem(system);
+	ecsManager->AddNetworkSystem(system);
 
 	//Scenes
 	sceneManager->LoadScene<GameScene>();
@@ -108,7 +111,7 @@ HRESULT InitWindow(const HINSTANCE pHInstance, const int pNCmdShow)
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = nullptr;
 	wcex.lpszMenuName = nullptr;
-	wcex.lpszClassName = L"Example Game";
+	wcex.lpszClassName = L"Canvas Painter";
 	wcex.hIconSm = LoadIcon(wcex.hInstance, nullptr);
 	if (!RegisterClassEx(&wcex))
 	{
@@ -117,9 +120,9 @@ HRESULT InitWindow(const HINSTANCE pHInstance, const int pNCmdShow)
 
 	//Create window
 	hInst = pHInstance;
-	RECT rc = { 0, 0, 1920, 1080 };
+	RECT rc = { 0, 0, 640, 480 };
 	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-	hWnd = CreateWindow(L"Example Game", L"Example Game",
+	hWnd = CreateWindow(L"Canvas Painter", L"Canvas Painter",
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, nullptr, nullptr, pHInstance,
 		nullptr);

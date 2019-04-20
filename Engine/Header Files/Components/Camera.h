@@ -3,8 +3,8 @@
 
 struct Camera
 {
-	MathsHelper::Vector4 lookAt;
-	MathsHelper::Vector4 up;
+	KodeboldsMath::Vector4 lookAt;
+	KodeboldsMath::Vector4 up;
 
 	float FOV;
 	float nearPlane;

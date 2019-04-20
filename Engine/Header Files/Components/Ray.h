@@ -1,10 +1,10 @@
 #pragma once
-#include "MathsHelper.h"
+#include "Vector3.h"
 
 struct Ray
 {
-	MathsHelper::Vector3 origin;
-	MathsHelper::Vector3 direction;
-	MathsHelper::Vector3 intersectionPoint;
+	KodeboldsMath::Vector3 origin;
+	KodeboldsMath::Vector3 direction;
+	KodeboldsMath::Vector3 intersectionPoint;
 	int intersectedWith;
 };

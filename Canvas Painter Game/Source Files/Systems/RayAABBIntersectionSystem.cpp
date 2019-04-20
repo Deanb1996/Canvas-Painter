@@ -99,7 +99,7 @@ void RayAABBIntersectionSystem::Process()
 	{
 		//Retrieve ray component and calculate inverse ray direction
 		Ray rayComp = *mEcsManager->RayComp(ray.ID);
-		MathsHelper::Vector3 inverseRayDir(1 / rayComp.direction.X, 1 / rayComp.direction.Y, 1 / rayComp.direction.Z);
+		KodeboldsMath::Vector3 inverseRayDir(1 / rayComp.direction.X, 1 / rayComp.direction.Y, 1 / rayComp.direction.Z);
 
 		//Check to see if ray intersects with any AABBs
 		for (const auto& box : mEntities)
@@ -190,7 +190,7 @@ void RayAABBIntersectionSystem::Process()
 				}
 
 				//Set rays intersection point property to the point of intersection
-				MathsHelper::Vector3 intersection(rayComp.origin + rayComp.direction * highestMin);
+				KodeboldsMath::Vector3 intersection(rayComp.origin + rayComp.direction * highestMin);
 				mEcsManager->RayComp(ray.ID)->intersectionPoint = intersection;
 				break;
 			}

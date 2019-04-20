@@ -2,7 +2,7 @@
 #include <cmath>
 #include "Vector2.h"
 
-namespace MathsHelper
+namespace KodeboldsMath
 {
 	struct Vector3
 	{

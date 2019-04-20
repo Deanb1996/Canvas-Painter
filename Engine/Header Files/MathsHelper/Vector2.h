@@ -1,7 +1,7 @@
 #pragma once
 #include <cmath>
 
-namespace MathsHelper
+namespace KodeboldsMath
 {
 	struct Vector2
 	{

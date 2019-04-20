@@ -72,9 +72,6 @@
     <ClInclude Include="Header Files\Managers\SceneManager.h">
       <Filter>Header Files\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="Header Files\MathsHelper\MathsHelper.h">
-      <Filter>Header Files\MathsHelper</Filter>
-    </ClInclude>
     <ClInclude Include="Header Files\MathsHelper\Matrix4.h">
       <Filter>Header Files\MathsHelper</Filter>
     </ClInclude>
@@ -209,6 +206,9 @@
     </ClInclude>
     <ClInclude Include="Header Files\Components\Weight.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\MathsHelper\KodeboldsMath.h">
+      <Filter>Header Files\MathsHelper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

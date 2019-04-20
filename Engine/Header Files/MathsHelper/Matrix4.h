@@ -1,7 +1,7 @@
 #pragma once
 #include "Vector4.h"
 
-namespace MathsHelper
+namespace KodeboldsMath
 {
 	struct Matrix4
 	{

@@ -69,7 +69,7 @@ const int InputManager::ScrollWheel() const
 /// Gets the position of the mouse this frame
 /// </summary>
 /// <returns>Position of the mouse</returns>
-const MathsHelper::Vector2 & InputManager::MousePos() const
+const KodeboldsMath::Vector2 & InputManager::MousePos() const
 {
 	return mMousePosition;
 }
@@ -82,10 +82,10 @@ const MathsHelper::Vector2 & InputManager::MousePos() const
 /// <param name="pWidth">Width of window</param>
 /// <param name="pHeight">Height of window</param>
 /// <returns>Direction vector containing the direction of the world mouse pos from the eye position</returns>
-const MathsHelper::Vector4 InputManager::RayFromMouse(const MathsHelper::Matrix4& pViewInverse, const MathsHelper::Matrix4& pProjInverse, const float& pWidth, const float& pHeight)
+const KodeboldsMath::Vector4 InputManager::RayFromMouse(const KodeboldsMath::Matrix4& pViewInverse, const KodeboldsMath::Matrix4& pProjInverse, const float& pWidth, const float& pHeight)
 {
 	//Normalised device coords
-	const MathsHelper::Vector4 mousePosNormalised(
+	const KodeboldsMath::Vector4 mousePosNormalised(
 		(2.0f * mMousePosition.X) / pWidth - 1.0f,
 		1.0f - (2.0f * mMousePosition.Y) / pHeight,
 		1.0f,
@@ -93,12 +93,12 @@ const MathsHelper::Vector4 InputManager::RayFromMouse(const MathsHelper::Matrix4
 	);
 
 	//Multiply by inverse projection
-	MathsHelper::Vector4 ray = MathsHelper::MultiplyVectorMatrix(mousePosNormalised, pProjInverse);
+	KodeboldsMath::Vector4 ray = KodeboldsMath::MultiplyVectorMatrix(mousePosNormalised, pProjInverse);
 	ray.Z = 1.0f;
 	ray.W = 0.0f;
 
 	//Multiply by inverse view
-	ray = MathsHelper::MultiplyVectorMatrix(ray, pViewInverse);
+	ray = KodeboldsMath::MultiplyVectorMatrix(ray, pViewInverse);
 	ray.W = 0.0f;
 
 	//Normalise to get direction of ray and return

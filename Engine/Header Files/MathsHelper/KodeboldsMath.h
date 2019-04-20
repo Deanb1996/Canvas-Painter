@@ -1,7 +1,7 @@
 #pragma once
 #include "Matrix4.h"
 
-namespace MathsHelper
+namespace KodeboldsMath
 {
 	const float PI = 3.141592653589793238463f;
 

@@ -59,6 +59,7 @@ void Thread::Run()
 			mTask = nullptr;
 			mNeedsTask = true;
 		}
+
 		//Sleep to prevent thread taking 100% cpu with a busy while
 		Sleep(1);
 	}

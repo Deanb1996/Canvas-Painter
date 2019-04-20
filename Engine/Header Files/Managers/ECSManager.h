@@ -40,8 +40,15 @@ private:
 	//Systems
 	std::vector<std::shared_ptr<ISystem>> mRenderSystems;
 	std::vector<std::shared_ptr<ISystem>> mUpdateSystems;
+	std::vector<std::shared_ptr<ISystem>> mNetworkSystems;
 
+	//Render and network threads
 	Task* mRenderTask = nullptr;
+	Task* mNetworkingTask = nullptr;
+	int mTargetRenderingFrequency;
+	int mTargetNetworkingFrequency;
+	int mRenderingFrequency;
+	int mNetworkingFrequency;
 
 	//Entity management
 	void AssignEntity(const Entity& pEntity);
@@ -59,6 +66,12 @@ public:
 	ECSManager& operator=(ECSManager const&) = delete;	
 	static std::shared_ptr<ECSManager> Instance();
 
+	//Frequencies get/sets
+	int& TargetRenderingFrequency();
+	int& TargetNetworkingFrequency();
+	const int& RenderingFrequency();
+	const int& NetworkingFrequency();
+
 	//Entity creation
 	const int CreateEntity();
 	void DestroyEntity(const int pEntityID);
@@ -66,6 +79,7 @@ public:
 	//System management
 	void AddUpdateSystem(std::shared_ptr<ISystem> pSystem);
 	void AddRenderSystem(std::shared_ptr<ISystem> pSystem);
+	void AddNetworkSystem(std::shared_ptr<ISystem> pSystem);
 	void ProcessSystems();
 
 	//Add methods for components

@@ -1,7 +1,7 @@
 #include "ObjLoader.h"
 
 using namespace std;
-using namespace MathsHelper;
+using namespace KodeboldsMath;
 
 /// <summary>
 /// Loads vertices, indices, texcoords and normals into a Vertex struct from an obj file

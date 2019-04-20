@@ -96,7 +96,7 @@
     <ClInclude Include="Header Files\Managers\ResourceManager.h" />
     <ClInclude Include="Header Files\Managers\SceneManager.h" />
     <ClInclude Include="Header Files\Managers\ThreadManager.h" />
-    <ClInclude Include="Header Files\MathsHelper\MathsHelper.h" />
+    <ClInclude Include="Header Files\MathsHelper\KodeboldsMath.h" />
     <ClInclude Include="Header Files\MathsHelper\Matrix4.h" />
     <ClInclude Include="Header Files\MathsHelper\Vector2.h" />
     <ClInclude Include="Header Files\MathsHelper\Vector3.h" />

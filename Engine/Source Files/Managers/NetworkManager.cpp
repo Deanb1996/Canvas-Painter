@@ -104,7 +104,7 @@ void NetworkManager::SendMessages()
 		{
 			//Switches the active queue and the flushing queue so while messages are being flushed new messages can be put on the queue
 			std::lock_guard<std::mutex> lock(mx);
-			std::queue<std::pair<std::string, int>>* temp = mActiveQueue;
+			std::queue<std::string>* temp = mActiveQueue;
 			mActiveQueue = mFlushingQueue;
 			mFlushingQueue = temp;
 		}
@@ -113,23 +113,19 @@ void NetworkManager::SendMessages()
 		int messagesToSend = static_cast<int>(mFlushingQueue->size());
 		for (int j = 0; j < messagesToSend; j++)
 		{
-			//Loops through all the peers
+			//Loops through all the peers and sends messages to them
 			int peerCount = static_cast<int>(mPeers.size());
 			for (int i = 0; i < peerCount; i++)
 			{
-				//Only sends the message to the designated peers, or all the peers if no peers are designated
-				if (i == (mFlushingQueue->front().second) || mFlushingQueue->front().second == -1)
+				OutputDebugString(L"Sending message!");
+				if (send(mPeers[i], mFlushingQueue->front().c_str(), static_cast<int>(mFlushingQueue->front().length()), 0) == SOCKET_ERROR)
 				{
-					OutputDebugString(L"Sending message!");
-					if (send(mPeers[i], mFlushingQueue->front().first.c_str(), static_cast<int>(mFlushingQueue->front().first.length()), 0) == SOCKET_ERROR)
-					{
-						OutputDebugString(L"Send failed with ");
-						OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
-					}
-					else
-					{
-						OutputDebugString(L"Send succeeded!");
-					}
+					OutputDebugString(L"Send failed with ");
+					OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
+				}
+				else
+				{
+					OutputDebugString(L"Send succeeded!");
 				}
 			}
 
@@ -292,27 +288,31 @@ void NetworkManager::InitWinSock(const int pPort)
 		OutputDebugString(L"Bind failed with ");
 		OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
 
-		//Try binding socket on secondary port (THIS IS FOR DEBUGGING PURPOSES ON A SINGLE MACHINE)
-		mListenAddress.sin_family = AF_INET;
-		mListenAddress.sin_port = htons(9172);
-		mListenAddress.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
-
-		//Create listening socket
-		mListenSocket = socket(AF_INET, SOCK_STREAM, 0);
-
-		if (bind(mListenSocket, (sockaddr *)&mListenAddress, sizeof(mListenAddress)) == SOCKET_ERROR)
+		//Try binding socket on alternative ports (THIS IS FOR DEBUGGING PURPOSES ON A SINGLE MACHINE)
+		for (int i = 1; i < 4; i++)
 		{
-			OutputDebugString(L"Secondary bind failed with ");
-			OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
-		}
-		else
-		{
-			//Listen on socket
-			listen(mListenSocket, 5);
+			mListenAddress.sin_family = AF_INET;
+			mListenAddress.sin_port = htons(pPort + i);
+			mListenAddress.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
 
-			//Add listener and sender to threads
-			mThreadManager->AddTask(std::bind(&NetworkManager::Listen, this), nullptr, nullptr, 1);
-			mThreadManager->AddTask(std::bind(&NetworkManager::SendMessages, this), nullptr, nullptr, 1);
+			//Create listening socket
+			mListenSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+			if (bind(mListenSocket, (sockaddr *)&mListenAddress, sizeof(mListenAddress)) == SOCKET_ERROR)
+			{
+				OutputDebugString(L"Secondary bind failed with ");
+				OutputDebugString(std::to_wstring(WSAGetLastError()).c_str());
+			}
+			else
+			{
+				//Listen on socket
+				listen(mListenSocket, 5);
+
+				//Add listener and sender to threads
+				mThreadManager->AddTask(std::bind(&NetworkManager::Listen, this), nullptr, nullptr, 1);
+				mThreadManager->AddTask(std::bind(&NetworkManager::SendMessages, this), nullptr, nullptr, 1);
+				break;
+			}
 		}
 	}
 	else if (listen(mListenSocket, 5) == SOCKET_ERROR)
@@ -332,10 +332,10 @@ void NetworkManager::InitWinSock(const int pPort)
 /// Adds a given message to the message queue
 /// </summary>
 /// <param name="pMessage">Given message to add</param>
-void NetworkManager::AddMessage(const std::string & pMessage, int pPeer)
+void NetworkManager::AddMessage(const std::string & pMessage)
 {
 	std::lock_guard<std::mutex> lock(mx);
-	mActiveQueue->push(std::make_pair(mIdentifier + pMessage + mTerminator, pPeer));
+	mActiveQueue->push(mIdentifier + pMessage + mTerminator);
 }
 
 /// <summary>
@@ -355,9 +355,9 @@ std::queue<std::string> NetworkManager::ReadMessages()
 /// Gets the count of players currently connected
 /// </summary>
 /// <returns>Count of players currently connected</returns>
-int NetworkManager::PlayerCount()
+int NetworkManager::PeerCount()
 {
-	return mPeerCount + 1;
+	return mPeerCount;
 }
 
 /// <summary>
