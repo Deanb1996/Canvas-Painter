@@ -12,13 +12,13 @@ void GameScene::CreatePlayer()
 
 	//Creates players colour component
 	Colour colour{ Vector4(1.0f, 1.0f, 1.0f, 1.0f) };
-	mPlayerColour = colour.colour;
+	GameStats::gPlayerColour = colour.colour;
 
 	//Set red if first player
 	if (mNetworkManager->PeerCount() == 0)
 	{
-		mPlayerColour = colour.colour = Vector4(0.5f, 0.0f, 0.0f, 1.0f);
-		mPlayerNumber = 1;
+		GameStats::gPlayerColour = colour.colour = Vector4(0.5f, 0.0f, 0.0f, 1.0f);
+		GameStats::gPlayerNumber = 1;
 	}
 
 	mEcsManager->AddColourComp(colour, mPlayerEntity);
@@ -99,7 +99,7 @@ void GameScene::CreateCanvas()
 				mEcsManager->AddShaderComp(shader, cubeID);
 
 				//Creates cubes colour component
-				Colour colour{mPlayerColour};
+				Colour colour{GameStats::gPlayerColour};
 				mEcsManager->AddColourComp(colour, cubeID);
 
 				//Creates cubes weight component
@@ -115,7 +115,7 @@ void GameScene::CreateCanvas()
 				};
 				mEcsManager->AddBoxColliderComp(boxCollider, cubeID);
 
-				mCubeCount++;
+				GameStats::gCubeCount++;
 			}
 		}
 	}
@@ -172,9 +172,10 @@ void GameScene::CameraControls()
 void GameScene::ColourCanvas()
 {
 	//Loops through every voxel of the canvas and colours it
-	for (int i = 1; i < mCubeCount; i++)
+	for (int i = 1; i < GameStats::gCubeCount; i++)
 	{
-		mEcsManager->ColourComp(i)->colour = mPlayerColour;
+		mEcsManager->ColourComp(i)->colour = GameStats::gPlayerColour;
+		mEcsManager->WeightComp(i)->weight = 1;
 	}
 }
 
@@ -190,21 +191,22 @@ void GameScene::CubeClicked()
 
 		//If ray has intersected with a cube, send clicked message
 		int intersectedCube = rayComp.intersectedWith;
-		if (intersectedCube != -1)
+		if (intersectedCube != -1 && intersectedCube != mPreviousCube)
 		{
+			mPreviousCube = intersectedCube;
 			//If game is multiplayer, handle multiplayer interaction
-			if (mPeerCount > 0)
+			if (mNetworkManager->PeerCount() > 0)
 			{
 				//Randomly choose a player to steal from
 				int playerToStealFrom = 0;
 				do
 				{
-					playerToStealFrom = rand() % mPlayerCount + 1;
+					playerToStealFrom = rand() % GameStats::gPlayerCount + 1;
 				} 
-				while (playerToStealFrom == mPlayerNumber);
+				while (playerToStealFrom == GameStats::gPlayerNumber);
 
 				//Send message to the chosen player requesting to steal a voxel
-				mNetworkManager->AddMessage("CLICKED:" + std::to_string(intersectedCube) + ":" + std::to_string(playerToStealFrom) + ":" + std::to_string(mPlayerNumber));
+				mNetworkManager->AddMessage("CLICKED:" + std::to_string(intersectedCube) + ":" + std::to_string(playerToStealFrom) + ":" + std::to_string(GameStats::gPlayerNumber));
 			}
 			//If single player, just draw
 			else
@@ -255,18 +257,19 @@ void GameScene::IntegrityCheck()
 }
 
 /// <summary>
-/// 
+/// Sends a message to the other peers requesting them to reset the canvas and then resets the local canvas
 /// </summary>
 void GameScene::Reset()
 {
-
+	mNetworkManager->AddMessage("RESET");
+	ColourCanvas();
 }
 
 /// <summary>
 /// Default constructor
 /// </summary>
 GameScene::GameScene()
-	:mCameraID(-1), mRayID(-1), mCubeCount(0), mPeerCount(0), mPlayerCount(1), mPlayerNumber(0), mTotalMass(0)
+	:mCameraID(-1), mRayID(-1), mPreviousCube(0)
 {
 }
 
@@ -282,19 +285,11 @@ GameScene::~GameScene()
 /// </summary>
 void GameScene::Update()
 {
-	//Keep games peer count and player count up to date
-	if (mPeerCount != mNetworkManager->PeerCount())
+	//Paint canvas when new colour assigned
+	if (!GameStats::gCanvasColoured)
 	{
-		mPeerCount = mNetworkManager->PeerCount();
-		mPlayerCount = mPeerCount + 1;
-	}
-
-	//Keep games player colour and player number up to date
-	if (mPlayerColour.X != mEcsManager->ColourComp(0)->colour.X)
-	{
-		mPlayerColour = mEcsManager->ColourComp(0)->colour;
-		mPlayerNumber = static_cast<int>(mEcsManager->ColourComp(0)->colour.W);
 		ColourCanvas();
+		GameStats::gCanvasColoured = true;
 	}
 
 	CubeClicked();
@@ -302,13 +297,13 @@ void GameScene::Update()
 	ControlFrequency();
 
 	//Run integrity check when M is pressed
-	if (mInputManager->KeyHeld(KEYS::KEY_M))
+	if (mInputManager->KeyDown(KEYS::KEY_M))
 	{
 		IntegrityCheck();
 	}
 
 	//Reset canvas when R is press
-	if (mInputManager->KeyHeld(KEYS::KEY_R))
+	if (mInputManager->KeyDown(KEYS::KEY_R))
 	{
 		Reset();
 	}
@@ -335,11 +330,11 @@ void GameScene::OnLoad()
 {
 	//AntTweak
 	mAntTweakManager->AddBar("Game stats");
-	mAntTweakManager->AddVariable("Game stats", "Player Count", TW_TYPE_INT32, &mPlayerCount, "group=PlayerStats");
-	mAntTweakManager->AddVariable("Game stats", "Player Number", TW_TYPE_INT32, &mPlayerNumber, "group=PlayerStats");
-	mAntTweakManager->AddVariable("Game stats", "Mass on PC", TW_TYPE_INT32, &mCubeCount, "group=CubeMass");
+	mAntTweakManager->AddVariable("Game stats", "Player Count", TW_TYPE_INT32, &GameStats::gPlayerCount, "group=PlayerStats");
+	mAntTweakManager->AddVariable("Game stats", "Player Number", TW_TYPE_INT32, &GameStats::gPlayerNumber, "group=PlayerStats");
+	mAntTweakManager->AddVariable("Game stats", "Mass on PC", TW_TYPE_INT32, &GameStats::gCurrentMass, "group=CubeMass");
 	mAntTweakManager->AddVariable("Game stats", "Starting Mass", TW_TYPE_INT32, &mStartingMass, "group=CubeMass");
-	mAntTweakManager->AddVariable("Game stats", "Total Mass", TW_TYPE_INT32, &mTotalMass, "group=CubeMass");
+	mAntTweakManager->AddVariable("Game stats", "Total Mass", TW_TYPE_INT32, &GameStats::gTotalMass, "group=CubeMass");
 	mAntTweakManager->AddVariable("Game stats", "Target Rendering Frequency", TW_TYPE_INT32, &mEcsManager->TargetRenderingFrequency(), "group=Frequencies");
 	mAntTweakManager->AddVariable("Game stats", "Target Networking Frequency", TW_TYPE_INT32, &mEcsManager->TargetNetworkingFrequency(), "group=Frequencies");
 	mAntTweakManager->AddVariable("Game stats", "Actual Rendering Frequency", TW_TYPE_INT32, &mEcsManager->RenderingFrequency(), "group=Frequencies");
@@ -348,7 +343,8 @@ void GameScene::OnLoad()
 	//Create game entities
 	CreatePlayer();
 	CreateCanvas();
-	mStartingMass = mCubeCount * 4;
+	GameStats::gCurrentMass = GameStats::gCubeCount;
+	mStartingMass = GameStats::gCubeCount * 4;
 	CreateCamera();
 	CreateLight();
 }

@@ -11,7 +11,7 @@ private:
 	Task* mTask;
 	bool mNeedsTask;
 
-	void SetThreadAffinity(const int pCore);
+	void SetThreadAffinity(const std::vector<int>& pCores);
 public:
 	//Structors
 	Thread();

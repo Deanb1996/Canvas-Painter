@@ -1,6 +1,7 @@
 #pragma once
 #include "ISystem.h"
 #include "Managers.h"
+#include "GameStats.h"
 
 class NetworkSystem : public ISystem
 {
@@ -11,7 +12,6 @@ private:
 	std::vector<std::pair<std::string, KodeboldsMath::Vector4>> mAvailableColours;
 	std::vector<int> mAvailablePlayerNumbers;
 	std::string mPlayerColour;
-	int mPlayerNumber;
 	int mPeersResponded;
 
 	//Colour constants
@@ -26,6 +26,8 @@ private:
 	void NewPlayerCommand(std::vector<std::string>& pSplitString);
 	void NewPlayerConfirmedCommand(std::vector<std::string>& pSplitString);
 	void ConnectCommmand();
+	void ResetCanvas();
+	void Integrity(std::vector<std::string>& pSplitString);
 
 public:
 	explicit NetworkSystem();

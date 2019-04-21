@@ -34,7 +34,7 @@ ThreadManager::~ThreadManager()
 /// <param name="pParam2">Second parameter of the function</param>
 /// <param name="pThreadAffinity">Thread affinity to set the task to</param>
 /// <returns>A handle to the created task so tha the tasks completion and be monitored and the memory can be cleaned up upon completion</returns>
-Task* const  ThreadManager::AddTask(std::function<void(void* param1, void* param2)> pFunction, void* pParam1, void* pParam2, const int pThreadAffinity)
+Task* const  ThreadManager::AddTask(std::function<void(void* param1, void* param2)> pFunction, void* pParam1, void* pParam2, const std::vector<int>& pThreadAffinity)
 {
 	Task* task = new Task(pFunction, pParam1, pParam2, pThreadAffinity);
 

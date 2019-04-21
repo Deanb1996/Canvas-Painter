@@ -198,7 +198,7 @@ void NetworkManager::FindPeers()
 			{
 				//If connect command was sent successfully, add the peer listener to a thread to handle communication with this peer
 				mPeers.push_back(peerSocket);
-				mThreadManager->AddTask(std::bind(&NetworkManager::ListenToPeer, this, std::placeholders::_1), &mPeers[mPeerCount], nullptr, 1);
+				mThreadManager->AddTask(std::bind(&NetworkManager::ListenToPeer, this, std::placeholders::_1), &mPeers[mPeerCount], nullptr, std::vector<int>{2, 3, 4, 5, 6, 7});
 				mPeerCount++;
 			}
 		}
@@ -245,7 +245,7 @@ void NetworkManager::Listen()
 
 			//Add peer socket to thread
 			mPeers.push_back(peerSocket);
-			mThreadManager->AddTask(std::bind(&NetworkManager::ListenToPeer, this, std::placeholders::_1), &mPeers[mPeerCount], nullptr, 1);
+			mThreadManager->AddTask(std::bind(&NetworkManager::ListenToPeer, this, std::placeholders::_1), &mPeers[mPeerCount], nullptr, std::vector<int>{2, 3, 4, 5, 6, 7});
 			mPeerCount++;
 		}
 	}
@@ -309,8 +309,8 @@ void NetworkManager::InitWinSock(const int pPort)
 				listen(mListenSocket, 5);
 
 				//Add listener and sender to threads
-				mThreadManager->AddTask(std::bind(&NetworkManager::Listen, this), nullptr, nullptr, 1);
-				mThreadManager->AddTask(std::bind(&NetworkManager::SendMessages, this), nullptr, nullptr, 1);
+				mThreadManager->AddTask(std::bind(&NetworkManager::Listen, this), nullptr, nullptr, std::vector<int>{2, 3, 4, 5, 6, 7});
+				mThreadManager->AddTask(std::bind(&NetworkManager::SendMessages, this), nullptr, nullptr, std::vector<int>{2, 3, 4, 5, 6, 7});
 				break;
 			}
 		}
@@ -323,8 +323,8 @@ void NetworkManager::InitWinSock(const int pPort)
 	else
 	{
 		//Add listener and sender to threads
-		mThreadManager->AddTask(std::bind(&NetworkManager::Listen, this), nullptr, nullptr, 1);
-		mThreadManager->AddTask(std::bind(&NetworkManager::SendMessages, this), nullptr, nullptr, 1);
+		mThreadManager->AddTask(std::bind(&NetworkManager::Listen, this), nullptr, nullptr, std::vector<int>{2, 3, 4, 5, 6, 7});
+		mThreadManager->AddTask(std::bind(&NetworkManager::SendMessages, this), nullptr, nullptr, std::vector<int>{2, 3, 4, 5, 6, 7});
 	}
 }
 

@@ -78,11 +78,20 @@ bool Thread::NeedsTask()
 /// Sets the thread affinity to the given core
 /// </summary>
 /// <param name="pCore">Core to set the threads affinity to</param>
-void Thread::SetThreadAffinity(const int pCore)
+void Thread::SetThreadAffinity(const std::vector<int>& pCores)
 {
-	if (!(pCore < 0))
+	if (pCores.size() != 0)
 	{
-		DWORD_PTR mask = (1i64 << pCore);
-		SetThreadAffinityMask(mThread.native_handle(), mask);
+		const auto handle = mThread.native_handle();
+		DWORD_PTR mask = 0;
+
+		for (const auto& core : pCores)
+		{
+			if (!(core < 0))
+			{
+				mask += (1i64 << core);
+			}
+		}
+		SetThreadAffinityMask(handle, mask);
 	}
 }

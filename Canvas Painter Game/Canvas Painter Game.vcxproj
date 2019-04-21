@@ -374,6 +374,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Header Files\GameStats.cpp" />
     <ClCompile Include="Source Files\main.cpp" />
     <ClCompile Include="Source Files\Scenes\GameScene.cpp" />
     <ClCompile Include="Source Files\Systems\NetworkSystem.cpp" />
@@ -383,6 +384,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Header Files\GameStats.h" />
     <ClInclude Include="Header Files\Scenes\GameScene.h" />
     <ClInclude Include="Header Files\Systems\NetworkSystem.h" />
     <ClInclude Include="Header Files\Systems\RayAABBIntersectionSystem.h" />

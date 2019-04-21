@@ -42,6 +42,9 @@
     <ClCompile Include="Source Files\Systems\NetworkSystem.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="Header Files\GameStats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -55,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="Header Files\Systems\NetworkSystem.h">
       <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Header Files\GameStats.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

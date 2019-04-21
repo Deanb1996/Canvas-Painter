@@ -7,38 +7,39 @@
 void NetworkSystem::ClickedCommand(std::vector<std::string>& pSplitString)
 {
 	int cubeID = std::stoi(pSplitString[1]);
-	std::string colourToSteal;
+	std::string colourToSteal = " ";
 
 	//Checks if this cube has weight to steal
 	if (mEcsManager->WeightComp(cubeID)->weight > 0)
 	{
 		//If has colour red, steal colour red
-		if (mEcsManager->ColourComp(cubeID)->colour.X == 0.5f)
+		if (mEcsManager->ColourComp(cubeID)->colour.X == 0.5f || mEcsManager->ColourComp(cubeID)->colour.X == 1.1f)
 		{
-			mEcsManager->ColourComp(cubeID)->colour = mEcsManager->ColourComp(0)->colour - RED;
+			mEcsManager->ColourComp(cubeID)->colour = mEcsManager->ColourComp(cubeID)->colour - RED;
 			colourToSteal = "RED";
 		}
 		//If has colour green, steal green
-		else if (mEcsManager->ColourComp(cubeID)->colour.Y == 0.5f)
+		else if (mEcsManager->ColourComp(cubeID)->colour.Y == 0.5f || mEcsManager->ColourComp(cubeID)->colour.Y == 1.1f)
 		{
-			mEcsManager->ColourComp(cubeID)->colour = mEcsManager->ColourComp(0)->colour - GREEN;
+			mEcsManager->ColourComp(cubeID)->colour = mEcsManager->ColourComp(cubeID)->colour - GREEN;
 			colourToSteal = "GREEN";
 		}
 		//If has colour blue, steal blue
 		else if (mEcsManager->ColourComp(cubeID)->colour.Z == 0.5f)
 		{
-			mEcsManager->ColourComp(cubeID)->colour = mEcsManager->ColourComp(0)->colour - BLUE;
+			mEcsManager->ColourComp(cubeID)->colour = mEcsManager->ColourComp(cubeID)->colour - BLUE;
 			colourToSteal = "BLUE";
 		}
 		//If has colour yellow, steal yellow
 		else if ((mEcsManager->ColourComp(cubeID)->colour.X == 0.6f || mEcsManager->ColourComp(cubeID)->colour.X == 1.1f)
 			&& (mEcsManager->ColourComp(cubeID)->colour.Y == 0.6f || mEcsManager->ColourComp(cubeID)->colour.Y == 1.1f))
 		{
-			mEcsManager->ColourComp(cubeID)->colour = mEcsManager->ColourComp(0)->colour - YELLOW;
+			mEcsManager->ColourComp(cubeID)->colour = mEcsManager->ColourComp(cubeID)->colour - YELLOW;
 			colourToSteal = "YELLOW";
 		}
 
 		//Decrease weight of cube by 1
+		GameStats::gCurrentMass--;
 		mEcsManager->WeightComp(cubeID)->weight -= 1;
 
 		//If cube is left with no weight, remove the cubes colour component entirely to cause it not to render anymore
@@ -87,7 +88,7 @@ void NetworkSystem::ClickedResponseCommand(std::vector<std::string>& pSplitStrin
 	//If the cube already has weight, then add the colour on to its existing colour
 	if (mEcsManager->WeightComp(cubeID)->weight > 0)
 	{
-		mEcsManager->ColourComp(cubeID)->colour = mEcsManager->ColourComp(0)->colour + stolenColour;
+		mEcsManager->ColourComp(cubeID)->colour = mEcsManager->ColourComp(cubeID)->colour + stolenColour;
 	}
 	//Else add a colour component with the stolen colour
 	else
@@ -97,6 +98,7 @@ void NetworkSystem::ClickedResponseCommand(std::vector<std::string>& pSplitStrin
 	}
 
 	//Add one weight to cube
+	GameStats::gCurrentMass++;
 	mEcsManager->WeightComp(cubeID)->weight += 1;
 }
 
@@ -122,16 +124,16 @@ void NetworkSystem::NewPlayerCommand(std::vector<std::string>& pSplitString)
 	{
 		//Set player colour to one of the available colours and then remove it from the list
 		mPlayerColour = mAvailableColours.back().first;
-		mEcsManager->ColourComp(0)->colour = mAvailableColours.back().second;
+		GameStats::gPlayerColour = mAvailableColours.back().second;
+		GameStats::gCanvasColoured = false;
 		mAvailableColours.pop_back();
 
 		//Set player number to one of the available numbers and then remove it from the list
-		mPlayerNumber = mAvailablePlayerNumbers.back();
+		GameStats::gPlayerNumber = mAvailablePlayerNumbers.back();
 		mAvailablePlayerNumbers.pop_back();
-		mEcsManager->ColourComp(0)->colour.W = static_cast<float>(mPlayerNumber);
 
 		//Send a response to the peers informing them of the new players colour and number
-		mNetworkManager->AddMessage("NEWPLAYERCONFIRMED:" + mPlayerColour + ":" + std::to_string(mPlayerNumber));
+		mNetworkManager->AddMessage("NEWPLAYERCONFIRMED:" + mPlayerColour + ":" + std::to_string(GameStats::gPlayerNumber));
 	}
 }
 
@@ -148,6 +150,8 @@ void NetworkSystem::NewPlayerConfirmedCommand(std::vector<std::string>& pSplitSt
 
 	//Removes the number of the replying peer from the available numbers list
 	mAvailablePlayerNumbers.erase(remove(mAvailablePlayerNumbers.begin(), mAvailablePlayerNumbers.end(), std::stoi(pSplitString[2])), mAvailablePlayerNumbers.end());
+
+	GameStats::gPlayerCount++;
 }
 
 /// <summary>
@@ -156,14 +160,47 @@ void NetworkSystem::NewPlayerConfirmedCommand(std::vector<std::string>& pSplitSt
 void NetworkSystem::ConnectCommmand()
 {
 	//Sends a response to the connection request with this players colour and number
-	mNetworkManager->AddMessage("NEWPLAYER:" + mPlayerColour + ":" + std::to_string(mPlayerNumber));
+	mNetworkManager->AddMessage("NEWPLAYER:" + mPlayerColour + ":" + std::to_string(GameStats::gPlayerNumber));
+}
+
+/// <summary>
+/// Executes the logic of the reset command
+/// </summary>
+void NetworkSystem::ResetCanvas()
+{
+	//Loops through every voxel of the canvas and resets the colour and weight to starting values
+	for (int i = 1; i < GameStats::gCubeCount; i++)
+	{
+		//If colour exists, set colour to player colour
+		if (mEcsManager->ColourComp(i))
+		{
+			mEcsManager->ColourComp(i)->colour = GameStats::gPlayerColour;
+		}
+		//Else create colour component with player colour
+		else
+		{
+			Colour colour{ GameStats::gPlayerColour };
+			mEcsManager->AddColourComp(colour, i);
+		}
+
+		//Set weight to 1
+		mEcsManager->WeightComp(i)->weight = 1;
+	}
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <param name="pSplitString"></param>
+void NetworkSystem::Integrity(std::vector<std::string>& pSplitString)
+{
 }
 
 /// <summary>
 /// Constructor
 /// Adds the available colours and player numbers to the appropriate lists
 /// </summary>
-NetworkSystem::NetworkSystem() : ISystem(ComponentType::COMPONENT_NONE), mPlayerNumber(0), mPeersResponded(0)
+NetworkSystem::NetworkSystem() : ISystem(ComponentType::COMPONENT_NONE), mPeersResponded(0)
 {
 	//Colours
 	mAvailableColours.push_back(std::make_pair("GREEN", GREEN));
@@ -210,7 +247,7 @@ void NetworkSystem::Process()
 	//If there are no peers connected, this is the first player, so set number to 1 and colour to red and remove it from availability lists
 	if (mNetworkManager->PeerCount() == 0)
 	{
-		mPlayerNumber = 1;
+		GameStats::gPlayerNumber = 1;
 		mPlayerColour = "RED";
 
 		mAvailableColours.erase(std::remove_if(mAvailableColours.begin(), mAvailableColours.end(),
@@ -250,7 +287,7 @@ void NetworkSystem::Process()
 		else if (splitString[0] == "CLICKED")
 		{
 			//If the peer decided to steal a cube from this player
-			if (std::stoi(splitString[2]) == mPlayerNumber)
+			if (std::stoi(splitString[2]) == GameStats::gPlayerNumber)
 			{
 				ClickedCommand(splitString);
 			}
@@ -259,7 +296,7 @@ void NetworkSystem::Process()
 		else if (splitString[0] == "NEWPLAYER")
 		{
 			//If player has not been assigned a number it is a new player and needs to be assigned one
-			if (mPlayerNumber == 0)
+			if (GameStats::gPlayerNumber == 0)
 			{
 				NewPlayerCommand(splitString);
 			}
@@ -268,7 +305,7 @@ void NetworkSystem::Process()
 		else if (splitString[0] == "CLICKEDRESPONSE")
 		{
 			//If this player is the one that initiated the voxel stealing transaction
-			if (std::stoi(splitString[3]) == mPlayerNumber)
+			if (std::stoi(splitString[3]) == GameStats::gPlayerNumber)
 			{
 				ClickedResponseCommand(splitString);
 			}
@@ -277,6 +314,16 @@ void NetworkSystem::Process()
 		else if (splitString[0] == "NEWPLAYERCONFIRMED")
 		{
 			NewPlayerConfirmedCommand(splitString);
+		}
+		//Reset canvas command, resets the canvas to the original colour and weight
+		else if (splitString[0] == "RESET")
+		{
+			ResetCanvas();
+		}
+		//Integrity test command, sends all data to a single canvas for an integrity test
+		else if (splitString[0] == "INTEGRITY")
+		{
+			Integrity(splitString);
 		}
 
 		//Remove the message from the queue

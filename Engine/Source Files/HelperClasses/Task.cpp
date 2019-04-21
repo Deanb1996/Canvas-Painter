@@ -7,7 +7,7 @@
 /// <param name="pParam1">The first parameter of the function</param>
 /// <param name="pParam2">The second parameter of the function</param>
 /// <param name="pThreadAffinity">Thread affinity of the task</param>
-Task::Task(std::function<void(void* param1, void* param2)> pFunction, void* pParam1, void* pParam2, const int pThreadAffinity)
+Task::Task(std::function<void(void* param1, void* param2)> pFunction, void* pParam1, void* pParam2, const std::vector<int>& pThreadAffinity)
 	:mParam1(pParam1), mParam2(pParam2), mFunction(pFunction), mAffinity(pThreadAffinity), mIsDone(false)
 {
 }
@@ -32,7 +32,7 @@ void Task::Run()
 /// Get method for the tasks thread affinity
 /// </summary>
 /// <returns>The thread affinity of the task</returns>
-int Task::ThreadAffinity()
+const std::vector<int>& Task::ThreadAffinity()
 {
 	return mAffinity;
 }

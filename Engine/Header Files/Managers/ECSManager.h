@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 #include "ThreadManager.h"
+#include <chrono>
 
 class RenderSystem_DX;
 
@@ -49,6 +50,12 @@ private:
 	int mTargetNetworkingFrequency;
 	int mRenderingFrequency;
 	int mNetworkingFrequency;
+	std::chrono::high_resolution_clock::time_point mRenderStart;
+	std::chrono::high_resolution_clock::time_point mRenderFinish;
+	std::chrono::nanoseconds mRenderTime;
+	std::chrono::high_resolution_clock::time_point mNetworkStart;
+	std::chrono::high_resolution_clock::time_point mNetworkFinish;
+	std::chrono::nanoseconds mNetworkTime;
 
 	//Entity management
 	void AssignEntity(const Entity& pEntity);

@@ -22,7 +22,7 @@ public:
 	ThreadManager(const ThreadManager& ThreadManager) = delete;
 	ThreadManager& operator=(ThreadManager const&) = delete;
 
-	Task* const AddTask(std::function<void(void* param1, void* param2)> pFunction, void* pParam1, void* pParam2, const int pThreadAffinity);
+	Task* const AddTask(std::function<void(void* param1, void* param2)> pFunction, void* pParam1, void* pParam2, const std::vector<int>& pThreadAffinity);
 	void ProcessTasks();
 
 	static std::shared_ptr< ThreadManager > Instance();

@@ -3,6 +3,7 @@
 #include <memory>
 #include "Managers.h"
 #include "KodeboldsMath.h"
+#include "GameStats.h"
 
 class GameScene : public Scene
 {
@@ -21,7 +22,6 @@ private:
 	//Entity IDs
 	int mCameraID;
 	int mRayID;
-	int mCubeCount;
 	int mPlayerEntity;
 
 	//Camera
@@ -32,13 +32,9 @@ private:
 	KodeboldsMath::Matrix4 mInverseProjection;
 
 	//Game stats
-	KodeboldsMath::Vector4 mPlayerColour;
-	int mPeerCount;
-	int mPlayerCount;
-	int mPlayerNumber;
 	const float mMoveSpeed = 5;
 	int mStartingMass;
-	int mTotalMass;
+	int mPreviousCube;
 
 	//On load functions
 	void CreatePlayer();

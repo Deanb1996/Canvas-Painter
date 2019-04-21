@@ -269,15 +269,33 @@ void ECSManager::ProcessSystems()
 			//Check if render task has been completed
 			if (mRenderTask->IsDone())
 			{
-				//Clean up the task and create new task
-				mRenderTask->CleanUpTask();
-				mRenderTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
+				//Calculate time taken
+				mRenderFinish = std::chrono::high_resolution_clock::now();
+				mRenderTime = mRenderFinish - mRenderStart;
+
+				//Convert timings to miliseconds for frequency calculations
+				float targetMiliseconds = static_cast<float>(1000 / mTargetRenderingFrequency);
+				float renderTimeMiliseconds = static_cast<float>(mRenderTime.count() / pow(10, 6));
+
+				//If render task took longer than target frequency, create new task
+				//Else wait until the time meets the target frequency
+				if (renderTimeMiliseconds >= targetMiliseconds)
+				{
+					//Calculate the actual rendering frequency
+					mRenderingFrequency = static_cast<int>(1000 / renderTimeMiliseconds);
+
+					// Cleanup then create new task and set start time
+					mRenderTask->CleanUpTask();
+					mRenderTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, std::vector<int>{0});
+					mRenderStart = std::chrono::high_resolution_clock::now();
+				}
 			}
 		}
 		else
 		{
-			//Create render task
-			mRenderTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
+			//Create render task and set start time
+			mRenderTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, std::vector<int>{0});
+			mRenderStart = std::chrono::high_resolution_clock::now();
 		}
 		//system->Process();
 	}
@@ -290,15 +308,33 @@ void ECSManager::ProcessSystems()
 			//Check if network task has been completed
 			if (mNetworkingTask->IsDone())
 			{
-				//Clean up the task and create new task
-				mNetworkingTask->CleanUpTask();
-				mNetworkingTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
+				//Calculate time taken
+				mNetworkFinish = std::chrono::high_resolution_clock::now();
+				mNetworkTime = mNetworkFinish - mNetworkStart;
+
+				//Convert timings to miliseconds for frequency calculations
+				float targetMiliseconds = static_cast<float>(1000 / mTargetNetworkingFrequency);
+				float networkTimeMiliseconds = static_cast<float>(mNetworkTime.count() / pow(10, 6));
+
+				//If networking task took longer than target frequency, create new task
+				//Else wait until the time meets the target frequency
+				if (networkTimeMiliseconds >= targetMiliseconds)
+				{
+					//Calculate the actual networking frequency
+					mNetworkingFrequency = static_cast<int>(1000 / networkTimeMiliseconds);
+
+					// Cleanup then create new task and set start time
+					mNetworkingTask->CleanUpTask();
+					mNetworkingTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, std::vector<int>{1});
+					mNetworkStart = std::chrono::high_resolution_clock::now();
+				}
 			}
 		}
 		else
 		{
 			//Create network task
-			mNetworkingTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, 2);
+			mNetworkingTask = mThreadManager->AddTask(std::bind(&ISystem::Process, system), nullptr, nullptr, std::vector<int>{1});
+			mNetworkStart = std::chrono::high_resolution_clock::now();
 		}
 	}
 }
