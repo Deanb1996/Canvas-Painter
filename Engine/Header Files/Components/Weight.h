@@ -1,4 +1,4 @@
 struct Weight
 {
-	float weight;
+	int weight;
 };

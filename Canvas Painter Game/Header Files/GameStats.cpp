@@ -11,4 +11,5 @@ namespace GameStats
 	int gCurrentMass = 0;
 	int gTotalMass = 0;
 	std::vector<int> gTakenPlayerNumbers;
+	std::vector<KodeboldsMath::Vector4> gColoursBeforeIntegrity;
 }

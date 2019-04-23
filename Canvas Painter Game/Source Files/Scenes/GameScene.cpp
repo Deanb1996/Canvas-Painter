@@ -97,6 +97,7 @@ void GameScene::CreateCanvas()
 			}
 		}
 	}
+	GameStats::gColoursBeforeIntegrity = std::vector<Vector4>(GameStats::gCubeCount);
 }
 
 /// <summary>
@@ -150,7 +151,7 @@ void GameScene::CameraControls()
 void GameScene::ColourCanvas()
 {
 	//Loops through every voxel of the canvas and colours it
-	for (int i = 2; i < GameStats::gCubeCount; i++)
+	for (int i = 2; i < GameStats::gCubeCount + 2; i++)
 	{
 		mEcsManager->ColourComp(i)->colour = GameStats::gPlayerColour;
 		mEcsManager->WeightComp(i)->weight = 1;
@@ -230,14 +231,6 @@ void GameScene::ControlFrequency()
 }
 
 /// <summary>
-/// 
-/// </summary>
-void GameScene::IntegrityCheck()
-{
-
-}
-
-/// <summary>
 /// Sends a message to the other peers requesting them to reset the canvas and then resets the local canvas
 /// </summary>
 void GameScene::Reset()
@@ -250,7 +243,7 @@ void GameScene::Reset()
 /// Default constructor
 /// </summary>
 GameScene::GameScene()
-	:mCameraID(-1), mRayID(-1), mPreviousCube(0)
+	:mCameraID(-1), mRayID(-1), mPreviousCube(0), mIntegrityMode(false)
 {
 }
 
@@ -277,10 +270,32 @@ void GameScene::Update()
 	CameraControls();
 	ControlFrequency();
 
-	//Run integrity check when M is pressed
 	if (mInputManager->KeyDown(KEYS::KEY_M))
 	{
-		IntegrityCheck();
+		//Send integrity message check if not already in integrity mode
+		if (!mIntegrityMode)
+		{
+			mNetworkManager->AddMessage("INTEGRITY:" + std::to_string(GameStats::gPlayerNumber));
+			mIntegrityMode = true;
+			GameStats::gTotalMass = 0;
+		}
+		//Else colour canvas to previous state
+		else
+		{
+			//Loops through every voxel of the canvas and colours it back to its original colour before integrity
+			for (int i = 2; i < GameStats::gCubeCount + 2; i++)
+			{
+				if (GameStats::gColoursBeforeIntegrity[i-2].W != 0)
+				{
+					mEcsManager->ColourComp(i)->colour = GameStats::gColoursBeforeIntegrity[i - 2];
+				}
+				else
+				{
+					mEcsManager->RemoveColourComp(i);
+				}
+			}
+			mIntegrityMode = false;
+		}
 	}
 
 	//Reset canvas when R is press

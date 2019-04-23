@@ -186,7 +186,7 @@ void NetworkSystem::ConnectCommmand()
 void NetworkSystem::ResetCanvasCommand()
 {
 	//Loops through every voxel of the canvas and resets the colour and weight to starting values
-	for (int i = 2; i < GameStats::gCubeCount; i++)
+	for (int i = 2; i < GameStats::gCubeCount + 2; i++)
 	{
 		//If colour exists, set colour to player colour
 		if (mEcsManager->ColourComp(i))
@@ -206,11 +206,110 @@ void NetworkSystem::ResetCanvasCommand()
 }
 
 /// <summary>
-/// 
+/// Executes the logic of the integrity command
 /// </summary>
-/// <param name="pSplitString"></param>
+/// <param name="pSplitString">Command args</param>
 void NetworkSystem::IntegrityCommand(std::vector<std::string>& pSplitString)
 {
+	//Create an integrity response message with the player number of the player that started the integrity 
+	std::string response = "INTEGRITYRESPONSE:" + pSplitString[1] + ":";
+
+	//Add all the weights of the current canvas to the message
+	for (int i = 2; i < GameStats::gCubeCount + 2; i++)
+	{
+		response += std::to_string(mEcsManager->WeightComp(i)->weight) + ":";
+	}
+
+	//Send message
+	mNetworkManager->AddMessage(response);
+}
+
+/// <summary>
+/// Exectures the logic of the integrity response command
+/// </summary>
+/// <param name="pSplitString">Command args</param>
+void NetworkSystem::IntegrityResponseCommand(std::vector<std::string>& pSplitString)
+{
+	//If weights has not yet been resized to cube count, resize it.
+	if (mWeights.size() != GameStats::gCubeCount)
+	{
+		mWeights = std::vector<int>(GameStats::gCubeCount);
+	}
+
+	//Store the weights of the received canvas
+	for (int i = 0; i < GameStats::gCubeCount; i++)
+	{
+		mWeights[i] += std::stoi(pSplitString[i + 2]);
+		GameStats::gTotalMass++;
+	}
+
+	//Keep track of how many peers have responded
+	mPeersRespondedToIntegrity++;
+
+	//If all the peers of responded
+	if (mPeersRespondedToIntegrity == mNetworkManager->PeerCount())
+	{
+		for (int i = 2; i < GameStats::gCubeCount + 2; i++)
+		{
+			//Tally up total weight
+			mWeights[i - 2] += mEcsManager->WeightComp(i)->weight;
+			GameStats::gTotalMass++;
+
+			//Store current colour of cube before doing integrity colouring
+			if (mEcsManager->ColourComp(i))
+			{
+				GameStats::gColoursBeforeIntegrity[i - 2] = mEcsManager->ColourComp(i)->colour;
+			}
+			else
+			{
+				GameStats::gColoursBeforeIntegrity[i - 2].W = 0;
+			}
+
+			//If missing weight, colour blue
+			if (mWeights[i-2] < GameStats::gPlayerCount)
+			{
+				if (mEcsManager->ColourComp(i))
+				{
+					mEcsManager->ColourComp(i)->colour = BLUE;
+				}
+				else
+				{
+					mEcsManager->AddColourComp(Colour{ BLUE }, i);
+				}
+			}
+			//If has too much weight, colour red
+			else if (mWeights[i - 2] > GameStats::gPlayerCount)
+			{
+				if (mEcsManager->ColourComp(i))
+				{
+					mEcsManager->ColourComp(i)->colour = RED;
+				}
+				else
+				{
+					mEcsManager->AddColourComp(Colour{ RED }, i);
+				}
+			}
+			//Else colour gray
+			else
+			{
+				if (mEcsManager->ColourComp(i))
+				{
+					mEcsManager->ColourComp(i)->colour = KodeboldsMath::Vector4(0.5, 0.5, 0.5, 1);
+				}
+				else
+				{
+					mEcsManager->AddColourComp(Colour{ KodeboldsMath::Vector4(0.5, 0.5, 0.5, 1) }, i);
+				}
+			}
+		}
+		mPeersRespondedToIntegrity = 0;
+
+		//Reset weights to zero
+		for (int i = 0; i < mWeights.size(); i++)
+		{
+			mWeights[i] = 0;
+		}
+	}
 }
 
 /// <summary>
@@ -233,7 +332,7 @@ void NetworkSystem::DisconnectDetectedCommand(std::vector<std::string>& pSplitSt
 	mPeersRespondedToDisconnect++;
 
 	//If all the peers of responded
-	if (mPeersRespondedToDisconnect == mNetworkManager->PeerCount() || pSplitString[0] == "")
+	if (mPeersRespondedToDisconnect == mNetworkManager->PeerCount())
 	{
 		std::pair<std::string, KodeboldsMath::Vector4> colourToRemove;
 		int numberToRemove;
@@ -286,7 +385,7 @@ void NetworkSystem::DisconnectDetectedCommand(std::vector<std::string>& pSplitSt
 /// Constructor
 /// Adds the available colours and player numbers to the appropriate lists
 /// </summary>
-NetworkSystem::NetworkSystem() : ISystem(ComponentType::COMPONENT_NONE), mPeersResponded(0), mPeersRespondedToDisconnect(0)
+NetworkSystem::NetworkSystem() : ISystem(ComponentType::COMPONENT_NONE), mPeersResponded(0), mPeersRespondedToDisconnect(0), mPeersRespondedToIntegrity(0)
 {
 	//Colours
 	mAvailableColours.push_back(std::make_pair("GREEN", GREEN));
@@ -432,6 +531,15 @@ void NetworkSystem::Process()
 		else if (splitString[0] == "INTEGRITY")
 		{
 			IntegrityCommand(splitString);
+		}
+		//Integrity test response containing the weights for all the cubes from a single peer
+		else if (splitString[0] == "INTEGRITYRESPONSE")
+		{
+			//If this player is the one that initiated the integrity test request
+			if (std::stoi(splitString[1]) == GameStats::gPlayerNumber)
+			{
+				IntegrityResponseCommand(splitString);
+			}
 		}
 		//Disconnect detected command, sends out the colour and number of this player to other peers 
 		//so all peers can figure out which player has disconnected and response appropriately

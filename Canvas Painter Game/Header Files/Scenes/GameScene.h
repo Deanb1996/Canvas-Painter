@@ -33,6 +33,7 @@ private:
 	//Game stats
 	const float mMoveSpeed = 5;
 	int mPreviousCube;
+	bool mIntegrityMode;
 
 	//On load functions
 	void CreateCamera();
@@ -44,7 +45,6 @@ private:
 	void ColourCanvas();
 	void CubeClicked();
 	void ControlFrequency();
-	void IntegrityCheck();
 	void Reset();
 
 public:
