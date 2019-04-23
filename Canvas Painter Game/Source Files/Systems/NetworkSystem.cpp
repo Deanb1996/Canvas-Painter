@@ -108,16 +108,25 @@ void NetworkSystem::ClickedResponseCommand(std::vector<std::string>& pSplitStrin
 /// <param name="pSplitString">Command args</param>
 void NetworkSystem::NewPlayerCommand(std::vector<std::string>& pSplitString)
 {
+	//Adds it to taken colours list
+	mTakenColours.push_back(*std::find_if(mAvailableColours.begin(), mAvailableColours.end(),
+		[&](const std::pair<std::string, KodeboldsMath::Vector4> pair) {return pair.first == pSplitString[1]; }));
+
 	//Removes the colour of the replying peer from the available colours list
 	mAvailableColours.erase(std::remove_if(mAvailableColours.begin(), mAvailableColours.end(),
 		[&](const std::pair<std::string, KodeboldsMath::Vector4> pair) {return pair.first == pSplitString[1]; }),
 		mAvailableColours.end());
+
+	//Adds it to the taken numbers list
+	GameStats::gTakenPlayerNumbers.push_back(std::stoi(pSplitString[2]));
 
 	//Removes the number of the replying peer from the available numbers list
 	mAvailablePlayerNumbers.erase(remove(mAvailablePlayerNumbers.begin(), mAvailablePlayerNumbers.end(), std::stoi(pSplitString[2])), mAvailablePlayerNumbers.end());
 
 	//Keep track of how many peers have responded to the connection request
 	mPeersResponded++;
+	GameStats::gPlayerCount++;
+	GameStats::gStartingMass = GameStats::gCubeCount * GameStats::gPlayerCount;
 
 	//If all the peers of responded
 	if (mPeersResponded == mNetworkManager->PeerCount())
@@ -143,15 +152,23 @@ void NetworkSystem::NewPlayerCommand(std::vector<std::string>& pSplitString)
 /// <param name="pSplitString">Command args</param>
 void NetworkSystem::NewPlayerConfirmedCommand(std::vector<std::string>& pSplitString)
 {
+	//Adds it to taken colours list
+	mTakenColours.push_back(*std::find_if(mAvailableColours.begin(), mAvailableColours.end(),
+		[&](const std::pair<std::string, KodeboldsMath::Vector4> pair) {return pair.first == pSplitString[1]; }));
+
 	//Removes the colour of the replying peer from the available colours list
 	mAvailableColours.erase(std::remove_if(mAvailableColours.begin(), mAvailableColours.end(),
 		[&](const std::pair<std::string, KodeboldsMath::Vector4> pair) {return pair.first == pSplitString[1]; }),
 		mAvailableColours.end());
 
+	//Add it to the taken numbers list
+	GameStats::gTakenPlayerNumbers.push_back(std::stoi(pSplitString[2]));
+
 	//Removes the number of the replying peer from the available numbers list
 	mAvailablePlayerNumbers.erase(remove(mAvailablePlayerNumbers.begin(), mAvailablePlayerNumbers.end(), std::stoi(pSplitString[2])), mAvailablePlayerNumbers.end());
 
 	GameStats::gPlayerCount++;
+	GameStats::gStartingMass = GameStats::gCubeCount * GameStats::gPlayerCount;
 }
 
 /// <summary>
@@ -166,10 +183,10 @@ void NetworkSystem::ConnectCommmand()
 /// <summary>
 /// Executes the logic of the reset command
 /// </summary>
-void NetworkSystem::ResetCanvas()
+void NetworkSystem::ResetCanvasCommand()
 {
 	//Loops through every voxel of the canvas and resets the colour and weight to starting values
-	for (int i = 1; i < GameStats::gCubeCount; i++)
+	for (int i = 2; i < GameStats::gCubeCount; i++)
 	{
 		//If colour exists, set colour to player colour
 		if (mEcsManager->ColourComp(i))
@@ -192,15 +209,84 @@ void NetworkSystem::ResetCanvas()
 /// 
 /// </summary>
 /// <param name="pSplitString"></param>
-void NetworkSystem::Integrity(std::vector<std::string>& pSplitString)
+void NetworkSystem::IntegrityCommand(std::vector<std::string>& pSplitString)
 {
+}
+
+/// <summary>
+/// Executes the logic of the disconnect command
+/// </summary>
+void NetworkSystem::DisconnectDetectedCommand(std::vector<std::string>& pSplitString)
+{
+	//Find the corresponding colour pair
+	auto it = std::find_if(mTakenColours.begin(), mTakenColours.end(),
+		[&](const std::pair<std::string, KodeboldsMath::Vector4> pair) { return pair.first == pSplitString[1]; });
+
+	//Add the colour pair to the temp colours list
+	if (it != mTakenColours.end())
+	{
+		mColoursTemp.push_back(*it);
+		mPlayerNumbersTemp.push_back(std::stoi(pSplitString[2]));
+	}
+
+	//Keep track of how many peers have responded
+	mPeersRespondedToDisconnect++;
+
+	//If all the peers of responded
+	if (mPeersRespondedToDisconnect == mNetworkManager->PeerCount() || pSplitString[0] == "")
+	{
+		std::pair<std::string, KodeboldsMath::Vector4> colourToRemove;
+		int numberToRemove;
+
+		//Search for the colour that is missing from the temporary colours list
+		for (const auto& colour : mTakenColours)
+		{
+			auto it = std::find_if(mColoursTemp.begin(), mColoursTemp.end(),
+				[&](const std::pair<std::string, KodeboldsMath::Vector4> pair) { return pair.first == colour.first; });
+
+			if (it == mColoursTemp.end())
+			{
+				colourToRemove = colour;
+			}
+		}
+
+		//Remove from the taken list and add to the available list
+		mAvailableColours.push_back(colourToRemove);
+		mTakenColours.erase(std::remove_if(mTakenColours.begin(), mTakenColours.end(), 
+			[&](const std::pair<std::string, KodeboldsMath::Vector4> pair) { return pair.first == colourToRemove.first; }
+		), mTakenColours.end());
+
+		//Search for the number that is missing from the temporary numbers list
+		for (const auto& number : GameStats::gTakenPlayerNumbers)
+		{
+			auto it = std::find(mPlayerNumbersTemp.begin(), mPlayerNumbersTemp.end(), number);
+
+			if (it == mPlayerNumbersTemp.end())
+			{
+				numberToRemove = number;
+			}
+		}
+
+		//Remove from the taken list and add to the available list
+		mAvailablePlayerNumbers.push_back(numberToRemove);
+		GameStats::gTakenPlayerNumbers.erase(remove(GameStats::gTakenPlayerNumbers.begin(), GameStats::gTakenPlayerNumbers.end(), numberToRemove), GameStats::gTakenPlayerNumbers.end());
+
+		//Clear temp lists
+		mColoursTemp.clear();
+		mPlayerNumbersTemp.clear();
+
+		//Reset canvas
+		ResetCanvasCommand();
+
+		mPeersRespondedToDisconnect = 0;
+	}
 }
 
 /// <summary>
 /// Constructor
 /// Adds the available colours and player numbers to the appropriate lists
 /// </summary>
-NetworkSystem::NetworkSystem() : ISystem(ComponentType::COMPONENT_NONE), mPeersResponded(0)
+NetworkSystem::NetworkSystem() : ISystem(ComponentType::COMPONENT_NONE), mPeersResponded(0), mPeersRespondedToDisconnect(0)
 {
 	//Colours
 	mAvailableColours.push_back(std::make_pair("GREEN", GREEN));
@@ -244,17 +330,39 @@ void NetworkSystem::ReAssignEntity(const Entity & pEntity)
 /// </summary>
 void NetworkSystem::Process()
 {
-	//If there are no peers connected, this is the first player, so set number to 1 and colour to red and remove it from availability lists
-	if (mNetworkManager->PeerCount() == 0)
+	//If there are no peers connected, this is the first player, so set number to 1 and colour to red and remove it from availability lists and add it to the taken lists
+	if (mNetworkManager->PeerCount() == 0 && GameStats::gPlayerNumber == 0)
 	{
 		GameStats::gPlayerNumber = 1;
+		GameStats::gPlayerColour = RED;
 		mPlayerColour = "RED";
+		GameStats::gCanvasColoured = false;
 
 		mAvailableColours.erase(std::remove_if(mAvailableColours.begin(), mAvailableColours.end(),
 			[&](const std::pair<std::string, KodeboldsMath::Vector4> pair) {return pair.first == mPlayerColour; }),
 			mAvailableColours.end());
 
+		mTakenColours.push_back(std::make_pair("RED", RED));
+
 		mAvailablePlayerNumbers.erase(remove(mAvailablePlayerNumbers.begin(), mAvailablePlayerNumbers.end(), 1), mAvailablePlayerNumbers.end());
+
+		GameStats::gTakenPlayerNumbers.push_back(1);
+	}
+
+	//If peer count is lower than player count, a player has disconnected, send disconnect message to peers to figure out which peer has disconnected then reset canvas
+	if (mNetworkManager->PeerCount() < (GameStats::gPlayerCount - 1))
+	{
+		if (mNetworkManager->PeerCount() > 0)
+		{
+			mNetworkManager->AddMessage("DISCONNECTDETECTED:" + mPlayerColour + ":" + std::to_string(GameStats::gPlayerNumber));
+		}
+		else
+		{
+			ResetCanvasCommand();
+		}
+
+		GameStats::gPlayerCount -= 1;
+		GameStats::gStartingMass = GameStats::gCubeCount * GameStats::gPlayerCount;
 	}
 
 	//Retrieves messages from the network manager queue
@@ -318,12 +426,18 @@ void NetworkSystem::Process()
 		//Reset canvas command, resets the canvas to the original colour and weight
 		else if (splitString[0] == "RESET")
 		{
-			ResetCanvas();
+			ResetCanvasCommand();
 		}
 		//Integrity test command, sends all data to a single canvas for an integrity test
 		else if (splitString[0] == "INTEGRITY")
 		{
-			Integrity(splitString);
+			IntegrityCommand(splitString);
+		}
+		//Disconnect detected command, sends out the colour and number of this player to other peers 
+		//so all peers can figure out which player has disconnected and response appropriately
+		else if (splitString[0] == "DISCONNECTDETECTED")
+		{
+			DisconnectDetectedCommand(splitString);
 		}
 
 		//Remove the message from the queue

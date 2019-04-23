@@ -10,9 +10,13 @@ private:
 	std::shared_ptr<NetworkManager> mNetworkManager = NetworkManager::Instance();
 
 	std::vector<std::pair<std::string, KodeboldsMath::Vector4>> mAvailableColours;
+	std::vector<std::pair<std::string, KodeboldsMath::Vector4>> mTakenColours;
+	std::vector<std::pair<std::string, KodeboldsMath::Vector4>> mColoursTemp;
 	std::vector<int> mAvailablePlayerNumbers;
+	std::vector<int> mPlayerNumbersTemp;
 	std::string mPlayerColour;
 	int mPeersResponded;
+	int mPeersRespondedToDisconnect;
 
 	//Colour constants
 	const KodeboldsMath::Vector4 RED = KodeboldsMath::Vector4(0.5f, 0, 0, 0);
@@ -26,8 +30,9 @@ private:
 	void NewPlayerCommand(std::vector<std::string>& pSplitString);
 	void NewPlayerConfirmedCommand(std::vector<std::string>& pSplitString);
 	void ConnectCommmand();
-	void ResetCanvas();
-	void Integrity(std::vector<std::string>& pSplitString);
+	void ResetCanvasCommand();
+	void IntegrityCommand(std::vector<std::string>& pSplitString);
+	void DisconnectDetectedCommand(std::vector<std::string>& pSplitString);
 
 public:
 	explicit NetworkSystem();

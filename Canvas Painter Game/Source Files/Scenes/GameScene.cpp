@@ -3,28 +3,6 @@
 using namespace KodeboldsMath;
 
 /// <summary>
-/// Creates a player entity so the network system can access and update the player colour
-/// </summary>
-void GameScene::CreatePlayer()
-{
-	//Create player entity
-	mPlayerEntity = mEcsManager->CreateEntity();
-
-	//Creates players colour component
-	Colour colour{ Vector4(1.0f, 1.0f, 1.0f, 1.0f) };
-	GameStats::gPlayerColour = colour.colour;
-
-	//Set red if first player
-	if (mNetworkManager->PeerCount() == 0)
-	{
-		GameStats::gPlayerColour = colour.colour = Vector4(0.5f, 0.0f, 0.0f, 1.0f);
-		GameStats::gPlayerNumber = 1;
-	}
-
-	mEcsManager->AddColourComp(colour, mPlayerEntity);
-}
-
-/// <summary>
 /// Creates the camera for the scene
 /// </summary>
 void GameScene::CreateCamera()
@@ -172,7 +150,7 @@ void GameScene::CameraControls()
 void GameScene::ColourCanvas()
 {
 	//Loops through every voxel of the canvas and colours it
-	for (int i = 1; i < GameStats::gCubeCount; i++)
+	for (int i = 2; i < GameStats::gCubeCount; i++)
 	{
 		mEcsManager->ColourComp(i)->colour = GameStats::gPlayerColour;
 		mEcsManager->WeightComp(i)->weight = 1;
@@ -199,11 +177,14 @@ void GameScene::CubeClicked()
 			{
 				//Randomly choose a player to steal from
 				int playerToStealFrom = 0;
+				std::vector<int>::iterator it;
 				do
 				{
-					playerToStealFrom = rand() % GameStats::gPlayerCount + 1;
+					playerToStealFrom = rand() % 4 + 1;
+
+					it = std::find(GameStats::gTakenPlayerNumbers.begin(), GameStats::gTakenPlayerNumbers.end(), playerToStealFrom);
 				} 
-				while (playerToStealFrom == GameStats::gPlayerNumber);
+				while (playerToStealFrom == GameStats::gPlayerNumber || it == GameStats::gTakenPlayerNumbers.end());
 
 				//Send message to the chosen player requesting to steal a voxel
 				mNetworkManager->AddMessage("CLICKED:" + std::to_string(intersectedCube) + ":" + std::to_string(playerToStealFrom) + ":" + std::to_string(GameStats::gPlayerNumber));
@@ -333,7 +314,7 @@ void GameScene::OnLoad()
 	mAntTweakManager->AddVariable("Game stats", "Player Count", TW_TYPE_INT32, &GameStats::gPlayerCount, "group=PlayerStats");
 	mAntTweakManager->AddVariable("Game stats", "Player Number", TW_TYPE_INT32, &GameStats::gPlayerNumber, "group=PlayerStats");
 	mAntTweakManager->AddVariable("Game stats", "Mass on PC", TW_TYPE_INT32, &GameStats::gCurrentMass, "group=CubeMass");
-	mAntTweakManager->AddVariable("Game stats", "Starting Mass", TW_TYPE_INT32, &mStartingMass, "group=CubeMass");
+	mAntTweakManager->AddVariable("Game stats", "Starting Mass", TW_TYPE_INT32, &GameStats::gStartingMass, "group=CubeMass");
 	mAntTweakManager->AddVariable("Game stats", "Total Mass", TW_TYPE_INT32, &GameStats::gTotalMass, "group=CubeMass");
 	mAntTweakManager->AddVariable("Game stats", "Target Rendering Frequency", TW_TYPE_INT32, &mEcsManager->TargetRenderingFrequency(), "group=Frequencies");
 	mAntTweakManager->AddVariable("Game stats", "Target Networking Frequency", TW_TYPE_INT32, &mEcsManager->TargetNetworkingFrequency(), "group=Frequencies");
@@ -341,12 +322,11 @@ void GameScene::OnLoad()
 	mAntTweakManager->AddVariable("Game stats", "Actual Networking Frequency", TW_TYPE_INT32, &mEcsManager->NetworkingFrequency(), "group=Frequencies");
 
 	//Create game entities
-	CreatePlayer();
+	CreateLight();
+	CreateCamera();
 	CreateCanvas();
 	GameStats::gCurrentMass = GameStats::gCubeCount;
-	mStartingMass = GameStats::gCubeCount * 4;
-	CreateCamera();
-	CreateLight();
+	GameStats::gStartingMass = GameStats::gCubeCount;
 }
 
 /// <summary>

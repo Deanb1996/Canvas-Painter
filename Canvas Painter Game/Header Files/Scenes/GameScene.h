@@ -22,7 +22,6 @@ private:
 	//Entity IDs
 	int mCameraID;
 	int mRayID;
-	int mPlayerEntity;
 
 	//Camera
 	Camera mActiveCamera;
@@ -33,11 +32,9 @@ private:
 
 	//Game stats
 	const float mMoveSpeed = 5;
-	int mStartingMass;
 	int mPreviousCube;
 
 	//On load functions
-	void CreatePlayer();
 	void CreateCamera();
 	void CreateLight();
 	void CreateCanvas();
