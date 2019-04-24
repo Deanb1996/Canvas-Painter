@@ -52,10 +52,10 @@ void InputManager_DX::CursorVisible(const bool pVisible)
 LRESULT CALLBACK InputManager_DX::WndProc(const HWND hWnd, const UINT message, const WPARAM wParam, const LPARAM lParam)
 {
 	//Tells anttweak to handle events relevant to anttweak
-	if (TwEventWin(hWnd, message, wParam, lParam))
-	{
-		return 0;
-	}
+	//if (TwEventWin(hWnd, message, wParam, lParam))
+	//{
+	//	return 0;
+	//}
 
 	switch (message)
 	{
