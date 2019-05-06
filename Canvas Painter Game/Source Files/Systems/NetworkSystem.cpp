@@ -203,6 +203,7 @@ void NetworkSystem::ResetCanvasCommand()
 		//Set weight to 1
 		mEcsManager->WeightComp(i)->weight = 1;
 	}
+	GameStats::gCurrentMass = GameStats::gStartingMass;
 }
 
 /// <summary>

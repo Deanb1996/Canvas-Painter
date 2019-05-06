@@ -237,6 +237,7 @@ void GameScene::Reset()
 {
 	mNetworkManager->AddMessage("RESET");
 	ColourCanvas();
+	GameStats::gCurrentMass = GameStats::gStartingMass;
 }
 
 /// <summary>
