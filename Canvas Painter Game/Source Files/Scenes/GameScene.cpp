@@ -153,7 +153,18 @@ void GameScene::ColourCanvas()
 	//Loops through every voxel of the canvas and colours it
 	for (int i = 2; i < GameStats::gCubeCount + 2; i++)
 	{
-		mEcsManager->ColourComp(i)->colour = GameStats::gPlayerColour;
+		//If colour exists, set colour to player colour
+		if (mEcsManager->ColourComp(i))
+		{
+			mEcsManager->ColourComp(i)->colour = GameStats::gPlayerColour;
+		}
+		//Else create colour component with player colour
+		else
+		{
+			Colour colour{ GameStats::gPlayerColour };
+			mEcsManager->AddColourComp(colour, i);
+		}
+		//Set weight to 1
 		mEcsManager->WeightComp(i)->weight = 1;
 	}
 }
